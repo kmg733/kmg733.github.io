@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     default: "Manuel",
     template: "%s | Manuel",
   },
-  description: "Manuel의 포트폴리오 및 기술 블로그",
+  description: "Manuel의 기술 블로그",
 };
 
 export default function RootLayout({
