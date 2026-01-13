@@ -9,7 +9,7 @@ export const projectsData: Project[] = [
   {
     id: "1",
     title: "Portfolio & Blog",
-    description: "Next.js와 TypeScript로 만든 Manuel의 포트폴리오 및 블로그 사이트",
+    description: "Next.js와 TypeScript로 만든 Manuel의 블로그 사이트",
     tags: ["Next.js", "TypeScript", "Tailwind CSS"],
     githubUrl: "https://github.com/kmg733/kmg733.github.io",
     demoUrl: "https://kmg733.github.io",
