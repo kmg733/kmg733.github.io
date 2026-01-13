@@ -122,8 +122,8 @@ export class FilePostRepository implements IPostRepository {
   }
 
   private sortByDateDescending(posts: PostMeta[]): PostMeta[] {
-    return posts.sort((a, b) =>
-      new Date(b.date) > new Date(a.date) ? 1 : -1
+    return posts.sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
     );
   }
 }
