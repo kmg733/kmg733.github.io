@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import TechCard from "@/components/TechCard";
 
 export const metadata: Metadata = {
   title: "About",
@@ -62,77 +63,33 @@ export default function AboutPage() {
           <h2 className="mb-6 text-2xl font-semibold">🛠️ Tech Stack</h2>
 
           <div className="grid gap-6 sm:grid-cols-2">
-            {/* Languages */}
-            <div className="group rounded-xl border border-zinc-200 bg-white/50 p-6 shadow-md backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-zinc-800 dark:bg-zinc-900/50">
-              <h3 className="mb-4 flex items-center gap-2 font-semibold text-zinc-900 dark:text-zinc-100">
-                <span className="text-xl">💬</span>
-                <span>Languages</span>
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {techStack.languages.map((lang) => (
-                  <span
-                    key={lang}
-                    className="cursor-default rounded-full bg-blue-100 px-3 py-1.5 text-sm font-medium text-blue-700 transition-all duration-200 hover:scale-105 hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50"
-                  >
-                    {lang}
-                  </span>
-                ))}
-              </div>
-            </div>
+            <TechCard
+              icon="💬"
+              title="Languages"
+              items={techStack.languages}
+              colorScheme="blue"
+            />
 
-            {/* Frameworks & Libraries */}
-            <div className="group rounded-xl border border-zinc-200 bg-white/50 p-6 shadow-md backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-zinc-800 dark:bg-zinc-900/50">
-              <h3 className="mb-4 flex items-center gap-2 font-semibold text-zinc-900 dark:text-zinc-100">
-                <span className="text-xl">🧩</span>
-                <span>Frameworks & Libraries</span>
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {techStack.frameworks.map((fw) => (
-                  <span
-                    key={fw}
-                    className="cursor-default rounded-full bg-green-100 px-3 py-1.5 text-sm font-medium text-green-700 transition-all duration-200 hover:scale-105 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-300 dark:hover:bg-green-900/50"
-                  >
-                    {fw}
-                  </span>
-                ))}
-              </div>
-            </div>
+            <TechCard
+              icon="🧩"
+              title="Frameworks & Libraries"
+              items={techStack.frameworks}
+              colorScheme="green"
+            />
 
-            {/* Databases */}
-            <div className="group rounded-xl border border-zinc-200 bg-white/50 p-6 shadow-md backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-zinc-800 dark:bg-zinc-900/50">
-              <h3 className="mb-4 flex items-center gap-2 font-semibold text-zinc-900 dark:text-zinc-100">
-                <span className="text-xl">🗄️</span>
-                <span>Databases</span>
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {techStack.databases.map((db) => (
-                  <span
-                    key={db}
-                    className="cursor-default rounded-full bg-orange-100 px-3 py-1.5 text-sm font-medium text-orange-700 transition-all duration-200 hover:scale-105 hover:bg-orange-200 dark:bg-orange-900/30 dark:text-orange-300 dark:hover:bg-orange-900/50"
-                  >
-                    {db}
-                  </span>
-                ))}
-              </div>
-            </div>
+            <TechCard
+              icon="🗄️"
+              title="Databases"
+              items={techStack.databases}
+              colorScheme="orange"
+            />
 
-            {/* Tools */}
-            <div className="group rounded-xl border border-zinc-200 bg-white/50 p-6 shadow-md backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-zinc-800 dark:bg-zinc-900/50">
-              <h3 className="mb-4 flex items-center gap-2 font-semibold text-zinc-900 dark:text-zinc-100">
-                <span className="text-xl">🔧</span>
-                <span>Tools & Environment</span>
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {techStack.tools.map((tool) => (
-                  <span
-                    key={tool}
-                    className="cursor-default rounded-full bg-purple-100 px-3 py-1.5 text-sm font-medium text-purple-700 transition-all duration-200 hover:scale-105 hover:bg-purple-200 dark:bg-purple-900/30 dark:text-purple-300 dark:hover:bg-purple-900/50"
-                  >
-                    {tool}
-                  </span>
-                ))}
-              </div>
-            </div>
+            <TechCard
+              icon="🔧"
+              title="Tools & Environment"
+              items={techStack.tools}
+              colorScheme="purple"
+            />
           </div>
         </section>
 
