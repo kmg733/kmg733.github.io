@@ -1,5 +1,6 @@
 interface TechCardProps {
   icon: string;
+  iconLabel: string;
   title: string;
   items: string[];
   colorScheme: "blue" | "green" | "orange" | "purple";
@@ -28,13 +29,13 @@ const colorSchemes = {
   },
 };
 
-export default function TechCard({ icon, title, items, colorScheme }: TechCardProps) {
+export default function TechCard({ icon, iconLabel, title, items, colorScheme }: TechCardProps) {
   const colors = colorSchemes[colorScheme];
 
   return (
     <div className="group rounded-xl border border-zinc-200 bg-white/50 p-6 shadow-md backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-zinc-800 dark:bg-zinc-900/50">
       <h3 className="mb-4 flex items-center gap-2 font-semibold text-zinc-900 dark:text-zinc-100">
-        <span className="text-xl">{icon}</span>
+        <span className="text-xl" role="img" aria-label={iconLabel}>{icon}</span>
         <span>{title}</span>
       </h3>
       <div className="flex flex-wrap gap-2">
