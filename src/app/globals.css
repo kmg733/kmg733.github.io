@@ -43,6 +43,19 @@ body {
   opacity: 0;
 }
 
+/* Animation delay classes */
+.animate-delay-100 {
+  animation-delay: 0.1s;
+}
+
+.animate-delay-200 {
+  animation-delay: 0.2s;
+}
+
+.animate-delay-300 {
+  animation-delay: 0.3s;
+}
+
 /* Blog post images */
 .prose img {
   max-width: 100%;

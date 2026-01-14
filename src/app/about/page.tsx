@@ -38,7 +38,7 @@ export default function AboutPage() {
         </header>
 
         {/* About Me with staggered animation */}
-        <section className="mb-12 animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
+        <section className="mb-12 animate-fade-in-up animate-delay-100">
           <h2 className="mb-6 text-2xl font-semibold">🙋‍♂️ About Me</h2>
           <div className="group rounded-xl border border-zinc-200 bg-white/50 p-6 shadow-md backdrop-blur-sm transition-all duration-300 hover:shadow-xl dark:border-zinc-800 dark:bg-zinc-900/50">
             <ul className="space-y-4 text-zinc-600 dark:text-zinc-400">
@@ -59,7 +59,7 @@ export default function AboutPage() {
         </section>
 
         {/* Tech Stack with enhanced cards */}
-        <section className="mb-12 animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
+        <section className="mb-12 animate-fade-in-up animate-delay-200">
           <h2 className="mb-6 text-2xl font-semibold">🛠️ Tech Stack</h2>
 
           <div className="grid gap-6 sm:grid-cols-2">
@@ -94,7 +94,7 @@ export default function AboutPage() {
         </section>
 
         {/* Contact with enhanced styling */}
-        <section className="animate-fade-in-up" style={{ animationDelay: "0.3s" }}>
+        <section className="animate-fade-in-up animate-delay-300">
           <h2 className="mb-6 text-2xl font-semibold">📫 Contact</h2>
           <div className="rounded-xl border border-zinc-200 bg-white/50 p-6 shadow-md backdrop-blur-sm dark:border-zinc-800 dark:bg-zinc-900/50">
             <ul className="space-y-4 text-zinc-600 dark:text-zinc-400">
