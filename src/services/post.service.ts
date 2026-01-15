@@ -61,4 +61,52 @@ export class PostService {
 
     return [...new Set(tags)];
   }
+
+  /**
+   * 카테고리로 포스트를 필터링합니다.
+   * @param category 카테고리
+   */
+  getPostsByCategory(category: string): PostMeta[] {
+    return this.postRepository
+      .findAll()
+      .filter((post) => post.category === category);
+  }
+
+  /**
+   * 서브카테고리로 포스트를 필터링합니다.
+   * @param category 카테고리
+   * @param subcategory 서브카테고리
+   */
+  getPostsBySubcategory(category: string, subcategory: string): PostMeta[] {
+    return this.postRepository
+      .findAll()
+      .filter(
+        (post) =>
+          post.category === category && post.subcategory === subcategory
+      );
+  }
+
+  /**
+   * 모든 카테고리를 조회합니다.
+   */
+  getAllCategories(): string[] {
+    const categories = this.postRepository
+      .findAll()
+      .map((post) => post.category);
+
+    return [...new Set(categories)];
+  }
+
+  /**
+   * 카테고리별 서브카테고리를 조회합니다.
+   * @param category 카테고리
+   */
+  getSubcategoriesByCategory(category: string): string[] {
+    const subcategories = this.postRepository
+      .findAll()
+      .filter((post) => post.category === category && post.subcategory)
+      .map((post) => post.subcategory as string);
+
+    return [...new Set(subcategories)];
+  }
 }

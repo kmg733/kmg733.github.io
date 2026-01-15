@@ -2,7 +2,9 @@
 title: "Hello World - 첫 번째 블로그 포스트"
 date: "2026-01-13"
 description: "Next.js와 TypeScript로 만든 블로그의 첫 번째 포스트입니다."
-tags: ["nextjs", "blog"]
+category: "개발"
+subcategory: "Next.js"
+tags: ["tutorial", "beginner"]
 ---
 
 <figure>
