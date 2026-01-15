@@ -6,6 +6,8 @@ export interface PostMeta {
   title: string;
   date: string;
   description: string;
+  category: string;
+  subcategory?: string;
   tags: string[];
   readingTime: string;
 }
@@ -24,5 +26,7 @@ export interface PostFrontmatter {
   title?: string;
   date?: string;
   description?: string;
+  category?: string;
+  subcategory?: string;
   tags?: string[];
 }

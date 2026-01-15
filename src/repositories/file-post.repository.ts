@@ -116,6 +116,8 @@ export class FilePostRepository implements IPostRepository {
       title: frontmatter.title ?? slug,
       date: frontmatter.date ?? new Date().toISOString(),
       description: frontmatter.description ?? "",
+      category: frontmatter.category ?? "미분류",
+      subcategory: frontmatter.subcategory,
       tags: frontmatter.tags ?? [],
       readingTime: stats.text,
     };
