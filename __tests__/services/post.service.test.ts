@@ -16,6 +16,8 @@ describe("PostService", () => {
       title: "First Post",
       date: "2025-01-10",
       description: "First description",
+      category: "개발",
+      subcategory: "React",
       tags: ["tag1", "tag2"],
       readingTime: "2 min read",
     },
@@ -24,8 +26,19 @@ describe("PostService", () => {
       title: "Second Post",
       date: "2025-01-12",
       description: "Second description",
+      category: "개발",
+      subcategory: "TypeScript",
       tags: ["tag2", "tag3"],
       readingTime: "3 min read",
+    },
+    {
+      slug: "third-post",
+      title: "Third Post",
+      date: "2025-01-14",
+      description: "Third description",
+      category: "일상",
+      tags: ["tag4"],
+      readingTime: "1 min read",
     },
   ];
 
@@ -70,7 +83,7 @@ describe("PostService", () => {
     it("should return all posts if count exceeds total", () => {
       const result = postService.getRecentPosts(10);
 
-      expect(result).toHaveLength(2);
+      expect(result).toHaveLength(3);
     });
   });
 
@@ -93,7 +106,7 @@ describe("PostService", () => {
     it("should return all slugs from repository", () => {
       const result = postService.getAllSlugs();
 
-      expect(result).toEqual(["first-post", "second-post"]);
+      expect(result).toEqual(["first-post", "second-post", "third-post"]);
       expect(mockRepository.findAllSlugs).toHaveBeenCalledTimes(1);
     });
   });
@@ -116,7 +129,71 @@ describe("PostService", () => {
     it("should return unique tags from all posts", () => {
       const result = postService.getAllTags();
 
-      expect(result).toEqual(["tag1", "tag2", "tag3"]);
+      expect(result).toEqual(["tag1", "tag2", "tag3", "tag4"]);
+    });
+  });
+
+  describe("getPostsByCategory", () => {
+    it("should return posts filtered by category", () => {
+      const result = postService.getPostsByCategory("개발");
+
+      expect(result).toHaveLength(2);
+      expect(result.every((post) => post.category === "개발")).toBe(true);
+    });
+
+    it("should return empty array when no posts have the category", () => {
+      const result = postService.getPostsByCategory("존재하지않는카테고리");
+
+      expect(result).toHaveLength(0);
+    });
+  });
+
+  describe("getPostsBySubcategory", () => {
+    it("should return posts filtered by category and subcategory", () => {
+      const result = postService.getPostsBySubcategory("개발", "React");
+
+      expect(result).toHaveLength(1);
+      expect(result[0].slug).toBe("first-post");
+    });
+
+    it("should return empty array when subcategory does not exist", () => {
+      const result = postService.getPostsBySubcategory("개발", "Vue");
+
+      expect(result).toHaveLength(0);
+    });
+
+    it("should return empty array when category does not match", () => {
+      const result = postService.getPostsBySubcategory("일상", "React");
+
+      expect(result).toHaveLength(0);
+    });
+  });
+
+  describe("getAllCategories", () => {
+    it("should return unique categories from all posts", () => {
+      const result = postService.getAllCategories();
+
+      expect(result).toEqual(["개발", "일상"]);
+    });
+  });
+
+  describe("getSubcategoriesByCategory", () => {
+    it("should return subcategories for a given category", () => {
+      const result = postService.getSubcategoriesByCategory("개발");
+
+      expect(result).toEqual(["React", "TypeScript"]);
+    });
+
+    it("should return empty array when category has no subcategories", () => {
+      const result = postService.getSubcategoriesByCategory("일상");
+
+      expect(result).toHaveLength(0);
+    });
+
+    it("should return empty array when category does not exist", () => {
+      const result = postService.getSubcategoriesByCategory("존재하지않음");
+
+      expect(result).toHaveLength(0);
     });
   });
 });
