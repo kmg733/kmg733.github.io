@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { postService } from "@/lib/container";
+import { HOME_DEFAULTS, DATE_FORMAT } from "@/lib/constants";
 
 export default function Home() {
-  const recentPosts = postService.getRecentPosts(3);
+  const recentPosts = postService.getRecentPosts(HOME_DEFAULTS.RECENT_POSTS_COUNT);
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-16">
@@ -58,11 +59,10 @@ export default function Home() {
                   </p>
                   <div className="flex items-center gap-4 text-sm text-zinc-500">
                     <time dateTime={post.date}>
-                      {new Date(post.date).toLocaleDateString("ko-KR", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })}
+                      {new Date(post.date).toLocaleDateString(
+                        DATE_FORMAT.LOCALE,
+                        DATE_FORMAT.OPTIONS
+                      )}
                     </time>
                     <span>{post.readingTime}</span>
                   </div>

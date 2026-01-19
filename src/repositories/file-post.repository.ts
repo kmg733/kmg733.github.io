@@ -4,6 +4,7 @@ import matter from "gray-matter";
 import readingTime from "reading-time";
 import type { IPostRepository } from "@/interfaces";
 import type { Post, PostMeta, PostFrontmatter } from "@/types";
+import { POST_DEFAULTS } from "@/lib/constants";
 
 /**
  * 파일 시스템 기반 포스트 Repository 구현체 (Infrastructure Layer)
@@ -16,7 +17,7 @@ export class FilePostRepository implements IPostRepository {
 
   constructor(postsDirectory?: string) {
     this.postsDirectory =
-      postsDirectory ?? path.join(process.cwd(), "content/posts");
+      postsDirectory ?? path.join(process.cwd(), POST_DEFAULTS.DIRECTORY);
   }
 
   findAll(): PostMeta[] {
@@ -115,10 +116,10 @@ export class FilePostRepository implements IPostRepository {
       slug,
       title: frontmatter.title ?? slug,
       date: frontmatter.date ?? new Date().toISOString(),
-      description: frontmatter.description ?? "",
-      category: frontmatter.category ?? "미분류",
+      description: frontmatter.description ?? POST_DEFAULTS.DESCRIPTION,
+      category: frontmatter.category ?? POST_DEFAULTS.CATEGORY,
       subcategory: frontmatter.subcategory,
-      tags: frontmatter.tags ?? [],
+      tags: frontmatter.tags ?? [...POST_DEFAULTS.TAGS],
       readingTime: stats.text,
     };
   }
