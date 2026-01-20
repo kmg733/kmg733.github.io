@@ -14,19 +14,23 @@ export default function BlogFilter({ posts }: BlogFilterProps) {
     null
   );
 
-  // 카테고리 목록 추출
+  // 카테고리 목록 추출 (정렬)
   const categories = useMemo(() => {
     const cats = posts.map((post) => post.category);
-    return [...new Set(cats)];
+    return [...new Set(cats)].sort();
   }, [posts]);
 
-  // 선택된 카테고리의 서브카테고리 목록
+  // 카테고리 활성화 상태 확인 헬퍼 함수
+  const isCategoryActive = (category: string) =>
+    selectedCategory === category && !selectedSubcategory;
+
+  // 선택된 카테고리의 서브카테고리 목록 (정렬)
   const subcategories = useMemo(() => {
     if (!selectedCategory) return [];
     const subs = posts
       .filter((post) => post.category === selectedCategory && post.subcategory)
       .map((post) => post.subcategory as string);
-    return [...new Set(subs)];
+    return [...new Set(subs)].sort();
   }, [posts, selectedCategory]);
 
   // 필터링된 포스트
@@ -67,7 +71,7 @@ export default function BlogFilter({ posts }: BlogFilterProps) {
               key={cat}
               onClick={() => handleCategoryClick(cat)}
               className={`rounded-full px-4 py-2 text-sm transition-colors ${
-                selectedCategory === cat && !selectedSubcategory
+                isCategoryActive(cat)
                   ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900"
                   : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700"
               }`}
