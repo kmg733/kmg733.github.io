@@ -1,6 +1,9 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+/* Tailwind v4: class 기반 다크 모드 활성화 */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -13,17 +16,46 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Dark mode - class 기반만 사용 */
+:root.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Dark mode styles for all elements */
+.dark .prose figure .image-frame {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border-color: #334155;
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.3),
+    0 2px 4px -2px rgb(0 0 0 / 0.2);
+}
+
+.dark .prose figure .image-frame:hover {
+  box-shadow:
+    0 10px 15px -3px rgb(0 0 0 / 0.4),
+    0 4px 6px -4px rgb(0 0 0 / 0.3);
+}
+
+.dark .prose figure .image-frame img {
+  box-shadow: 0 2px 4px rgb(0 0 0 / 0.3);
+}
+
+.dark .prose figure figcaption {
+  color: #94a3b8;
+  border-bottom-color: #334155;
+}
+
+.dark .toc-nav {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border-color: #334155;
 }
 
 /* Fade-in animation for About page */
@@ -116,45 +148,12 @@ body {
   text-align: left;
 }
 
-/* Dark mode figure styles */
-@media (prefers-color-scheme: dark) {
-  .prose figure .image-frame {
-    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-    border-color: #334155;
-    box-shadow:
-      0 4px 6px -1px rgb(0 0 0 / 0.3),
-      0 2px 4px -2px rgb(0 0 0 / 0.2);
-  }
-
-  .prose figure .image-frame:hover {
-    box-shadow:
-      0 10px 15px -3px rgb(0 0 0 / 0.4),
-      0 4px 6px -4px rgb(0 0 0 / 0.3);
-  }
-
-  .prose figure .image-frame img {
-    box-shadow: 0 2px 4px rgb(0 0 0 / 0.3);
-  }
-
-  .prose figure figcaption {
-    color: #94a3b8;
-    border-bottom-color: #334155;
-  }
-}
-
 /* Table of Contents */
 .toc-nav {
   padding: 1rem;
   background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
   border-radius: 0.75rem;
   border: 1px solid #e2e8f0;
-}
-
-@media (prefers-color-scheme: dark) {
-  .toc-nav {
-    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-    border-color: #334155;
-  }
 }
 
 /* Heading highlight animation */
@@ -176,6 +175,24 @@ body {
   }
 }
 
+@keyframes heading-flash-dark {
+  0% {
+    background-color: transparent;
+  }
+  25% {
+    background-color: rgba(96, 165, 250, 0.15);
+  }
+  50% {
+    background-color: rgba(96, 165, 250, 0.25);
+  }
+  75% {
+    background-color: rgba(96, 165, 250, 0.15);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
 /* Scroll offset for fixed navigation */
 .prose h2,
 .prose h3 {
@@ -187,22 +204,6 @@ body {
   border-radius: 0.25rem;
 }
 
-@media (prefers-color-scheme: dark) {
-  @keyframes heading-flash {
-    0% {
-      background-color: transparent;
-    }
-    25% {
-      background-color: rgba(96, 165, 250, 0.15);
-    }
-    50% {
-      background-color: rgba(96, 165, 250, 0.25);
-    }
-    75% {
-      background-color: rgba(96, 165, 250, 0.15);
-    }
-    100% {
-      background-color: transparent;
-    }
-  }
+.dark .heading-highlight {
+  animation: heading-flash-dark 1.5s ease-in-out;
 }

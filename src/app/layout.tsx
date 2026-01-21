@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Sacramento } from "next/font/google";
 import Link from "next/link";
+import ThemeToggle from "@/components/ThemeToggle";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -42,7 +43,7 @@ export default function RootLayout({
             <Link href="/" className="text-2xl font-bold font-[family-name:var(--font-sacramento)]">
               Manuel
             </Link>
-            <div className="flex gap-6">
+            <div className="flex items-center gap-6">
               <Link
                 href="/"
                 className="text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
@@ -67,6 +68,7 @@ export default function RootLayout({
               >
                 About
               </Link>
+              <ThemeToggle />
             </div>
           </nav>
         </header>
