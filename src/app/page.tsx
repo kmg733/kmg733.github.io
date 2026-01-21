@@ -18,13 +18,13 @@ export default function Home() {
         <div className="mt-8 flex justify-center gap-4">
           <Link
             href="/blog"
-            className="rounded-full bg-zinc-900 px-6 py-3 text-sm font-medium text-white hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+            className="rounded-full bg-gradient-to-r from-amber-500 to-orange-500 px-6 py-3 text-sm font-medium text-white hover:from-amber-600 hover:to-orange-600 shadow-md hover:shadow-lg transition-all dark:from-slate-600 dark:to-slate-700 dark:hover:from-slate-500 dark:hover:to-slate-600"
           >
             블로그 보기
           </Link>
           <Link
             href="/about"
-            className="rounded-full border border-zinc-300 px-6 py-3 text-sm font-medium hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
+            className="rounded-full border border-amber-300 px-6 py-3 text-sm font-medium text-amber-700 hover:bg-amber-50 transition-all dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800"
           >
             About Me
           </Link>

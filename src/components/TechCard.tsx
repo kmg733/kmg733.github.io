@@ -3,29 +3,29 @@ interface TechCardProps {
   iconLabel: string;
   title: string;
   items: string[];
-  colorScheme: "blue" | "green" | "orange" | "purple";
+  colorScheme: "amber" | "orange" | "yellow" | "rose";
 }
 
 const colorSchemes = {
-  blue: {
-    bg: "bg-blue-100 dark:bg-blue-900/30",
-    bgHover: "hover:bg-blue-200 dark:hover:bg-blue-900/50",
-    text: "text-blue-700 dark:text-blue-300",
-  },
-  green: {
-    bg: "bg-green-100 dark:bg-green-900/30",
-    bgHover: "hover:bg-green-200 dark:hover:bg-green-900/50",
-    text: "text-green-700 dark:text-green-300",
+  amber: {
+    bg: "bg-amber-100 dark:bg-slate-800/50",
+    bgHover: "hover:bg-amber-200 dark:hover:bg-slate-700/50",
+    text: "text-amber-800 dark:text-slate-300",
   },
   orange: {
-    bg: "bg-orange-100 dark:bg-orange-900/30",
-    bgHover: "hover:bg-orange-200 dark:hover:bg-orange-900/50",
-    text: "text-orange-700 dark:text-orange-300",
+    bg: "bg-orange-100 dark:bg-gray-800/50",
+    bgHover: "hover:bg-orange-200 dark:hover:bg-gray-700/50",
+    text: "text-orange-800 dark:text-gray-300",
   },
-  purple: {
-    bg: "bg-purple-100 dark:bg-purple-900/30",
-    bgHover: "hover:bg-purple-200 dark:hover:bg-purple-900/50",
-    text: "text-purple-700 dark:text-purple-300",
+  yellow: {
+    bg: "bg-yellow-100 dark:bg-zinc-800/50",
+    bgHover: "hover:bg-yellow-200 dark:hover:bg-zinc-700/50",
+    text: "text-yellow-800 dark:text-zinc-300",
+  },
+  rose: {
+    bg: "bg-rose-100 dark:bg-stone-800/50",
+    bgHover: "hover:bg-rose-200 dark:hover:bg-stone-700/50",
+    text: "text-rose-800 dark:text-stone-300",
   },
 };
 
@@ -33,7 +33,7 @@ export default function TechCard({ icon, iconLabel, title, items, colorScheme }:
   const colors = colorSchemes[colorScheme];
 
   return (
-    <div className="group rounded-xl border border-zinc-200 bg-white/50 p-6 shadow-md backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-zinc-800 dark:bg-zinc-900/50">
+    <div className="group rounded-xl border border-amber-200 bg-gradient-to-br from-amber-50/80 to-orange-50/80 p-6 shadow-md backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-slate-700 dark:bg-gradient-to-br dark:from-slate-800 dark:to-slate-900">
       <h3 className="mb-4 flex items-center gap-2 font-semibold text-zinc-900 dark:text-zinc-100">
         <span className="text-xl" role="img" aria-label={iconLabel}>{icon}</span>
         <span>{title}</span>

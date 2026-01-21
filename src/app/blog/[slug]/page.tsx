@@ -73,7 +73,7 @@ export default async function BlogPostPage({ params }: Props) {
             <div className="mt-4 text-sm text-zinc-500">{post.readingTime}</div>
           </header>
 
-          <div className="prose prose-zinc max-w-none dark:prose-invert prose-headings:font-semibold prose-a:text-blue-600 prose-code:rounded prose-code:bg-zinc-100 prose-code:px-1 prose-code:py-0.5 prose-code:before:content-none prose-code:after:content-none dark:prose-a:text-blue-400 dark:prose-code:bg-zinc-800">
+          <div className="prose prose-zinc max-w-none dark:prose-invert prose-headings:font-semibold prose-a:text-amber-700 hover:prose-a:text-amber-800 prose-code:rounded prose-code:bg-amber-100 prose-code:px-1 prose-code:py-0.5 prose-code:text-amber-900 prose-code:before:content-none prose-code:after:content-none dark:prose-a:text-blue-400 dark:prose-code:bg-zinc-800 dark:prose-code:text-zinc-200">
             <MDXRemote
               source={post.content}
               options={{
