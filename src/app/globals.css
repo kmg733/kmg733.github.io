@@ -29,31 +29,34 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* 상단 그라데이션 효과 */
+/* 상단 그라데이션 효과 - 라이트: 일출 햇빛 */
 body::before {
   content: "";
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  height: 400px;
+  height: 450px;
   background: linear-gradient(
     180deg,
-    rgba(167, 139, 250, 0.15) 0%,
-    rgba(129, 140, 248, 0.08) 40%,
+    rgba(251, 191, 36, 0.35) 0%,
+    rgba(251, 146, 60, 0.2) 30%,
+    rgba(253, 224, 71, 0.1) 60%,
     transparent 100%
   );
   pointer-events: none;
   z-index: -1;
-  transition: background 0.3s ease;
+  transition: background 0.5s ease;
 }
 
+/* 다크 모드 - 달빛 효과 */
 .dark body::before,
 :root.dark body::before {
   background: linear-gradient(
     180deg,
-    rgba(99, 102, 241, 0.2) 0%,
-    rgba(139, 92, 246, 0.1) 40%,
+    rgba(226, 232, 240, 0.25) 0%,
+    rgba(148, 163, 184, 0.15) 35%,
+    rgba(186, 230, 253, 0.08) 70%,
     transparent 100%
   );
 }
@@ -117,6 +120,30 @@ body::before {
   animation-delay: 0.3s;
 }
 
+/* Code blocks - 라이트모드: 따뜻한 톤 */
+.prose pre {
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%) !important;
+  border: 1px solid #fde68a !important;
+  border-radius: 0.75rem;
+  padding: 1rem;
+}
+
+.prose pre code {
+  background: transparent !important;
+  color: #92400e !important;
+  padding: 0;
+}
+
+/* Code blocks - 다크모드 */
+.dark .prose pre {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
+  border-color: #334155 !important;
+}
+
+.dark .prose pre code {
+  color: #e2e8f0 !important;
+}
+
 /* Blog post images */
 .prose img {
   max-width: 100%;
@@ -138,26 +165,26 @@ body::before {
   position: relative;
   display: inline-block;
   padding: 1rem;
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
   border-radius: 1rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #fde68a;
   box-shadow:
-    0 4px 6px -1px rgb(0 0 0 / 0.1),
-    0 2px 4px -2px rgb(0 0 0 / 0.1);
+    0 4px 6px -1px rgb(251 191 36 / 0.1),
+    0 2px 4px -2px rgb(251 146 60 / 0.08);
   transition: all 0.3s ease;
 }
 
 .prose figure .image-frame:hover {
   transform: translateY(-2px);
   box-shadow:
-    0 10px 15px -3px rgb(0 0 0 / 0.1),
-    0 4px 6px -4px rgb(0 0 0 / 0.1);
+    0 10px 15px -3px rgb(251 191 36 / 0.15),
+    0 4px 6px -4px rgb(251 146 60 / 0.12);
 }
 
 .prose figure .image-frame img {
   margin: 0;
   border-radius: 0.5rem;
-  box-shadow: 0 2px 4px rgb(0 0 0 / 0.1);
+  box-shadow: 0 2px 4px rgb(251 191 36 / 0.1);
 }
 
 .prose figure figcaption {
@@ -166,9 +193,9 @@ body::before {
   padding: 0.5rem 0;
   text-align: left;
   font-size: 0.875rem;
-  color: #64748b;
+  color: #92400e;
   font-style: italic;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid #fde68a;
 }
 
 /* Figure wrapper to control caption alignment */
@@ -180,9 +207,9 @@ body::before {
 /* Table of Contents */
 .toc-nav {
   padding: 1rem;
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
   border-radius: 0.75rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #fde68a;
 }
 
 /* Heading highlight animation */
@@ -191,13 +218,13 @@ body::before {
     background-color: transparent;
   }
   25% {
-    background-color: rgba(59, 130, 246, 0.2);
+    background-color: rgba(251, 191, 36, 0.2);
   }
   50% {
-    background-color: rgba(59, 130, 246, 0.3);
+    background-color: rgba(251, 191, 36, 0.3);
   }
   75% {
-    background-color: rgba(59, 130, 246, 0.2);
+    background-color: rgba(251, 191, 36, 0.2);
   }
   100% {
     background-color: transparent;

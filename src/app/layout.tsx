@@ -46,25 +46,25 @@ export default function RootLayout({
             <div className="flex items-center gap-6">
               <Link
                 href="/"
-                className="text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+                className="text-amber-700 hover:text-amber-900 dark:text-zinc-400 dark:hover:text-zinc-100"
               >
                 Home
               </Link>
               <Link
                 href="/blog"
-                className="text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+                className="text-amber-700 hover:text-amber-900 dark:text-zinc-400 dark:hover:text-zinc-100"
               >
                 Blog
               </Link>
               <Link
                 href="/projects"
-                className="text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+                className="text-amber-700 hover:text-amber-900 dark:text-zinc-400 dark:hover:text-zinc-100"
               >
                 Projects
               </Link>
               <Link
                 href="/about"
-                className="text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+                className="text-amber-700 hover:text-amber-900 dark:text-zinc-400 dark:hover:text-zinc-100"
               >
                 About
               </Link>

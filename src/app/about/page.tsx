@@ -16,19 +16,14 @@ const techStack = {
 export default function AboutPage() {
   return (
     <div className="relative mx-auto max-w-3xl px-4 py-16">
-      {/* Background Decorative Elements */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-        <div className="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-gradient-to-br from-blue-500/10 to-purple-500/10 blur-3xl dark:from-blue-500/5 dark:to-purple-500/5" />
-        <div className="absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-gradient-to-tr from-green-500/10 to-blue-500/10 blur-3xl dark:from-green-500/5 dark:to-blue-500/5" />
-      </div>
 
       {/* Content */}
       <div className="relative">
         {/* Header with gradient background */}
-        <header className="mb-12 animate-fade-in-up rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 p-8 shadow-lg dark:from-blue-950/30 dark:to-indigo-950/30 dark:shadow-blue-900/20">
+        <header className="mb-12 animate-fade-in-up rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50 p-8 shadow-lg border border-amber-200/50 dark:from-slate-800 dark:to-slate-900 dark:border-slate-700 dark:shadow-slate-900/30">
           <h1 className="text-4xl font-bold md:text-5xl">
             <span role="img" aria-label="손 흔들기">👋</span> Hello! I&apos;m{" "}
-            <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent dark:from-blue-400 dark:to-indigo-400">
+            <span className="bg-gradient-to-r from-amber-600 to-orange-500 bg-clip-text text-transparent dark:from-slate-300 dark:to-blue-300">
               MinGyu
             </span>
           </h1>
@@ -40,7 +35,7 @@ export default function AboutPage() {
         {/* About Me with staggered animation */}
         <section className="mb-12 animate-fade-in-up animate-delay-100">
           <h2 className="mb-6 text-2xl font-semibold"><span role="img" aria-label="자기소개">🙋‍♂️</span> About Me</h2>
-          <div className="group rounded-xl border border-zinc-200 bg-white/50 p-6 shadow-md backdrop-blur-sm transition-all duration-300 hover:shadow-xl dark:border-zinc-800 dark:bg-zinc-900/50">
+          <div className="group rounded-xl border border-amber-200 bg-gradient-to-br from-amber-50/80 to-orange-50/80 p-6 shadow-md backdrop-blur-sm transition-all duration-300 hover:shadow-xl dark:border-slate-700 dark:bg-gradient-to-br dark:from-slate-800 dark:to-slate-900">
             <ul className="space-y-4 text-zinc-600 dark:text-zinc-400">
               <li className="flex items-start gap-3 transition-transform duration-200 hover:translate-x-1">
                 <span className="text-2xl" role="img" aria-label="목표">🎯</span>
@@ -68,7 +63,7 @@ export default function AboutPage() {
               iconLabel="언어"
               title="Languages"
               items={techStack.languages}
-              colorScheme="blue"
+              colorScheme="amber"
             />
 
             <TechCard
@@ -76,7 +71,7 @@ export default function AboutPage() {
               iconLabel="프레임워크"
               title="Frameworks & Libraries"
               items={techStack.frameworks}
-              colorScheme="green"
+              colorScheme="orange"
             />
 
             <TechCard
@@ -84,7 +79,7 @@ export default function AboutPage() {
               iconLabel="데이터베이스"
               title="Databases"
               items={techStack.databases}
-              colorScheme="orange"
+              colorScheme="yellow"
             />
 
             <TechCard
@@ -92,7 +87,7 @@ export default function AboutPage() {
               iconLabel="도구"
               title="Tools & Environment"
               items={techStack.tools}
-              colorScheme="purple"
+              colorScheme="rose"
             />
           </div>
         </section>
@@ -100,13 +95,13 @@ export default function AboutPage() {
         {/* Contact with enhanced styling */}
         <section className="animate-fade-in-up animate-delay-300">
           <h2 className="mb-6 text-2xl font-semibold"><span role="img" aria-label="연락처">📫</span> Contact</h2>
-          <div className="rounded-xl border border-zinc-200 bg-white/50 p-6 shadow-md backdrop-blur-sm dark:border-zinc-800 dark:bg-zinc-900/50">
+          <div className="rounded-xl border border-amber-200 bg-gradient-to-br from-amber-50/80 to-orange-50/80 p-6 shadow-md backdrop-blur-sm dark:border-slate-700 dark:bg-gradient-to-br dark:from-slate-800 dark:to-slate-900">
             <ul className="space-y-4 text-zinc-600 dark:text-zinc-400">
               <li className="flex items-center gap-3 transition-all duration-200 hover:translate-x-1">
                 <span className="font-medium text-zinc-900 dark:text-zinc-100">Email:</span>
                 <a
                   href="mailto:mink906@gmail.com"
-                  className="text-blue-600 transition-colors duration-200 hover:text-blue-700 hover:underline dark:text-blue-400 dark:hover:text-blue-300"
+                  className="text-amber-700 transition-colors duration-200 hover:text-amber-800 hover:underline dark:text-blue-400 dark:hover:text-blue-300"
                 >
                   mink906@gmail.com
                 </a>
@@ -117,7 +112,7 @@ export default function AboutPage() {
                   href="https://github.com/kmg733"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-blue-600 transition-colors duration-200 hover:text-blue-700 hover:underline dark:text-blue-400 dark:hover:text-blue-300"
+                  className="text-amber-700 transition-colors duration-200 hover:text-amber-800 hover:underline dark:text-blue-400 dark:hover:text-blue-300"
                 >
                   @kmg733
                 </a>
