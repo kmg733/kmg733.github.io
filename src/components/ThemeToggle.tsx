@@ -9,8 +9,9 @@ export default function ThemeToggle() {
   useEffect(() => {
     setMounted(true);
 
-    // localStorage에서 저장된 테마 확인
-    const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
+    // localStorage에서 저장된 테마 확인 (유효성 검증 포함)
+    const storedTheme = localStorage.getItem("theme");
+    const savedTheme = storedTheme === "light" || storedTheme === "dark" ? storedTheme : null;
 
     if (savedTheme) {
       setTheme(savedTheme);
