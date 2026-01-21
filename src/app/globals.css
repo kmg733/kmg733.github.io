@@ -29,6 +29,35 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* 상단 그라데이션 효과 */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 400px;
+  background: linear-gradient(
+    180deg,
+    rgba(167, 139, 250, 0.15) 0%,
+    rgba(129, 140, 248, 0.08) 40%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: -1;
+  transition: background 0.3s ease;
+}
+
+.dark body::before,
+:root.dark body::before {
+  background: linear-gradient(
+    180deg,
+    rgba(99, 102, 241, 0.2) 0%,
+    rgba(139, 92, 246, 0.1) 40%,
+    transparent 100%
+  );
+}
+
 /* Dark mode styles for all elements */
 .dark .prose figure .image-frame {
   background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
