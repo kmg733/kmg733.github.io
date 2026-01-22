@@ -1,6 +1,9 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+/* Tailwind v4 레이어 순서 정의 - prose-overrides가 typography보다 높은 우선순위 */
+@layer base, theme, components, prose-overrides, utilities;
+
 /* Tailwind v4: class 기반 다크 모드 활성화 */
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -120,28 +123,31 @@ body::before {
   animation-delay: 0.3s;
 }
 
-/* Code blocks - 라이트모드: 따뜻한 톤 */
-.prose pre {
-  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%) !important;
-  border: 1px solid #fde68a !important;
-  border-radius: 0.75rem;
-  padding: 1rem;
-}
+/* Code blocks - @layer를 사용하여 typography 플러그인 스타일 오버라이드 */
+@layer prose-overrides {
+  /* 라이트모드: 따뜻한 톤 */
+  .prose pre {
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+    border: 1px solid #fde68a;
+    border-radius: 0.75rem;
+    padding: 1rem;
+  }
 
-.prose pre code {
-  background: transparent !important;
-  color: #92400e !important;
-  padding: 0;
-}
+  .prose pre code {
+    background: transparent;
+    color: #92400e;
+    padding: 0;
+  }
 
-/* Code blocks - 다크모드 */
-.dark .prose pre {
-  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
-  border-color: #334155 !important;
-}
+  /* 다크모드 */
+  .dark .prose pre {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    border-color: #334155;
+  }
 
-.dark .prose pre code {
-  color: #e2e8f0 !important;
+  .dark .prose pre code {
+    color: #e2e8f0;
+  }
 }
 
 /* Blog post images */
