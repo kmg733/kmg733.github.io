@@ -23,6 +23,26 @@ export default function ThemeToggle() {
       setTheme(systemTheme);
       applyTheme(systemTheme);
     }
+
+    // 시스템 테마 변경 감지 리스너
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const handleSystemThemeChange = (e: MediaQueryListEvent) => {
+      // localStorage에 사용자 설정이 없는 경우에만 시스템 테마 변경을 반영
+      const currentStoredTheme = localStorage.getItem("theme");
+      if (!currentStoredTheme) {
+        const newSystemTheme = e.matches ? "dark" : "light";
+        setTheme(newSystemTheme);
+        applyTheme(newSystemTheme);
+      }
+    };
+
+    // 이벤트 리스너 등록
+    mediaQuery.addEventListener("change", handleSystemThemeChange);
+
+    // 클린업: 컴포넌트 언마운트 시 이벤트 리스너 제거
+    return () => {
+      mediaQuery.removeEventListener("change", handleSystemThemeChange);
+    };
   }, []);
 
   const applyTheme = (newTheme: "light" | "dark") => {
