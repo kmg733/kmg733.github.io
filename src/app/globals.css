@@ -274,89 +274,91 @@ body::before {
    Image Lightbox Styles
    ======================================== */
 
-/* 이미지에 클릭 가능 표시 */
-.prose img {
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+@layer components {
+  /* 이미지에 클릭 가능 표시 */
+  .prose img {
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .prose img:hover {
+    transform: scale(1.02);
+    box-shadow: 0 8px 25px -5px rgb(0 0 0 / 0.15);
+  }
+
+  .dark .prose img:hover {
+    box-shadow: 0 8px 25px -5px rgb(0 0 0 / 0.4);
+  }
+
+  /* 라이트박스 오버레이 */
+  .lightbox-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(4px);
+    animation: lightbox-fade-in 0.25s ease-out;
+  }
+
+  .dark .lightbox-overlay {
+    background-color: rgba(0, 0, 0, 0.92);
+  }
+
+  /* 닫기 버튼 */
+  .lightbox-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 50%;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .lightbox-close:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+  }
+
+  .lightbox-close:focus {
+    outline: 2px solid rgba(255, 255, 255, 0.5);
+    outline-offset: 2px;
+  }
+
+  /* 이미지 컨테이너 */
+  .lightbox-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 90vw;
+    max-height: 90vh;
+    animation: lightbox-scale-in 0.3s ease-out;
+  }
+
+  /* 확대된 이미지 */
+  .lightbox-image {
+    max-width: 100%;
+    max-height: 90vh;
+    object-fit: contain;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.5);
+  }
 }
 
-.prose img:hover {
-  transform: scale(1.02);
-  box-shadow: 0 8px 25px -5px rgb(0 0 0 / 0.15);
-}
-
-.dark .prose img:hover {
-  box-shadow: 0 8px 25px -5px rgb(0 0 0 / 0.4);
-}
-
-/* 라이트박스 오버레이 */
-.lightbox-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(4px);
-  animation: lightbox-fade-in 0.25s ease-out;
-}
-
-.dark .lightbox-overlay {
-  background-color: rgba(0, 0, 0, 0.92);
-}
-
-/* 닫기 버튼 */
-.lightbox-close {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  padding: 0;
-  background-color: rgba(255, 255, 255, 0.1);
-  border: none;
-  border-radius: 50%;
-  color: white;
-  cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.2s ease;
-}
-
-.lightbox-close:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-  transform: scale(1.1);
-}
-
-.lightbox-close:focus {
-  outline: 2px solid rgba(255, 255, 255, 0.5);
-  outline-offset: 2px;
-}
-
-/* 이미지 컨테이너 */
-.lightbox-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  max-width: 90vw;
-  max-height: 90vh;
-  animation: lightbox-scale-in 0.3s ease-out;
-}
-
-/* 확대된 이미지 */
-.lightbox-image {
-  max-width: 100%;
-  max-height: 90vh;
-  object-fit: contain;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.5);
-}
-
-/* 애니메이션 */
+/* 애니메이션 - @layer 밖에 정의 (keyframes는 layer 영향 없음) */
 @keyframes lightbox-fade-in {
   from {
     opacity: 0;
