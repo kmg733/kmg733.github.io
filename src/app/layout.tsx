@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Sacramento } from "next/font/google";
 import Link from "next/link";
 import ThemeToggle from "@/components/ThemeToggle";
+import ImageLightbox from "@/components/ImageLightbox";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -74,6 +75,8 @@ export default function RootLayout({
         </header>
 
         <main className="flex-1">{children}</main>
+
+        <ImageLightbox />
 
         <footer className="border-t border-zinc-200 py-8 dark:border-zinc-800">
           <div className="mx-auto max-w-4xl px-4 text-center text-sm text-zinc-500">
