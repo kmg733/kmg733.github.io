@@ -271,6 +271,26 @@ body::before {
 }
 
 /* ========================================
+   Search Highlight Styles
+   ======================================== */
+
+@layer components {
+  /* 검색 결과 하이라이트 - 라이트 모드 */
+  .search-highlight {
+    background-color: rgba(251, 191, 36, 0.4);
+    color: inherit;
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.25rem;
+    font-weight: inherit;
+  }
+
+  /* 검색 결과 하이라이트 - 다크 모드 */
+  .dark .search-highlight {
+    background-color: rgba(96, 165, 250, 0.3);
+  }
+}
+
+/* ========================================
    Image Lightbox Styles
    ======================================== */
 

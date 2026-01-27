@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 import BlogFilter from "@/components/BlogFilter";
 import type { PostMeta } from "@/types";
 
@@ -260,6 +260,144 @@ describe("BlogFilter", () => {
         link.getAttribute("href")?.includes("react-post")
       );
       expect(reactPostLink).toHaveAttribute("href", "/blog/react-post");
+    });
+  });
+
+  describe("검색 기능", () => {
+    beforeEach(() => {
+      jest.useFakeTimers();
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    // 하이라이트된 텍스트도 찾을 수 있는 헬퍼 함수
+    const findTextContent = (text: string) =>
+      screen.queryByText((content, element) => {
+        return element?.textContent?.includes(text) ?? false;
+      });
+
+    it("should render search input", () => {
+      render(<BlogFilter posts={mockPosts} />);
+
+      expect(screen.getByRole("searchbox")).toBeInTheDocument();
+    });
+
+    it("should filter posts by search query after debounce", async () => {
+      render(<BlogFilter posts={mockPosts} />);
+
+      const searchInput = screen.getByRole("searchbox");
+
+      act(() => {
+        fireEvent.change(searchInput, { target: { value: "React" } });
+      });
+
+      // 디바운스 대기
+      act(() => {
+        jest.advanceTimersByTime(300);
+      });
+
+      await waitFor(() => {
+        // React 관련 포스트가 표시됨 (하이라이트로 인해 article 개수로 확인)
+        const articles = screen.getAllByRole("article");
+        expect(articles).toHaveLength(1);
+        // React 포스트의 링크 존재 확인
+        expect(screen.getByRole("link", { name: /React 시작하기/i })).toBeInTheDocument();
+      });
+    });
+
+    it("should search Korean text", async () => {
+      render(<BlogFilter posts={mockPosts} />);
+
+      const searchInput = screen.getByRole("searchbox");
+
+      act(() => {
+        fireEvent.change(searchInput, { target: { value: "제주도" } });
+      });
+
+      act(() => {
+        jest.advanceTimersByTime(300);
+      });
+
+      await waitFor(() => {
+        // 하나의 결과만 표시
+        const articles = screen.getAllByRole("article");
+        expect(articles).toHaveLength(1);
+        // 제주도 포스트 링크 확인
+        expect(screen.getByRole("link", { name: /제주도 여행/i })).toBeInTheDocument();
+      });
+    });
+
+    it("should show no results message when search has no matches", async () => {
+      render(<BlogFilter posts={mockPosts} />);
+
+      const searchInput = screen.getByRole("searchbox");
+
+      act(() => {
+        fireEvent.change(searchInput, { target: { value: "notexist" } });
+      });
+
+      act(() => {
+        jest.advanceTimersByTime(300);
+      });
+
+      await waitFor(() => {
+        expect(
+          screen.getByText("'notexist'에 대한 검색 결과가 없습니다.")
+        ).toBeInTheDocument();
+      });
+    });
+
+    it("should clear search when category is changed", async () => {
+      render(<BlogFilter posts={mockPosts} />);
+
+      const searchInput = screen.getByRole("searchbox");
+
+      // 검색어 입력
+      act(() => {
+        fireEvent.change(searchInput, { target: { value: "React" } });
+      });
+
+      act(() => {
+        jest.advanceTimersByTime(300);
+      });
+
+      await waitFor(() => {
+        expect(screen.getByRole("searchbox")).toHaveValue("React");
+      });
+
+      // 카테고리 변경
+      fireEvent.click(screen.getByRole("button", { name: "일상" }));
+
+      // 검색어가 초기화되어야 함
+      expect(screen.getByRole("searchbox")).toHaveValue("");
+    });
+
+    it("should combine search with category filter", async () => {
+      render(<BlogFilter posts={mockPosts} />);
+
+      // 먼저 개발 카테고리 선택
+      fireEvent.click(screen.getByRole("button", { name: "개발" }));
+
+      const searchInput = screen.getByRole("searchbox");
+
+      // TypeScript 검색 (개발 카테고리 내에서)
+      act(() => {
+        fireEvent.change(searchInput, { target: { value: "TypeScript" } });
+      });
+
+      act(() => {
+        jest.advanceTimersByTime(300);
+      });
+
+      await waitFor(() => {
+        // TypeScript 포스트만 표시 (article 1개)
+        const articles = screen.getAllByRole("article");
+        expect(articles).toHaveLength(1);
+        // TypeScript 포스트 링크 확인
+        expect(screen.getByRole("link", { name: /TypeScript 타입 시스템/i })).toBeInTheDocument();
+      });
     });
   });
 });
