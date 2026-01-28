@@ -22,14 +22,18 @@ export default function ImageLightbox() {
   }, [isClosing]);
 
   // 애니메이션 완료 후 실제로 닫기
-  const handleAnimationEnd = useCallback(() => {
-    if (isClosing) {
-      setIsOpen(false);
-      setImageSrc(null);
-      setImageAlt("");
-      setIsClosing(false);
-    }
-  }, [isClosing]);
+  const handleAnimationEnd = useCallback(
+    (e: React.AnimationEvent<HTMLDivElement>) => {
+      // 닫기 애니메이션(lightbox-fade-out)일 때만 처리
+      if (e.animationName === "lightbox-fade-out") {
+        setIsOpen(false);
+        setImageSrc(null);
+        setImageAlt("");
+        setIsClosing(false);
+      }
+    },
+    []
+  );
 
   // ESC 키로 닫기
   useEffect(() => {
