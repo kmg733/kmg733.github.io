@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 
 export default function ImageLightbox() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [imageAlt, setImageAlt] = useState("");
   const [mounted, setMounted] = useState(false);
@@ -14,12 +15,21 @@ export default function ImageLightbox() {
     setMounted(true);
   }, []);
 
-  // 라이트박스 닫기
+  // 라이트박스 닫기 애니메이션 시작
   const closeLightbox = useCallback(() => {
-    setIsOpen(false);
-    setImageSrc(null);
-    setImageAlt("");
-  }, []);
+    if (isClosing) return; // 이미 닫기 중이면 무시
+    setIsClosing(true);
+  }, [isClosing]);
+
+  // 애니메이션 완료 후 실제로 닫기
+  const handleAnimationEnd = useCallback(() => {
+    if (isClosing) {
+      setIsOpen(false);
+      setImageSrc(null);
+      setImageAlt("");
+      setIsClosing(false);
+    }
+  }, [isClosing]);
 
   // ESC 키로 닫기
   useEffect(() => {
@@ -70,8 +80,9 @@ export default function ImageLightbox() {
 
   return createPortal(
     <div
-      className="lightbox-overlay"
+      className={`lightbox-overlay${isClosing ? " closing" : ""}`}
       onClick={closeLightbox}
+      onAnimationEnd={handleAnimationEnd}
       role="dialog"
       aria-modal="true"
       aria-label={imageAlt || "확대된 이미지"}
@@ -100,7 +111,10 @@ export default function ImageLightbox() {
       </button>
 
       {/* 확대된 이미지 */}
-      <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
+      <div
+        className={`lightbox-content${isClosing ? " closing" : ""}`}
+        onClick={(e) => e.stopPropagation()}
+      >
         <img
           src={imageSrc}
           alt={imageAlt}
