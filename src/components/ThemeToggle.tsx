@@ -53,6 +53,26 @@ export default function ThemeToggle() {
     } else {
       root.classList.remove("dark");
     }
+
+    // Favicon 동적 변경
+    updateFavicon(newTheme);
+  };
+
+  const updateFavicon = (newTheme: "light" | "dark") => {
+    const faviconUrl = newTheme === "dark" ? "/icon-dark.svg" : "/icon-light.svg";
+
+    // 기존 favicon link 요소 찾기
+    let link = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
+
+    if (!link) {
+      // 없으면 새로 생성
+      link = document.createElement("link");
+      link.rel = "icon";
+      link.type = "image/svg+xml";
+      document.head.appendChild(link);
+    }
+
+    link.href = faviconUrl;
   };
 
   const toggleTheme = () => {
