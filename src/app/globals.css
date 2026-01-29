@@ -375,6 +375,32 @@ body::before {
     border-radius: 0.5rem;
     cursor: pointer;
     box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.5);
+    transition: opacity 0.3s ease;
+  }
+
+  /* 이미지 로딩 상태 */
+  .lightbox-image.loading {
+    opacity: 0;
+  }
+
+  .lightbox-image.loaded {
+    opacity: 1;
+  }
+
+  /* 로딩 스피너 */
+  .lightbox-spinner {
+    position: absolute;
+    width: 48px;
+    height: 48px;
+    border: 4px solid rgba(251, 191, 36, 0.3);
+    border-top-color: #fbbf24;
+    border-radius: 50%;
+    animation: lightbox-spinner-spin 1s linear infinite;
+  }
+
+  .dark .lightbox-spinner {
+    border-color: rgba(148, 163, 184, 0.3);
+    border-top-color: #94a3b8;
   }
 
   /* 닫기 애니메이션 */
@@ -425,5 +451,14 @@ body::before {
   to {
     opacity: 0;
     transform: scale(0.9);
+  }
+}
+
+@keyframes lightbox-spinner-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }
