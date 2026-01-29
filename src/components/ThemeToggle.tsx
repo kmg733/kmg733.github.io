@@ -61,12 +61,13 @@ export default function ThemeToggle() {
   const updateFavicon = (newTheme: "light" | "dark") => {
     const faviconUrl = newTheme === "dark" ? "/icon-dark.svg" : "/icon-light.svg";
 
-    // 기존 favicon link 요소 찾기
-    let link = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
+    // 고유 ID로 특정 favicon link 요소만 선택
+    let link = document.querySelector<HTMLLinkElement>("link#theme-favicon");
 
     if (!link) {
       // 없으면 새로 생성
       link = document.createElement("link");
+      link.id = "theme-favicon";
       link.rel = "icon";
       link.type = "image/svg+xml";
       document.head.appendChild(link);
