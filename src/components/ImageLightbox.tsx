@@ -6,6 +6,7 @@ import { createPortal } from "react-dom";
 export default function ImageLightbox() {
   const [isOpen, setIsOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [imageAlt, setImageAlt] = useState("");
   const [mounted, setMounted] = useState(false);
@@ -30,10 +31,21 @@ export default function ImageLightbox() {
         setImageSrc(null);
         setImageAlt("");
         setIsClosing(false);
+        setIsLoading(true); // 다음 열기를 위해 로딩 상태 리셋
       }
     },
     []
   );
+
+  // 이미지 로딩 완료 핸들러
+  const handleImageLoad = useCallback(() => {
+    setIsLoading(false);
+  }, []);
+
+  // 이미지 로딩 실패 핸들러
+  const handleImageError = useCallback(() => {
+    setIsLoading(false);
+  }, []);
 
   // ESC 키로 닫기
   useEffect(() => {
@@ -69,6 +81,7 @@ export default function ImageLightbox() {
         const img = target as HTMLImageElement;
         setImageSrc(img.src);
         setImageAlt(img.alt || "");
+        setIsLoading(true); // 라이트박스 열 때 로딩 상태 초기화
         setIsOpen(true);
       }
     };
@@ -119,11 +132,21 @@ export default function ImageLightbox() {
         className={`lightbox-content${isClosing ? " closing" : ""}`}
         onClick={(e) => e.stopPropagation()}
       >
+        {/* 로딩 스피너 */}
+        {isLoading && (
+          <div
+            className="lightbox-spinner"
+            role="status"
+            aria-label="이미지 로딩 중"
+          />
+        )}
         <img
           src={imageSrc}
           alt={imageAlt}
-          className="lightbox-image"
+          className={`lightbox-image${isLoading ? " loading" : " loaded"}`}
           onClick={closeLightbox}
+          onLoad={handleImageLoad}
+          onError={handleImageError}
         />
       </div>
     </div>,
