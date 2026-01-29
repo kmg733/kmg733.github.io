@@ -27,6 +27,18 @@ export const metadata: Metadata = {
     template: "%s | Manuel",
   },
   description: "Manuel의 기술 블로그",
+  icons: {
+    icon: [
+      {
+        url: "/icon-light.svg",
+        media: "(prefers-color-scheme: light)",
+      },
+      {
+        url: "/icon-dark.svg",
+        media: "(prefers-color-scheme: dark)",
+      },
+    ],
+  },
 };
 
 export default function RootLayout({
