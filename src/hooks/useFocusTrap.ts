@@ -114,6 +114,13 @@ export function useFocusTrap(
       const firstElement = focusableElements[0];
       const lastElement = focusableElements[focusableElements.length - 1];
 
+      // 포커스 가능 요소가 1개뿐이면 항상 Tab 차단
+      if (focusableElements.length === 1) {
+        event.preventDefault();
+        firstElement.focus();
+        return;
+      }
+
       // 포커스가 컨테이너 밖에 있으면 첫 번째 요소로 강제 이동
       if (!container.contains(document.activeElement)) {
         event.preventDefault();
@@ -134,9 +141,9 @@ export function useFocusTrap(
       }
     }
 
-    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("keydown", handleKeyDown, true);
     return () => {
-      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("keydown", handleKeyDown, true);
     };
   }, [isActive]);
 
