@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
+import { useFocusTrap } from "@/hooks/useFocusTrap";
 
 export default function ImageLightbox() {
   const [isOpen, setIsOpen] = useState(false);
@@ -21,6 +22,12 @@ export default function ImageLightbox() {
     if (isClosing) return; // 이미 닫기 중이면 무시
     setIsClosing(true);
   }, [isClosing]);
+
+  // 포커스 트랩 훅 연결
+  const { containerRef } = useFocusTrap({
+    isActive: isOpen && !isClosing,
+    onEscape: closeLightbox,
+  });
 
   // 애니메이션 완료 후 실제로 닫기
   const handleAnimationEnd = useCallback(
@@ -47,25 +54,16 @@ export default function ImageLightbox() {
     setIsLoading(false);
   }, []);
 
-  // ESC 키로 닫기
+  // 스크롤 방지 (ESC 키는 useFocusTrap에서 처리)
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isOpen) {
-        closeLightbox();
-      }
-    };
-
     if (isOpen) {
-      document.addEventListener("keydown", handleKeyDown);
-      // 스크롤 방지
       document.body.style.overflow = "hidden";
     }
 
     return () => {
-      document.removeEventListener("keydown", handleKeyDown);
       document.body.style.overflow = "";
     };
-  }, [isOpen, closeLightbox]);
+  }, [isOpen]);
 
   // 이미지 클릭 이벤트 위임
   useEffect(() => {
@@ -79,6 +77,13 @@ export default function ImageLightbox() {
         !target.closest(".lightbox-overlay")
       ) {
         const img = target as HTMLImageElement;
+
+        // 포커스 복원을 위해 클릭된 이미지를 포커스 가능하게 만들고 포커스
+        if (img.tabIndex < 0) {
+          img.tabIndex = 0;
+        }
+        img.focus();
+
         setImageSrc(img.src);
         setImageAlt(img.alt || "");
         setIsLoading(true); // 라이트박스 열 때 로딩 상태 초기화
@@ -97,6 +102,7 @@ export default function ImageLightbox() {
 
   return createPortal(
     <div
+      ref={containerRef}
       className={`lightbox-overlay${isClosing ? " closing" : ""}`}
       onClick={closeLightbox}
       onAnimationEnd={handleAnimationEnd}
