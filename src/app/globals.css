@@ -411,54 +411,54 @@ body::before {
   .lightbox-content.closing {
     animation: lightbox-scale-out 0.25s ease-out forwards;
   }
-}
 
-/* 애니메이션 - @layer 밖에 정의 (keyframes는 layer 영향 없음) */
-@keyframes lightbox-fade-in {
-  from {
-    opacity: 0;
+  /* 애니메이션 키프레임 (@layer 내부에 정의하여 animationend 이벤트 정상 동작) */
+  @keyframes lightbox-fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
-  to {
-    opacity: 1;
-  }
-}
 
-@keyframes lightbox-fade-out {
-  from {
-    opacity: 1;
+  @keyframes lightbox-fade-out {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
   }
-  to {
-    opacity: 0;
-  }
-}
 
-@keyframes lightbox-scale-in {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
+  @keyframes lightbox-scale-in {
+    from {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
   }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
 
-@keyframes lightbox-scale-out {
-  from {
-    opacity: 1;
-    transform: scale(1);
+  @keyframes lightbox-scale-out {
+    from {
+      opacity: 1;
+      transform: scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: scale(0.9);
+    }
   }
-  to {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-}
 
-@keyframes lightbox-spinner-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
+  @keyframes lightbox-spinner-spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
   }
 }

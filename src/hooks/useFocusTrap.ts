@@ -90,7 +90,7 @@ export function useFocusTrap(
     }
   }, [isActive]);
 
-  // 키보드 이벤트 리스너
+  // 키보드 이벤트 리스너 (document 레벨에서 감지하여 포커스 탈출 방지)
   useEffect(() => {
     if (!isActive) return;
 
@@ -114,6 +114,13 @@ export function useFocusTrap(
       const firstElement = focusableElements[0];
       const lastElement = focusableElements[focusableElements.length - 1];
 
+      // 포커스가 컨테이너 밖에 있으면 첫 번째 요소로 강제 이동
+      if (!container.contains(document.activeElement)) {
+        event.preventDefault();
+        firstElement.focus();
+        return;
+      }
+
       if (event.shiftKey) {
         if (document.activeElement === firstElement) {
           event.preventDefault();
@@ -127,9 +134,9 @@ export function useFocusTrap(
       }
     }
 
-    container.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("keydown", handleKeyDown);
     return () => {
-      container.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("keydown", handleKeyDown);
     };
   }, [isActive]);
 

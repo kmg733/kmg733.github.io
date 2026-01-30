@@ -146,7 +146,7 @@ describe("useFocusTrap", () => {
           shiftKey: false,
           bubbles: true,
         });
-        container.dispatchEvent(tabEvent);
+        document.dispatchEvent(tabEvent);
       });
 
       expect(document.activeElement).toBe(btn1);
@@ -183,7 +183,7 @@ describe("useFocusTrap", () => {
           shiftKey: true,
           bubbles: true,
         });
-        container.dispatchEvent(shiftTabEvent);
+        document.dispatchEvent(shiftTabEvent);
       });
 
       expect(document.activeElement).toBe(btn3);
@@ -290,7 +290,7 @@ describe("useFocusTrap", () => {
           key: "Escape",
           bubbles: true,
         });
-        container.dispatchEvent(escEvent);
+        document.dispatchEvent(escEvent);
       });
 
       expect(onEscape).toHaveBeenCalledTimes(1);
@@ -318,7 +318,7 @@ describe("useFocusTrap", () => {
             key: "Escape",
             bubbles: true,
           });
-          container.dispatchEvent(escEvent);
+          document.dispatchEvent(escEvent);
         });
       }).not.toThrow();
     });
@@ -352,7 +352,7 @@ describe("useFocusTrap", () => {
             key: "Tab",
             bubbles: true,
           });
-          container.dispatchEvent(tabEvent);
+          document.dispatchEvent(tabEvent);
         });
       }).not.toThrow();
     });
@@ -381,7 +381,7 @@ describe("useFocusTrap", () => {
           shiftKey: false,
           bubbles: true,
         });
-        container.dispatchEvent(tabEvent);
+        document.dispatchEvent(tabEvent);
       });
       expect(document.activeElement).toBe(btn);
 
@@ -392,7 +392,7 @@ describe("useFocusTrap", () => {
           shiftKey: true,
           bubbles: true,
         });
-        container.dispatchEvent(shiftTabEvent);
+        document.dispatchEvent(shiftTabEvent);
       });
       expect(document.activeElement).toBe(btn);
     });
@@ -441,10 +441,51 @@ describe("useFocusTrap", () => {
           shiftKey: false,
           bubbles: true,
         });
-        container.dispatchEvent(tabEvent);
+        document.dispatchEvent(tabEvent);
       });
 
       expect(document.activeElement).toBe(btn);
+    });
+
+    test("포커스가 컨테이너 밖에 있을 때 Tab을 누르면 첫 번째 요소로 강제 이동한다", () => {
+      const btn = createButton("Inside");
+      appendFocusableElements(container, [btn]);
+
+      const outsideBtn = document.createElement("button");
+      outsideBtn.textContent = "Outside";
+      document.body.appendChild(outsideBtn);
+
+      const { result, rerender } = renderHook(
+        ({ isActive }) => useFocusTrap({ isActive }),
+        { initialProps: { isActive: false } }
+      );
+
+      Object.defineProperty(result.current.containerRef, "current", {
+        value: container,
+        writable: true,
+      });
+
+      rerender({ isActive: true });
+
+      // 포커스를 컨테이너 밖으로 강제 이동
+      act(() => {
+        outsideBtn.focus();
+      });
+      expect(document.activeElement).toBe(outsideBtn);
+
+      // Tab 키 -> 컨테이너 내부 첫 번째 요소로 강제 이동
+      act(() => {
+        const tabEvent = new KeyboardEvent("keydown", {
+          key: "Tab",
+          shiftKey: false,
+          bubbles: true,
+        });
+        document.dispatchEvent(tabEvent);
+      });
+
+      expect(document.activeElement).toBe(btn);
+
+      document.body.removeChild(outsideBtn);
     });
 
     test("tabindex=-1 요소는 포커스 트랩 대상에서 제외된다", () => {
@@ -477,7 +518,7 @@ describe("useFocusTrap", () => {
           shiftKey: false,
           bubbles: true,
         });
-        container.dispatchEvent(tabEvent);
+        document.dispatchEvent(tabEvent);
       });
 
       expect(document.activeElement).toBe(btn);
