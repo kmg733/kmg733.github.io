@@ -105,6 +105,8 @@ export function useFocusTrap(
 
       if (event.key !== "Tab") return;
 
+      if (!container) return;
+
       const focusableElements = queryFocusableElements(container);
       if (focusableElements.length === 0) {
         event.preventDefault();
