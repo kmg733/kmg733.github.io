@@ -1,5 +1,6 @@
 import type { IPostRepository } from "@/interfaces";
 import type { Post, PostMeta } from "@/types";
+import { calculateRelevanceScore } from "@/lib/related-posts";
 
 /**
  * 포스트 서비스 (Application Layer)
@@ -49,6 +50,50 @@ export class PostService {
     return this.postRepository
       .findAll()
       .filter((post) => post.tags.includes(tag));
+  }
+
+  /**
+   * 관련 포스트를 조회합니다.
+   * category/subcategory/tags 기반 점수로 정렬하며,
+   * 관련 글이 없으면 최신 글을 반환합니다.
+   * @param slug 현재 포스트 slug
+   * @param maxCount 최대 반환 개수
+   */
+  getRelatedPosts(slug: string, maxCount: number = 3): PostMeta[] {
+    const currentPost = this.postRepository.findBySlug(slug);
+    if (!currentPost) {
+      return [];
+    }
+
+    const candidates = this.postRepository
+      .findAll()
+      .filter((post) => post.slug !== slug);
+
+    if (candidates.length === 0) {
+      return [];
+    }
+
+    const scored = candidates.map((post) => ({
+      post,
+      score: calculateRelevanceScore(currentPost, post),
+    }));
+
+    const hasRelated = scored.some((item) => item.score > 0);
+
+    if (!hasRelated) {
+      // fallback: 최신 글 순서 (findAll은 이미 날짜 내림차순)
+      return candidates.slice(0, maxCount);
+    }
+
+    return scored
+      .sort((a, b) => {
+        if (b.score !== a.score) {
+          return b.score - a.score;
+        }
+        return new Date(b.post.date).getTime() - new Date(a.post.date).getTime();
+      })
+      .slice(0, maxCount)
+      .map((item) => item.post);
   }
 
   /**
