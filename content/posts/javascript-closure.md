@@ -68,25 +68,28 @@ closureFunc();  // 'Hello' - message가 여전히 접근 가능
 
 클로저가 어떤 과정을 거쳐 동작하는지 단계별로 살펴보겠습니다.
 
-```
-1. outer() 호출
-   ┌──────────────────────────────────────┐
-   │  outer 실행 컨텍스트                  │
-   │  - message = 'Hello'                 │
-   │  - inner 함수 정의 (렉시컬 환경 기억) │
-   └──────────────────────────────────────┘
+**1단계: outer() 호출**
 
-2. inner 함수 반환, outer 종료
-   - 일반적으로 message는 가비지 컬렉션 대상
-   - 하지만 inner가 message를 참조하므로 유지됨
+<div className="info-box">
+  <strong>outer 실행 컨텍스트</strong><br/>
+  - message = 'Hello'<br/>
+  - inner 함수 정의 (렉시컬 환경 기억)
+</div>
 
-3. closureFunc() 호출
-   ┌──────────────────────────────────────┐
-   │  inner 실행                           │
-   │  - 자신의 렉시컬 환경에서 message 탐색 │
-   │  - 클로저를 통해 'Hello' 접근         │
-   └──────────────────────────────────────┘
-```
+**2단계: inner 함수 반환, outer 종료**
+
+<div className="info-box">
+  - 일반적으로 message는 가비지 컬렉션 대상<br/>
+  - 하지만 inner가 message를 참조하므로 유지됨
+</div>
+
+**3단계: closureFunc() 호출**
+
+<div className="info-box">
+  <strong>inner 실행</strong><br/>
+  - 자신의 렉시컬 환경에서 message 탐색<br/>
+  - 클로저를 통해 'Hello' 접근
+</div>
 
 핵심은 **렉시컬 스코프**입니다. JavaScript 함수는 어디서 호출되었는지가 아니라, **어디서 선언되었는지**에 따라 상위 스코프가 결정됩니다.
 `inner` 함수는 `outer` 내부에서 선언되었으므로, `outer`의 변수 환경을 기억합니다.
