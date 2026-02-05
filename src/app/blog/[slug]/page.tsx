@@ -6,6 +6,7 @@ import { postService } from "@/lib/container";
 import { extractHeadings } from "@/lib/toc";
 import { DATE_FORMAT } from "@/lib/constants";
 import TableOfContents from "@/components/TableOfContents";
+import RelatedPosts from "@/components/RelatedPosts";
 import type { Metadata } from "next";
 
 interface Props {
@@ -40,6 +41,7 @@ export default async function BlogPostPage({ params }: Props) {
   }
 
   const headings = extractHeadings(post.content);
+  const relatedPosts = postService.getRelatedPosts(slug, 3);
 
   return (
     <div className="relative mx-auto max-w-6xl px-4 py-16">
@@ -84,6 +86,8 @@ export default async function BlogPostPage({ params }: Props) {
               }}
             />
           </div>
+
+          <RelatedPosts posts={relatedPosts} />
         </article>
 
         {/* 우측 목차 영역 */}
