@@ -3,6 +3,9 @@ import { Geist, Geist_Mono, Sacramento } from "next/font/google";
 import Link from "next/link";
 import ThemeToggle from "@/components/ThemeToggle";
 import ImageLightbox from "@/components/ImageLightbox";
+import SearchModal from "@/components/SearchModal";
+import SearchButton from "@/components/SearchButton";
+import { postService } from "@/lib/container";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -34,6 +37,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const allPosts = postService.getAllPosts();
+
   return (
     <html lang="ko">
       <body
@@ -69,6 +74,7 @@ export default function RootLayout({
               >
                 About
               </Link>
+              <SearchButton />
               <ThemeToggle />
             </div>
           </nav>
@@ -77,6 +83,7 @@ export default function RootLayout({
         <main className="flex-1">{children}</main>
 
         <ImageLightbox />
+        <SearchModal posts={allPosts} />
 
         <footer className="border-t border-zinc-200 py-8 dark:border-zinc-800">
           <div className="mx-auto max-w-4xl px-4 text-center text-sm text-zinc-500">
