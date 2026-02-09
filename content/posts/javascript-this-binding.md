@@ -10,7 +10,7 @@ tags: ["guide", "intermediate"]
 <figure>
   <div className="figure-content">
     <div className="image-frame">
-      <img src="/images/posts/javascript-this-binding/javascript-this-binding.png" alt="JavaScript this 바인딩" />
+      <img src="/images/posts/javascript-this-binding/javascript-this-binding-dark.png" alt="JavaScript this 바인딩" />
     </div>
     <figcaption>그림 1. JavaScript this 바인딩</figcaption>
   </div>
@@ -458,15 +458,14 @@ arrow.call({ name: 'obj' });  // 여전히 상위 스코프의 this
 
 다섯 가지 규칙이 충돌할 때, 어떤 규칙이 우선하는지 알아야 합니다.
 
-```
-┌─────────────────────────────────────────┐
-│  1위  new Func()    → 새 인스턴스       │
-│  2위  call/apply/bind → 지정 객체       │
-│  3위  obj.method()  → obj              │
-│  4위  func()        → 전역/undefined   │
-│  예외  화살표 함수    → 변경 불가        │
-└─────────────────────────────────────────┘
-```
+<figure>
+  <div className="figure-content">
+    <div className="image-frame">
+      <img src="/images/posts/javascript-this-binding/this-binding-priority.svg" alt="this 바인딩 우선순위" />
+    </div>
+    <figcaption>그림 2. this 바인딩 우선순위</figcaption>
+  </div>
+</figure>
 
 `this`를 판단할 때는 다음 체크리스트를 위에서부터 순서대로 확인합니다.
 
