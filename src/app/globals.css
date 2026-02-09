@@ -247,11 +247,14 @@ body::before {
   border: none;
   cursor: pointer;
   padding: 0;
-  outline: none;
 }
 
 .toc-toggle-button:hover {
   opacity: 0.8;
+}
+
+.toc-toggle-button:focus:not(:focus-visible) {
+  outline: none;
 }
 
 .toc-toggle-button:focus-visible {

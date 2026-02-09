@@ -19,16 +19,24 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
   // localStorage에서 초기 상태 로드 (hydration mismatch 방지)
   useEffect(() => {
     setMounted(true);
-    const stored = localStorage.getItem(TOC_STORAGE_KEY);
-    if (stored !== null) {
-      setIsOpen(stored === "true");
+    try {
+      const stored = localStorage.getItem(TOC_STORAGE_KEY);
+      if (stored !== null) {
+        setIsOpen(stored === "true");
+      }
+    } catch {
+      // localStorage 접근 불가 시 기본값(true) 유지
     }
   }, []);
 
   // 토글 상태 변경 시 localStorage 저장
   useEffect(() => {
     if (mounted) {
-      localStorage.setItem(TOC_STORAGE_KEY, String(isOpen));
+      try {
+        localStorage.setItem(TOC_STORAGE_KEY, String(isOpen));
+      } catch {
+        // 저장 실패 시 무시
+      }
     }
   }, [isOpen, mounted]);
 
