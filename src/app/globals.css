@@ -88,6 +88,20 @@ body::before {
   border-bottom-color: #334155;
 }
 
+/* Theme-aware image switching */
+.prose figure .theme-light {
+  display: block;
+}
+.prose figure .theme-dark {
+  display: none;
+}
+.dark .prose figure .theme-light {
+  display: none;
+}
+.dark .prose figure .theme-dark {
+  display: block;
+}
+
 .dark .toc-nav {
   background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
   border-color: #334155;
