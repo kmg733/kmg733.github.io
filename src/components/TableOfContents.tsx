@@ -7,10 +7,30 @@ interface TableOfContentsProps {
   headings: TocItem[];
 }
 
+const TOC_STORAGE_KEY = "toc-is-open";
+
 export default function TableOfContents({ headings }: TableOfContentsProps) {
   const [activeId, setActiveId] = useState<string>("");
+  const [isOpen, setIsOpen] = useState<boolean>(true);
+  const [mounted, setMounted] = useState<boolean>(false);
   const clickedRef = useRef<boolean>(false);
   const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // localStorage에서 초기 상태 로드 (hydration mismatch 방지)
+  useEffect(() => {
+    setMounted(true);
+    const stored = localStorage.getItem(TOC_STORAGE_KEY);
+    if (stored !== null) {
+      setIsOpen(stored === "true");
+    }
+  }, []);
+
+  // 토글 상태 변경 시 localStorage 저장
+  useEffect(() => {
+    if (mounted) {
+      localStorage.setItem(TOC_STORAGE_KEY, String(isOpen));
+    }
+  }, [isOpen, mounted]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -40,14 +60,43 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
     };
   }, [headings]);
 
+  const toggleToc = () => {
+    setIsOpen((prev) => !prev);
+  };
+
   if (headings.length === 0) return null;
 
   return (
     <nav className="toc-nav">
-      <h2 className="mb-4 text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-        목차
-      </h2>
-      <ul className="space-y-2 text-sm">
+      <button
+        onClick={toggleToc}
+        aria-expanded={isOpen}
+        aria-label="목차 접기/펼치기"
+        className="toc-toggle-button mb-4 flex w-full items-center justify-between text-left text-sm font-semibold text-zinc-900 dark:text-zinc-100"
+      >
+        <span>목차</span>
+        <svg
+          className={`toc-toggle-icon h-4 w-4 transition-transform duration-200 ${
+            isOpen ? "rotate-0" : "-rotate-90"
+          }`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 9l-7 7-7-7"
+          />
+        </svg>
+      </button>
+      <ul
+        className={`toc-list space-y-2 text-sm transition-all duration-200 ${
+          isOpen ? "toc-list-open" : "toc-list-closed"
+        }`}
+      >
         {headings.map(({ slug, text, level }) => (
           <li
             key={slug}
