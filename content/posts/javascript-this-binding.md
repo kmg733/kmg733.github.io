@@ -10,7 +10,8 @@ tags: ["guide", "intermediate"]
 <figure>
   <div className="figure-content">
     <div className="image-frame">
-      <img src="/images/posts/javascript-this-binding/javascript-this-binding-dark.png" alt="JavaScript this 바인딩" />
+      <img className="theme-light" src="/images/posts/javascript-this-binding/javascript-this-binding-light.png" alt="JavaScript this 바인딩" />
+      <img className="theme-dark" src="/images/posts/javascript-this-binding/javascript-this-binding-dark.png" alt="JavaScript this 바인딩" />
     </div>
     <figcaption>그림 1. JavaScript this 바인딩</figcaption>
   </div>
@@ -461,7 +462,8 @@ arrow.call({ name: 'obj' });  // 여전히 상위 스코프의 this
 <figure>
   <div className="figure-content">
     <div className="image-frame">
-      <img src="/images/posts/javascript-this-binding/this-binding-priority.svg" alt="this 바인딩 우선순위" />
+      <img className="theme-light" src="/images/posts/javascript-this-binding/this-binding-priority-light.svg" alt="this 바인딩 우선순위" />
+      <img className="theme-dark" src="/images/posts/javascript-this-binding/this-binding-priority-dark.svg" alt="this 바인딩 우선순위" />
     </div>
     <figcaption>그림 2. this 바인딩 우선순위</figcaption>
   </div>
