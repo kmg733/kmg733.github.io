@@ -85,7 +85,8 @@ describe("Term", () => {
 
   it("클릭 시 glossary 섹션으로 스크롤한다", () => {
     const mockScrollIntoView = jest.fn();
-    const mockElement = { scrollIntoView: mockScrollIntoView };
+    const mockClassList = { add: jest.fn(), remove: jest.fn() };
+    const mockElement = { scrollIntoView: mockScrollIntoView, classList: mockClassList };
     jest.spyOn(document, "getElementById").mockReturnValue(mockElement as unknown as HTMLElement);
 
     renderWithProvider(<Term id="closure">클로저</Term>);
@@ -99,9 +100,39 @@ describe("Term", () => {
     jest.restoreAllMocks();
   });
 
+  it("스크롤 완료 후 대상 용어 설명 항목에 강조 애니메이션을 적용한다", () => {
+    Object.defineProperty(window, "onscrollend", {
+      value: null,
+      writable: true,
+      configurable: true,
+    });
+
+    const mockClassList = { add: jest.fn(), remove: jest.fn() };
+    const mockElement = {
+      scrollIntoView: jest.fn(),
+      classList: mockClassList,
+    };
+    jest.spyOn(document, "getElementById").mockReturnValue(mockElement as unknown as HTMLElement);
+
+    renderWithProvider(<Term id="closure">클로저</Term>);
+
+    const abbr = screen.getByText("클로저");
+    fireEvent.click(abbr);
+
+    expect(mockClassList.add).not.toHaveBeenCalled();
+
+    window.dispatchEvent(new Event("scrollend"));
+
+    expect(mockClassList.add).toHaveBeenCalledWith("glossary-highlight");
+
+    delete (window as Record<string, unknown>)["onscrollend"];
+    jest.restoreAllMocks();
+  });
+
   it("Enter 키 누르면 glossary 섹션으로 스크롤한다", () => {
     const mockScrollIntoView = jest.fn();
-    const mockElement = { scrollIntoView: mockScrollIntoView };
+    const mockClassList = { add: jest.fn(), remove: jest.fn() };
+    const mockElement = { scrollIntoView: mockScrollIntoView, classList: mockClassList };
     jest.spyOn(document, "getElementById").mockReturnValue(mockElement as unknown as HTMLElement);
 
     renderWithProvider(<Term id="closure">클로저</Term>);

@@ -125,4 +125,53 @@ describe("GlossarySection", () => {
     const list = container.querySelector(".glossary-list");
     expect(list).toHaveClass("glossary-list-open");
   });
+
+  it("↑ 클릭 시 smooth scroll로 본문 용어 위치로 이동한다", () => {
+    const mockScrollIntoView = jest.fn();
+    const mockClassList = { add: jest.fn(), remove: jest.fn() };
+    const mockElement = {
+      scrollIntoView: mockScrollIntoView,
+      classList: mockClassList,
+    };
+    jest.spyOn(document, "getElementById").mockReturnValue(mockElement as unknown as HTMLElement);
+
+    renderWithProvider();
+
+    const backLink = screen.getAllByLabelText("본문으로 돌아가기")[0];
+    fireEvent.click(backLink);
+
+    expect(document.getElementById).toHaveBeenCalledWith("term-closure");
+    expect(mockScrollIntoView).toHaveBeenCalledWith({ behavior: "smooth" });
+
+    jest.restoreAllMocks();
+  });
+
+  it("↑ 클릭 시 스크롤 완료 후 대상 Term에 강조 애니메이션을 적용한다", () => {
+    Object.defineProperty(window, "onscrollend", {
+      value: null,
+      writable: true,
+      configurable: true,
+    });
+
+    const mockClassList = { add: jest.fn(), remove: jest.fn() };
+    const mockElement = {
+      scrollIntoView: jest.fn(),
+      classList: mockClassList,
+    };
+    jest.spyOn(document, "getElementById").mockReturnValue(mockElement as unknown as HTMLElement);
+
+    renderWithProvider();
+
+    const backLink = screen.getAllByLabelText("본문으로 돌아가기")[0];
+    fireEvent.click(backLink);
+
+    expect(mockClassList.add).not.toHaveBeenCalled();
+
+    window.dispatchEvent(new Event("scrollend"));
+
+    expect(mockClassList.add).toHaveBeenCalledWith("glossary-highlight");
+
+    delete (window as Record<string, unknown>)["onscrollend"];
+    jest.restoreAllMocks();
+  });
 });

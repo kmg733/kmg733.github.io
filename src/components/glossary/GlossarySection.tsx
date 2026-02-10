@@ -1,7 +1,9 @@
 "use client";
 
+import { useCallback } from "react";
 import type { GlossaryEntry } from "@/types";
 import { useGlossarySection } from "./GlossaryProvider";
+import { scrollAndHighlight } from "@/lib/scrollHighlight";
 
 interface GlossarySectionProps {
   entries: GlossaryEntry[];
@@ -9,6 +11,12 @@ interface GlossarySectionProps {
 
 export function GlossarySection({ entries }: GlossarySectionProps) {
   const { isSectionOpen, toggleSection } = useGlossarySection();
+
+  const handleBackToTerm = useCallback((e: React.MouseEvent, termId: string) => {
+    e.preventDefault();
+    const target = document.getElementById(`term-${termId}`);
+    scrollAndHighlight(target);
+  }, []);
 
   if (entries.length === 0) {
     return null;
@@ -55,6 +63,7 @@ export function GlossarySection({ entries }: GlossarySectionProps) {
                 href={`#term-${entry.id}`}
                 className="glossary-back-link"
                 aria-label="본문으로 돌아가기"
+                onClick={(e) => handleBackToTerm(e, entry.id)}
               >
                 ↑
               </a>
