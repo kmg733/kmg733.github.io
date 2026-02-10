@@ -10,7 +10,7 @@ export function scrollAndHighlight(
     target.classList.add(highlightClass);
     setTimeout(() => {
       target.classList.remove(highlightClass);
-    }, 1500);
+    }, 2000);
   };
 
   if ("onscrollend" in window) {

@@ -47,15 +47,24 @@ describe("scrollAndHighlight", () => {
       expect(target.classList.add).toHaveBeenCalledWith("glossary-highlight");
     });
 
-    it("강조 클래스는 1500ms 후 제거된다", () => {
+    it("강조 클래스는 1500ms 시점에서는 아직 제거되지 않는다", () => {
       const target = createMockElement();
 
       scrollAndHighlight(target);
       window.dispatchEvent(new Event("scrollend"));
 
-      expect(target.classList.remove).not.toHaveBeenCalled();
-
       jest.advanceTimersByTime(1500);
+
+      expect(target.classList.remove).not.toHaveBeenCalled();
+    });
+
+    it("강조 클래스는 2000ms 후 제거된다", () => {
+      const target = createMockElement();
+
+      scrollAndHighlight(target);
+      window.dispatchEvent(new Event("scrollend"));
+
+      jest.advanceTimersByTime(2000);
 
       expect(target.classList.remove).toHaveBeenCalledWith("glossary-highlight");
     });
@@ -97,7 +106,7 @@ describe("scrollAndHighlight", () => {
       expect(target.classList.add).toHaveBeenCalledWith("glossary-highlight");
     });
 
-    it("강조 클래스는 1500ms 후 제거된다", () => {
+    it("강조 클래스는 2000ms 후 제거된다", () => {
       const target = createMockElement();
 
       scrollAndHighlight(target);
@@ -105,7 +114,7 @@ describe("scrollAndHighlight", () => {
 
       expect(target.classList.remove).not.toHaveBeenCalled();
 
-      jest.advanceTimersByTime(1500);
+      jest.advanceTimersByTime(2000);
 
       expect(target.classList.remove).toHaveBeenCalledWith("glossary-highlight");
     });
@@ -125,7 +134,7 @@ describe("scrollAndHighlight", () => {
 
     expect(target.classList.add).toHaveBeenCalledWith("heading-highlight");
 
-    jest.advanceTimersByTime(1500);
+    jest.advanceTimersByTime(2000);
 
     expect(target.classList.remove).toHaveBeenCalledWith("heading-highlight");
 

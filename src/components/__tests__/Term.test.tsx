@@ -100,7 +100,7 @@ describe("Term", () => {
     jest.restoreAllMocks();
   });
 
-  it("스크롤 완료 후 대상 용어 설명 항목에 강조 애니메이션을 적용한다", () => {
+  it("스크롤 완료 후 대상 용어 설명 항목에 배경 강조를 적용한다", () => {
     Object.defineProperty(window, "onscrollend", {
       value: null,
       writable: true,
@@ -123,7 +123,7 @@ describe("Term", () => {
 
     window.dispatchEvent(new Event("scrollend"));
 
-    expect(mockClassList.add).toHaveBeenCalledWith("glossary-highlight");
+    expect(mockClassList.add).toHaveBeenCalledWith("glossary-entry-highlight");
 
     delete (window as Record<string, unknown>)["onscrollend"];
     jest.restoreAllMocks();

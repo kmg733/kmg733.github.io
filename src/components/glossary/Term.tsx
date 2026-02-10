@@ -17,7 +17,7 @@ export function Term({ id, children }: TermProps) {
   const handleScrollToGlossary = useCallback(() => {
     openSection();
     const target = document.getElementById(`glossary-${id}`);
-    scrollAndHighlight(target);
+    scrollAndHighlight(target, "glossary-entry-highlight");
   }, [id, openSection]);
 
   const handleKeyDown = useCallback(
