@@ -12,6 +12,8 @@ export function parseGlossary(data: unknown): GlossaryEntry[] {
   return data.filter(isValidGlossaryEntry);
 }
 
+const VALID_ID_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
 function isValidGlossaryEntry(item: unknown): item is GlossaryEntry {
   if (item == null || typeof item !== "object") {
     return false;
@@ -21,6 +23,7 @@ function isValidGlossaryEntry(item: unknown): item is GlossaryEntry {
 
   return (
     typeof entry.id === "string" &&
+    VALID_ID_PATTERN.test(entry.id) &&
     typeof entry.term === "string" &&
     typeof entry.brief === "string" &&
     typeof entry.detail === "string"

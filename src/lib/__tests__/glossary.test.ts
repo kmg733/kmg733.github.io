@@ -68,6 +68,35 @@ describe("parseGlossary", () => {
     expect(result[0]).toEqual(validEntry);
   });
 
+  it("id가 HTML-safe 패턴이 아닌 항목은 제외한다", () => {
+    const raw = [
+      validEntry,
+      { id: "has space", term: "공백", brief: "설명", detail: "상세" },
+      { id: "has\"quote", term: "따옴표", brief: "설명", detail: "상세" },
+      { id: "has>angle", term: "꺾쇠", brief: "설명", detail: "상세" },
+      { id: "", term: "빈ID", brief: "설명", detail: "상세" },
+      { id: "-leading-dash", term: "대시시작", brief: "설명", detail: "상세" },
+      { id: "trailing-dash-", term: "대시끝", brief: "설명", detail: "상세" },
+      { id: "UPPERCASE", term: "대문자", brief: "설명", detail: "상세" },
+    ];
+
+    const result = parseGlossary(raw);
+    expect(result).toHaveLength(1);
+    expect(result[0]).toEqual(validEntry);
+  });
+
+  it("유효한 id 패턴은 통과한다", () => {
+    const raw = [
+      { id: "closure", term: "클로저", brief: "설명", detail: "상세" },
+      { id: "lexical-scope", term: "스코프", brief: "설명", detail: "상세" },
+      { id: "es6", term: "ES6", brief: "설명", detail: "상세" },
+      { id: "web-api-v2", term: "API", brief: "설명", detail: "상세" },
+    ];
+
+    const result = parseGlossary(raw);
+    expect(result).toHaveLength(4);
+  });
+
   it("배열 내 null/undefined 항목은 제외한다", () => {
     const raw = [validEntry, null, undefined, validEntry2];
 
