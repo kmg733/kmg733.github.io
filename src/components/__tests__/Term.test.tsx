@@ -1,6 +1,7 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { Term } from "../glossary/Term";
 import { GlossaryProvider } from "../glossary/GlossaryProvider";
+import { GlossarySection } from "../glossary/GlossarySection";
 import type { GlossaryEntry } from "@/types";
 
 const mockEntries: GlossaryEntry[] = [
@@ -43,6 +44,13 @@ describe("Term", () => {
 
     const abbr = screen.getByText("클로저");
     expect(abbr).toHaveAttribute("tabindex", "0");
+  });
+
+  it("역참조 앵커 타겟으로 사용할 id가 설정된다", () => {
+    renderWithProvider(<Term id="closure">클로저</Term>);
+
+    const abbr = screen.getByText("클로저");
+    expect(abbr).toHaveAttribute("id", "term-closure");
   });
 
   it("용어가 Context에 없으면 일반 span으로 렌더링한다", () => {
@@ -104,5 +112,29 @@ describe("Term", () => {
     expect(mockScrollIntoView).toHaveBeenCalledWith({ behavior: "smooth" });
 
     jest.restoreAllMocks();
+  });
+
+  it("클릭 시 접힌 GlossarySection이 자동으로 열린다", () => {
+    Element.prototype.scrollIntoView = jest.fn();
+
+    render(
+      <GlossaryProvider entries={mockEntries}>
+        <Term id="closure">클로저</Term>
+        <GlossarySection entries={mockEntries} />
+      </GlossaryProvider>
+    );
+
+    // 섹션 접기
+    const toggleButton = screen.getByRole("button", {
+      name: "용어 설명 접기/펼치기",
+    });
+    fireEvent.click(toggleButton);
+    expect(toggleButton).toHaveAttribute("aria-expanded", "false");
+
+    // Term 클릭 → 접힌 섹션이 자동으로 열려야 함
+    const abbr = screen.getByText("클로저");
+    fireEvent.click(abbr);
+
+    expect(toggleButton).toHaveAttribute("aria-expanded", "true");
   });
 });

@@ -1,9 +1,23 @@
 "use client";
 
-import { createContext, useContext, useMemo } from "react";
+import { createContext, useContext, useMemo, useState, useCallback } from "react";
 import type { GlossaryEntry } from "@/types";
 
-const GlossaryContext = createContext<Map<string, GlossaryEntry>>(new Map());
+interface GlossaryContextValue {
+  entries: Map<string, GlossaryEntry>;
+  isSectionOpen: boolean;
+  openSection: () => void;
+  toggleSection: () => void;
+}
+
+const defaultValue: GlossaryContextValue = {
+  entries: new Map(),
+  isSectionOpen: true,
+  openSection: () => {},
+  toggleSection: () => {},
+};
+
+const GlossaryContext = createContext<GlossaryContextValue>(defaultValue);
 
 interface GlossaryProviderProps {
   entries: GlossaryEntry[];
@@ -16,14 +30,34 @@ export function GlossaryProvider({ entries, children }: GlossaryProviderProps) {
     [entries]
   );
 
+  const [isSectionOpen, setIsSectionOpen] = useState(true);
+
+  const openSection = useCallback(() => {
+    setIsSectionOpen(true);
+  }, []);
+
+  const toggleSection = useCallback(() => {
+    setIsSectionOpen((prev) => !prev);
+  }, []);
+
+  const value = useMemo(
+    () => ({ entries: entryMap, isSectionOpen, openSection, toggleSection }),
+    [entryMap, isSectionOpen, openSection, toggleSection]
+  );
+
   return (
-    <GlossaryContext.Provider value={entryMap}>
+    <GlossaryContext.Provider value={value}>
       {children}
     </GlossaryContext.Provider>
   );
 }
 
 export function useGlossary(id: string): GlossaryEntry | undefined {
-  const map = useContext(GlossaryContext);
-  return map.get(id);
+  const { entries } = useContext(GlossaryContext);
+  return entries.get(id);
+}
+
+export function useGlossarySection() {
+  const { isSectionOpen, openSection, toggleSection } = useContext(GlossaryContext);
+  return { isSectionOpen, openSection, toggleSection };
 }

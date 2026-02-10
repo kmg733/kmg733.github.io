@@ -153,6 +153,7 @@ body::before {
     font-style: normal;
     color: #92400e;
     transition: all 0.2s ease;
+    scroll-margin-top: 6rem;
   }
 
   .glossary-term:hover,
@@ -253,8 +254,20 @@ body::before {
   border-color: #334155;
 }
 
+.glossary-toggle-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+}
+
 .glossary-section-title {
-  margin: 0 0 1rem;
+  margin: 0;
   font-size: 1.125rem;
   font-weight: 600;
   color: #92400e;
@@ -264,8 +277,34 @@ body::before {
   color: #e2e8f0;
 }
 
+.glossary-toggle-icon {
+  width: 1rem;
+  height: 1rem;
+  color: #92400e;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.dark .glossary-toggle-icon {
+  color: #e2e8f0;
+}
+
 .glossary-list {
   margin: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.3s ease, margin-top 0.3s ease;
+}
+
+.glossary-list-open {
+  max-height: 2000px;
+  opacity: 1;
+  margin-top: 1rem;
+}
+
+.glossary-list-closed {
+  max-height: 0;
+  opacity: 0;
+  margin-top: 0;
 }
 
 .glossary-item {

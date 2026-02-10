@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { useGlossary } from "./GlossaryProvider";
+import { useGlossary, useGlossarySection } from "./GlossaryProvider";
 
 interface TermProps {
   id: string;
@@ -10,12 +10,14 @@ interface TermProps {
 
 export function Term({ id, children }: TermProps) {
   const entry = useGlossary(id);
+  const { openSection } = useGlossarySection();
   const [showTooltip, setShowTooltip] = useState(false);
 
   const handleScrollToGlossary = useCallback(() => {
+    openSection();
     const target = document.getElementById(`glossary-${id}`);
     target?.scrollIntoView({ behavior: "smooth" });
-  }, [id]);
+  }, [id, openSection]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
@@ -33,6 +35,7 @@ export function Term({ id, children }: TermProps) {
 
   return (
     <abbr
+      id={`term-${id}`}
       className="glossary-term"
       role="doc-noteref"
       aria-describedby={`glossary-${id}`}

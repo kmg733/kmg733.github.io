@@ -1,10 +1,15 @@
+"use client";
+
 import type { GlossaryEntry } from "@/types";
+import { useGlossarySection } from "./GlossaryProvider";
 
 interface GlossarySectionProps {
   entries: GlossaryEntry[];
 }
 
 export function GlossarySection({ entries }: GlossarySectionProps) {
+  const { isSectionOpen, toggleSection } = useGlossarySection();
+
   if (entries.length === 0) {
     return null;
   }
@@ -15,8 +20,29 @@ export function GlossarySection({ entries }: GlossarySectionProps) {
       role="doc-endnotes"
       aria-label="용어 설명"
     >
-      <h2 className="glossary-section-title">용어 설명</h2>
-      <dl className="glossary-list">
+      <button
+        onClick={toggleSection}
+        aria-expanded={isSectionOpen}
+        aria-label="용어 설명 접기/펼치기"
+        className="glossary-toggle-button"
+      >
+        <h2 className="glossary-section-title">용어 설명</h2>
+        <svg
+          className={`glossary-toggle-icon ${isSectionOpen ? "rotate-0" : "-rotate-90"}`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 9l-7 7-7-7"
+          />
+        </svg>
+      </button>
+      <dl className={`glossary-list ${isSectionOpen ? "glossary-list-open" : "glossary-list-closed"}`}>
         {entries.map((entry) => (
           <div
             key={entry.id}
