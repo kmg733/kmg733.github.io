@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import type { TocItem } from "@/lib/toc";
+import { scrollAndHighlight } from "@/lib/scrollHighlight";
 
 interface TableOfContentsProps {
   headings: TocItem[];
@@ -133,14 +134,8 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
                     clickedRef.current = false;
                   }, 2000);
 
-                  // 스크롤
-                  element.scrollIntoView({ behavior: "smooth" });
-
-                  // 헤딩 강조 애니메이션 추가
-                  element.classList.add("heading-highlight");
-                  setTimeout(() => {
-                    element.classList.remove("heading-highlight");
-                  }, 1500);
+                  // 스크롤 + 헤딩 강조 애니메이션
+                  scrollAndHighlight(element, "heading-highlight");
                 }
               }}
             >

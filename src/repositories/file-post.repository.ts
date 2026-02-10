@@ -5,6 +5,7 @@ import readingTime from "reading-time";
 import type { IPostRepository } from "@/interfaces";
 import type { Post, PostMeta, PostFrontmatter } from "@/types";
 import { POST_DEFAULTS } from "@/lib/constants";
+import { parseGlossary } from "@/lib/glossary";
 
 /**
  * 파일 시스템 기반 포스트 Repository 구현체 (Infrastructure Layer)
@@ -98,10 +99,12 @@ export class FilePostRepository implements IPostRepository {
   private parsePost(slug: string, filePath: string): Post {
     const fileContents = fs.readFileSync(filePath, "utf8");
     const { data, content } = matter(fileContents);
+    const glossary = parseGlossary((data as Record<string, unknown>).glossary);
 
     return {
       ...this.buildPostMeta(slug, data as PostFrontmatter, content),
       content,
+      ...(glossary.length > 0 && { glossary }),
     };
   }
 
