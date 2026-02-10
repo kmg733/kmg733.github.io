@@ -7,6 +7,7 @@ import { extractHeadings } from "@/lib/toc";
 import { DATE_FORMAT } from "@/lib/constants";
 import TableOfContents from "@/components/TableOfContents";
 import RelatedPosts from "@/components/RelatedPosts";
+import { GlossaryProvider, GlossarySection, Term } from "@/components/glossary";
 import type { Metadata } from "next";
 
 interface Props {
@@ -42,6 +43,20 @@ export default async function BlogPostPage({ params }: Props) {
 
   const headings = extractHeadings(post.content);
   const relatedPosts = postService.getRelatedPosts(slug, 3);
+  const glossary = post.glossary ?? [];
+
+  const mdxContent = (
+    <MDXRemote
+      source={post.content}
+      components={{ Term }}
+      options={{
+        mdxOptions: {
+          remarkPlugins: [remarkGfm],
+          rehypePlugins: [rehypeSlug],
+        },
+      }}
+    />
+  );
 
   return (
     <div className="relative mx-auto max-w-6xl px-4 py-16">
@@ -75,17 +90,18 @@ export default async function BlogPostPage({ params }: Props) {
             <div className="mt-4 text-sm text-zinc-500">{post.readingTime}</div>
           </header>
 
-          <div className="prose prose-zinc max-w-none dark:prose-invert prose-headings:font-semibold prose-a:text-amber-700 hover:prose-a:text-amber-800 prose-code:rounded prose-code:bg-amber-100 prose-code:px-1 prose-code:py-0.5 prose-code:text-amber-900 prose-code:before:content-none prose-code:after:content-none dark:prose-a:text-blue-400 dark:prose-code:bg-zinc-800 dark:prose-code:text-zinc-200">
-            <MDXRemote
-              source={post.content}
-              options={{
-                mdxOptions: {
-                  remarkPlugins: [remarkGfm],
-                  rehypePlugins: [rehypeSlug],
-                },
-              }}
-            />
-          </div>
+          {glossary.length > 0 ? (
+            <GlossaryProvider entries={glossary}>
+              <div className="prose prose-zinc max-w-none dark:prose-invert prose-headings:font-semibold prose-a:text-amber-700 hover:prose-a:text-amber-800 prose-code:rounded prose-code:bg-amber-100 prose-code:px-1 prose-code:py-0.5 prose-code:text-amber-900 prose-code:before:content-none prose-code:after:content-none dark:prose-a:text-blue-400 dark:prose-code:bg-zinc-800 dark:prose-code:text-zinc-200">
+                {mdxContent}
+              </div>
+              <GlossarySection entries={glossary} />
+            </GlossaryProvider>
+          ) : (
+            <div className="prose prose-zinc max-w-none dark:prose-invert prose-headings:font-semibold prose-a:text-amber-700 hover:prose-a:text-amber-800 prose-code:rounded prose-code:bg-amber-100 prose-code:px-1 prose-code:py-0.5 prose-code:text-amber-900 prose-code:before:content-none prose-code:after:content-none dark:prose-a:text-blue-400 dark:prose-code:bg-zinc-800 dark:prose-code:text-zinc-200">
+              {mdxContent}
+            </div>
+          )}
 
           <RelatedPosts posts={relatedPosts} />
         </article>

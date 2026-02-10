@@ -17,6 +17,7 @@ export interface PostMeta {
  */
 export interface Post extends PostMeta {
   content: string;
+  glossary?: import("./glossary").GlossaryEntry[];
 }
 
 /**

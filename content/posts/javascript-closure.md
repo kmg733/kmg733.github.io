@@ -5,6 +5,23 @@ description: "JavaScript 클로저의 동작 원리부터 실무 활용 패턴�
 category: "개발"
 subcategory: "JavaScript"
 tags: ["guide", "intermediate"]
+glossary:
+  - id: "closure"
+    term: "클로저(Closure)"
+    brief: "함수가 선언된 렉시컬 환경을 기억하여 외부 스코프 변수에 접근할 수 있는 현상"
+    detail: "함수가 자신이 선언된 환경의 변수를 기억하고, 외부 함수 실행이 종료된 후에도 해당 변수에 접근할 수 있는 JavaScript의 핵심 메커니즘이다. 함수와 그 함수가 선언된 렉시컬 환경의 조합으로 정의된다."
+  - id: "lexical-scope"
+    term: "렉시컬 스코프(Lexical Scope)"
+    brief: "함수가 호출 위치가 아닌 선언 위치에 따라 스코프가 결정되는 규칙"
+    detail: "정적 스코프(Static Scope)라고도 한다. 함수가 어디서 호출되었는지가 아니라 어디서 작성(선언)되었는지에 따라 접근 가능한 변수의 범위가 결정된다."
+  - id: "iife"
+    term: "즉시 실행 함수(IIFE)"
+    brief: "선언과 동시에 실행되는 함수 표현식"
+    detail: "Immediately Invoked Function Expression의 약자. (function() { ... })() 형태로 작성하며, 함수를 정의하자마자 즉시 실행한다. 독립적인 스코프를 생성하여 변수 오염을 방지하는 데 사용된다."
+  - id: "garbage-collection"
+    term: "가비지 컬렉션(Garbage Collection)"
+    brief: "더 이상 참조되지 않는 메모리를 자동으로 해제하는 메커니즘"
+    detail: "JavaScript 엔진이 더 이상 사용되지 않는 객체나 변수의 메모리를 자동으로 회수하는 메모리 관리 메커니즘이다. 클로저가 외부 변수를 참조하면 해당 변수는 가비지 컬렉션 대상에서 제외된다."
 ---
 
 <figure>
@@ -21,17 +38,7 @@ tags: ["guide", "intermediate"]
 JavaScript를 사용하다 보면 "클로저"라는 단어를 자주 접하게 됩니다.
 면접 단골 주제이기도 하고, 실무에서도 의식하지 못한 채 사용하고 있는 경우가 많습니다.
 
-클로저(Closure)는 **함수가 자신이 선언된 렉시컬 환경을 기억하여, 외부 스코프의 변수에 접근할 수 있는 현상**입니다.
-
-<details>
-<summary>용어 설명: 렉시컬 스코프와 외부 스코프</summary>
-
-<strong>렉시컬 스코프(Lexical Scope)</strong>란, 함수가 어디서 <strong>호출</strong>되었는지가 아니라 어디서 <strong>작성(선언)</strong>되었는지에 따라 접근할 수 있는 변수의 범위가 결정되는 규칙을 말합니다.
-
-<strong>외부 스코프</strong>는 함수 자신을 감싸고 있는 바깥쪽 함수(또는 전역)의 변수 영역을 의미합니다.
-즉 함수 안에 또 다른 함수가 있을 때, 안쪽 함수 입장에서 바깥쪽 함수의 변수 영역이 외부 스코프입니다.
-
-</details>
+<Term id="closure">클로저(Closure)</Term>는 **함수가 자신이 선언된 <Term id="lexical-scope">렉시컬 환경</Term>을 기억하여, 외부 스코프의 변수에 접근할 수 있는 현상**입니다.
 
 비유하자면, 회사를 퇴사한 직원이 재직 시절 사용하던 사물함 비밀번호를 여전히 기억하고 있는 것과 비슷합니다.
 회사(외부 함수)와의 관계는 끝났지만, 그 안에서 알게 된 정보(변수)에는 여전히 접근할 수 있는 셈입니다.
@@ -61,7 +68,7 @@ closureFunc();  // 'Hello' - message가 여전히 접근 가능
 ```
 
 `outer()` 함수는 이미 실행이 끝났지만, 반환된 `inner` 함수는 여전히 `message` 변수에 접근할 수 있습니다.
-일반적이라면 함수 종료와 함께 지역 변수도 사라져야 하지만, `inner`가 `message`를 참조하고 있기 때문에 가비지 컬렉션 대상에서 제외됩니다.
+일반적이라면 함수 종료와 함께 지역 변수도 사라져야 하지만, `inner`가 `message`를 참조하고 있기 때문에 <Term id="garbage-collection">가비지 컬렉션</Term> 대상에서 제외됩니다.
 이것이 클로저의 핵심입니다.
 
 ## 클로저의 동작 원리
@@ -293,13 +300,13 @@ for (var i = 0; i < 3; i++) {
 }
 ```
 
-즉시 실행 함수(IIFE)가 각 반복의 `i` 값을 `capturedI`로 캡처합니다.
+<Term id="iife">즉시 실행 함수(IIFE)</Term>가 각 반복의 `i` 값을 `capturedI`로 캡처합니다.
 `let`이 없던 ES5 시절에 주로 사용하던 방식입니다.
 
 ## 모듈 패턴
 
 클로저의 가장 실용적인 활용 중 하나가 모듈 패턴입니다.
-IIFE와 클로저를 결합하여 private 영역과 public API를 분리합니다.
+<Term id="iife">IIFE</Term>와 클로저를 결합하여 private 영역과 public API를 분리합니다.
 
 ```javascript
 const Calculator = (function () {
