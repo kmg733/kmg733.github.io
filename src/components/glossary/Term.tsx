@@ -39,7 +39,7 @@ export function Term({ id, children }: TermProps) {
       id={`term-${id}`}
       className="glossary-term"
       role="doc-noteref"
-      aria-describedby={`glossary-${id}`}
+      aria-describedby={showTooltip ? `tooltip-${id}` : `glossary-${id}`}
       tabIndex={0}
       onMouseEnter={() => setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}

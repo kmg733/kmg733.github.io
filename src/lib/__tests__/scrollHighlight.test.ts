@@ -91,6 +91,19 @@ describe("scrollAndHighlight", () => {
 
       expect(target.classList.add).toHaveBeenCalledTimes(1);
     });
+
+    it("scrollend 발생 시 안전 타임아웃이 취소된다", () => {
+      const clearTimeoutSpy = jest.spyOn(global, "clearTimeout");
+
+      const target = createMockElement();
+      scrollAndHighlight(target);
+
+      window.dispatchEvent(new Event("scrollend"));
+
+      expect(clearTimeoutSpy).toHaveBeenCalled();
+
+      clearTimeoutSpy.mockRestore();
+    });
   });
 
   describe("scrollend 미지원 환경", () => {

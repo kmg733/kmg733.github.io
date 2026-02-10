@@ -25,10 +25,29 @@ describe("Term", () => {
     expect(abbr.tagName).toBe("ABBR");
   });
 
-  it("aria-describedby 속성이 올바르게 설정된다", () => {
+  it("기본 aria-describedby가 glossary 섹션을 가리킨다", () => {
     renderWithProvider(<Term id="closure">클로저</Term>);
 
     const abbr = screen.getByText("클로저");
+    expect(abbr).toHaveAttribute("aria-describedby", "glossary-closure");
+  });
+
+  it("호버 시 aria-describedby가 툴팁으로 전환된다", () => {
+    renderWithProvider(<Term id="closure">클로저</Term>);
+
+    const abbr = screen.getByText("클로저");
+    fireEvent.mouseEnter(abbr);
+
+    expect(abbr).toHaveAttribute("aria-describedby", "tooltip-closure");
+  });
+
+  it("마우스 아웃 시 aria-describedby가 glossary로 복원된다", () => {
+    renderWithProvider(<Term id="closure">클로저</Term>);
+
+    const abbr = screen.getByText("클로저");
+    fireEvent.mouseEnter(abbr);
+    fireEvent.mouseLeave(abbr);
+
     expect(abbr).toHaveAttribute("aria-describedby", "glossary-closure");
   });
 

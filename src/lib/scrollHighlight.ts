@@ -18,10 +18,11 @@ export function scrollAndHighlight(
     const handler = () => {
       if (applied) return;
       applied = true;
+      clearTimeout(fallbackTimer);
       applyHighlight();
     };
     window.addEventListener("scrollend", handler, { once: true });
-    setTimeout(() => {
+    const fallbackTimer = setTimeout(() => {
       if (!applied) {
         window.removeEventListener("scrollend", handler);
         handler();
