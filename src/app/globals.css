@@ -529,6 +529,35 @@ body::before {
   pointer-events: none;
 }
 
+/* TOC Active Item Styles */
+.toc-item-active {
+  position: relative;
+  padding-left: 0.75rem;
+  background-color: rgba(251, 191, 36, 0.08);
+  border-radius: 0.375rem;
+  transition: all 0.2s ease;
+}
+
+.toc-item-active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
+  border-radius: 0 2px 2px 0;
+  transition: all 0.2s ease;
+}
+
+.dark .toc-item-active {
+  background-color: rgba(96, 165, 250, 0.1);
+}
+
+.dark .toc-item-active::before {
+  background: linear-gradient(180deg, #60a5fa 0%, #3b82f6 100%);
+}
+
 /* Heading highlight animation */
 @keyframes heading-flash {
   0% {

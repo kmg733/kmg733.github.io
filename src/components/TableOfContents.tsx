@@ -113,9 +113,9 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
           >
             <a
               href={`#${slug}`}
-              className={`block py-1 transition-colors duration-200 hover:text-blue-600 dark:hover:text-blue-400 ${
+              className={`block py-1 transition-all duration-200 hover:text-blue-600 dark:hover:text-blue-400 ${
                 activeId === slug
-                  ? "font-medium text-blue-600 dark:text-blue-400"
+                  ? "font-medium text-blue-600 dark:text-blue-400 toc-item-active"
                   : "text-zinc-600 dark:text-zinc-400"
               }`}
               onClick={(e) => {
