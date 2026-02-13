@@ -25,6 +25,14 @@
   --foreground: #ededed;
 }
 
+/* 초기 로드 시 전환 애니메이션 비활성화 (FOUC 방지) */
+.no-transition,
+.no-transition *,
+.no-transition *::before,
+.no-transition *::after {
+  transition: none !important;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);

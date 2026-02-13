@@ -40,7 +40,14 @@ export default function RootLayout({
   const allPosts = postService.getAllPosts();
 
   return (
-    <html lang="ko">
+    <html lang="ko" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var s=localStorage.getItem('theme');var t=s==='dark'||s==='light'?s:null;if(!t){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}if(t==='dark'){document.documentElement.classList.add('dark')}document.documentElement.classList.add('no-transition')}catch(e){}})()`,
+          }}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${sacramento.variable} antialiased min-h-screen flex flex-col`}
       >
