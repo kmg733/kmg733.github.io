@@ -4,10 +4,9 @@ import ThemeToggle from "@/components/ThemeToggle";
 
 describe("ThemeToggle", () => {
   beforeEach(() => {
-    // localStorage 초기화
     localStorage.clear();
-    // dark 클래스 제거
     document.documentElement.classList.remove("dark");
+    document.documentElement.classList.remove("no-transition");
   });
 
   it("컴포넌트가 정상적으로 렌더링된다", () => {
@@ -43,7 +42,7 @@ describe("ThemeToggle", () => {
   });
 
   it("클릭 시 다크모드에서 라이트모드로 전환된다", async () => {
-    // 다크모드로 설정
+    // 인라인 스크립트가 설정하는 DOM 상태를 시뮬레이션
     document.documentElement.classList.add("dark");
     localStorage.setItem("theme", "dark");
 
@@ -63,8 +62,10 @@ describe("ThemeToggle", () => {
     });
   });
 
-  it("localStorage에 저장된 테마를 불러온다", async () => {
+  it("DOM에서 다크모드 상태를 읽어온다 (인라인 스크립트가 설정한 상태)", async () => {
+    // 인라인 스크립트가 localStorage 기반으로 .dark 클래스를 미리 적용한 상태를 시뮬레이션
     localStorage.setItem("theme", "dark");
+    document.documentElement.classList.add("dark");
 
     render(<ThemeToggle />);
 
@@ -73,26 +74,23 @@ describe("ThemeToggle", () => {
     });
   });
 
-  it("저장된 테마가 없을 때 시스템 설정을 감지한다", async () => {
-    // prefers-color-scheme 모킹
-    Object.defineProperty(window, "matchMedia", {
-      writable: true,
-      value: jest.fn().mockImplementation((query) => ({
-        matches: query === "(prefers-color-scheme: dark)",
-        media: query,
-        onchange: null,
-        addListener: jest.fn(),
-        removeListener: jest.fn(),
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
-        dispatchEvent: jest.fn(),
-      })),
+  it("DOM에 dark 클래스가 없으면 라이트모드로 동기화된다", async () => {
+    // 인라인 스크립트가 라이트모드로 결정한 상태
+    render(<ThemeToggle />);
+
+    await waitFor(() => {
+      expect(document.documentElement).not.toHaveClass("dark");
     });
+  });
+
+  it("마운트 후 no-transition 클래스를 제거한다", async () => {
+    // 인라인 스크립트가 설정하는 no-transition 상태를 시뮬레이션
+    document.documentElement.classList.add("no-transition");
 
     render(<ThemeToggle />);
 
     await waitFor(() => {
-      expect(document.documentElement).toHaveClass("dark");
+      expect(document.documentElement).not.toHaveClass("no-transition");
     });
   });
 

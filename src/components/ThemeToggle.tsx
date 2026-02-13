@@ -9,20 +9,15 @@ export default function ThemeToggle() {
   useEffect(() => {
     setMounted(true);
 
-    // localStorage에서 저장된 테마 확인 (유효성 검증 포함)
-    const storedTheme = localStorage.getItem("theme");
-    const savedTheme = storedTheme === "light" || storedTheme === "dark" ? storedTheme : null;
+    // 인라인 스크립트(layout.tsx <head>)가 이미 적용한 테마를 DOM에서 읽어 React state에 동기화
+    const isDark = document.documentElement.classList.contains("dark");
+    setTheme(isDark ? "dark" : "light");
+    updateFavicon(isDark ? "dark" : "light");
 
-    if (savedTheme) {
-      setTheme(savedTheme);
-      applyTheme(savedTheme);
-    } else {
-      // 시스템 다크모드 설정 감지
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      const systemTheme = prefersDark ? "dark" : "light";
-      setTheme(systemTheme);
-      applyTheme(systemTheme);
-    }
+    // 렌더링 완료 후 전환 애니메이션 활성화 (FOUC 방지용 no-transition 제거)
+    requestAnimationFrame(() => {
+      document.documentElement.classList.remove("no-transition");
+    });
 
     // 시스템 테마 변경 감지 리스너
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
