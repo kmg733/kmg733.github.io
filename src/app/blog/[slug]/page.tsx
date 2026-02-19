@@ -2,13 +2,25 @@ import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
+import rehypePrettyCode from "rehype-pretty-code";
+import type { Options as PrettyCodeOptions } from "rehype-pretty-code";
 import { postService } from "@/lib/container";
 import { extractHeadings } from "@/lib/toc";
 import { DATE_FORMAT } from "@/lib/constants";
 import TableOfContents from "@/components/TableOfContents";
 import RelatedPosts from "@/components/RelatedPosts";
+import CodeBlock from "@/components/CodeBlock";
 import { GlossaryProvider, GlossarySection, Term } from "@/components/glossary";
 import type { Metadata } from "next";
+
+const prettyCodeOptions: PrettyCodeOptions = {
+  theme: {
+    dark: "one-dark-pro",
+    light: "github-light",
+  },
+  keepBackground: false,
+  defaultLang: "plaintext",
+};
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -48,11 +60,11 @@ export default async function BlogPostPage({ params }: Props) {
   const mdxContent = (
     <MDXRemote
       source={post.content}
-      components={{ Term }}
+      components={{ Term, pre: CodeBlock }}
       options={{
         mdxOptions: {
           remarkPlugins: [remarkGfm],
-          rehypePlugins: [rehypeSlug],
+          rehypePlugins: [rehypeSlug, [rehypePrettyCode, prettyCodeOptions]],
         },
       }}
     />
