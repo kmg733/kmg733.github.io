@@ -9,6 +9,7 @@ import { extractHeadings } from "@/lib/toc";
 import { DATE_FORMAT } from "@/lib/constants";
 import TableOfContents from "@/components/TableOfContents";
 import RelatedPosts from "@/components/RelatedPosts";
+import PostNavigation from "@/components/PostNavigation";
 import CodeBlock from "@/components/CodeBlock";
 import { GlossaryProvider, GlossarySection, Term } from "@/components/glossary";
 import type { Metadata } from "next";
@@ -55,6 +56,7 @@ export default async function BlogPostPage({ params }: Props) {
 
   const headings = extractHeadings(post.content);
   const relatedPosts = postService.getRelatedPosts(slug, 3);
+  const adjacentPosts = postService.getAdjacentPosts(slug);
   const glossary = post.glossary ?? [];
 
   const mdxContent = (
@@ -109,6 +111,10 @@ export default async function BlogPostPage({ params }: Props) {
             {glossary.length > 0 && <GlossarySection entries={glossary} />}
           </GlossaryProvider>
 
+          <PostNavigation
+            prev={adjacentPosts.prev}
+            next={adjacentPosts.next}
+          />
           <RelatedPosts posts={relatedPosts} />
         </article>
 
