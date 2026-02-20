@@ -5,6 +5,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 import ImageLightbox from "@/components/ImageLightbox";
 import SearchModal from "@/components/SearchModal";
 import SearchButton from "@/components/SearchButton";
+import ScrollToTop from "@/components/ScrollToTop";
 import { postService } from "@/lib/container";
 import "./globals.css";
 
@@ -90,6 +91,7 @@ export default function RootLayout({
         <main className="flex-1">{children}</main>
 
         <ImageLightbox />
+        <ScrollToTop />
         <SearchModal posts={allPosts} />
 
         <footer className="border-t border-zinc-200 py-8 dark:border-zinc-800">
