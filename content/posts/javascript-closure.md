@@ -5,6 +5,8 @@ description: "JavaScript 클로저의 동작 원리부터 실무 활용 패턴�
 category: "개발"
 subcategory: "JavaScript"
 tags: ["guide", "intermediate"]
+series: "javascript-core"
+seriesOrder: 1
 glossary:
   - id: "closure"
     term: "클로저(Closure)"

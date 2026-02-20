@@ -24,7 +24,7 @@ describe("calculateRelevanceScore", () => {
     tags: ["javascript", "react", "nextjs"],
   });
 
-  it("같은 subcategory일 때 +3점", () => {
+  it("같은 subcategory여도 subcategory 점수는 부여하지 않는다 (tag만 평가)", () => {
     const candidate = createPostMeta({
       slug: "candidate",
       category: "other",
@@ -32,10 +32,11 @@ describe("calculateRelevanceScore", () => {
       tags: [],
     });
 
-    expect(calculateRelevanceScore(currentPost, candidate)).toBe(3);
+    // subcategory 점수 제거됨: tag 공통 0개 = 0점
+    expect(calculateRelevanceScore(currentPost, candidate)).toBe(0);
   });
 
-  it("같은 category일 때 +2점", () => {
+  it("같은 category지만 subcategory 다르고 tag 없으면 0점", () => {
     const candidate = createPostMeta({
       slug: "candidate",
       category: "dev",
@@ -43,7 +44,7 @@ describe("calculateRelevanceScore", () => {
       tags: [],
     });
 
-    expect(calculateRelevanceScore(currentPost, candidate)).toBe(2);
+    expect(calculateRelevanceScore(currentPost, candidate)).toBe(0);
   });
 
   it("공통 tag 1개당 +1점", () => {
@@ -67,7 +68,7 @@ describe("calculateRelevanceScore", () => {
     expect(calculateRelevanceScore(currentPost, candidate)).toBe(0);
   });
 
-  it("복합 조건: 같은 category(+2) + 같은 subcategory(+3) + 공통 tag 2개(+2) = 7점", () => {
+  it("같은 subcategory + 공통 tag 2개 = 2점 (subcategory 점수 없음, tag만 평가)", () => {
     const candidate = createPostMeta({
       slug: "candidate",
       category: "dev",
@@ -75,52 +76,27 @@ describe("calculateRelevanceScore", () => {
       tags: ["javascript", "react", "typescript"],
     });
 
-    expect(calculateRelevanceScore(currentPost, candidate)).toBe(7);
-  });
-
-  it("currentPost의 subcategory가 undefined이면 subcategory 점수 0점", () => {
-    const noSubcategoryCurrent = createPostMeta({
-      slug: "current",
-      category: "dev",
-      subcategory: undefined,
-      tags: [],
-    });
-    const candidate = createPostMeta({
-      slug: "candidate",
-      category: "dev",
-      subcategory: "frontend",
-      tags: [],
-    });
-
-    expect(calculateRelevanceScore(noSubcategoryCurrent, candidate)).toBe(2);
-  });
-
-  it("candidate의 subcategory가 undefined이면 subcategory 점수 0점", () => {
-    const candidate = createPostMeta({
-      slug: "candidate",
-      category: "dev",
-      subcategory: undefined,
-      tags: [],
-    });
-
+    // subcategory 점수 제거됨: 공통 tag(javascript, react) = 2점
     expect(calculateRelevanceScore(currentPost, candidate)).toBe(2);
   });
 
-  it("양쪽 subcategory가 undefined이면 subcategory 매칭 안 함", () => {
-    const noSub1 = createPostMeta({
+  it("tag가 모두 동일하면 공통 tag 수만큼 점수를 부여한다", () => {
+    const post1 = createPostMeta({
       slug: "a",
-      category: "other",
-      subcategory: undefined,
-      tags: [],
+      tags: ["javascript", "react", "nextjs"],
     });
-    const noSub2 = createPostMeta({
+    const post2 = createPostMeta({
       slug: "b",
-      category: "other",
-      subcategory: undefined,
-      tags: [],
+      tags: ["javascript", "react", "nextjs"],
     });
 
-    // category만 일치 = 2점, undefined끼리 매칭하면 안 됨
-    expect(calculateRelevanceScore(noSub1, noSub2)).toBe(2);
+    expect(calculateRelevanceScore(post1, post2)).toBe(3);
+  });
+
+  it("양쪽 모두 tag가 비어있으면 0점", () => {
+    const post1 = createPostMeta({ slug: "a", tags: [] });
+    const post2 = createPostMeta({ slug: "b", tags: [] });
+
+    expect(calculateRelevanceScore(post1, post2)).toBe(0);
   });
 });

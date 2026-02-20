@@ -124,6 +124,10 @@ export class FilePostRepository implements IPostRepository {
       subcategory: frontmatter.subcategory,
       tags: frontmatter.tags ?? [...POST_DEFAULTS.TAGS],
       readingTime: stats.text,
+      ...(frontmatter.series && { series: frontmatter.series }),
+      ...(frontmatter.seriesOrder != null && {
+        seriesOrder: frontmatter.seriesOrder,
+      }),
     };
   }
 

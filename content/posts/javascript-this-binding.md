@@ -5,6 +5,8 @@ description: "JavaScript에서 this가 결정되는 규칙을 호출 방식별�
 category: "개발"
 subcategory: "JavaScript"
 tags: ["guide", "intermediate"]
+series: "javascript-core"
+seriesOrder: 2
 ---
 
 <figure>
