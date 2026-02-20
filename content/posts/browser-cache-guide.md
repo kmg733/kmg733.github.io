@@ -486,3 +486,8 @@ Chrome DevTools의 Network 탭에서 캐시 동작을 확인할 수 있습니다
 | Cache Busting | URL에 해시를 삽입하는 것이 가장 안정적인 캐시 무효화 전략 |
 | 휴리스틱 캐싱 | 모든 응답에 Cache-Control을 명시하여 방지 |
 | 베스트 프랙티스 | ETag와 Last-Modified를 함께 제공 |
+
+## 참고 자료
+
+- [HTTP Caching - MDN Web Docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Caching)
+- [헷갈리는 캐시 설정, 쉽게 정리해 드립니다(feat Cache-Control)](https://www.youtube.com/watch?v=iCo0Sz2736Y&t=1s)
