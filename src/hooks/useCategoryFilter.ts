@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import type { PostMeta, CategoryTree } from "@/types";
 import { buildCategoryTree } from "@/lib/category";
@@ -44,7 +44,7 @@ export function useCategoryFilter(posts: PostMeta[]) {
     [posts]
   );
 
-  // URL에서 초기값 읽기 (유효성 검증 포함)
+  // URL에서 검증된 파라미터
   const validatedParams = useMemo(
     () => validateURLParams(searchParams, categoryTree),
     [searchParams, categoryTree]
@@ -53,10 +53,16 @@ export function useCategoryFilter(posts: PostMeta[]) {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(
     validatedParams.category
   );
-  const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(
-    validatedParams.subcategory
-  );
+  const [selectedSubcategory, setSelectedSubcategory] = useState<
+    string | null
+  >(validatedParams.subcategory);
   const [collapsedSet, setCollapsedSet] = useState<Set<string>>(new Set());
+
+  // URL 변경 시 state 동기화 (브라우저 뒤로가기/앞으로가기 대응)
+  useEffect(() => {
+    setSelectedCategory(validatedParams.category);
+    setSelectedSubcategory(validatedParams.subcategory);
+  }, [validatedParams.category, validatedParams.subcategory]);
 
   // URL 업데이트
   const updateURL = useCallback(

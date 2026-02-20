@@ -37,6 +37,7 @@ export default function BlogFilter({
   const highlightQuery = isSearchActive ? query : "";
 
   // 빈 결과 메시지 생성
+  // React JSX 텍스트 노드로 렌더링되므로 자동 이스케이프됨 (XSS 안전)
   const getEmptyMessage = () => {
     if (isSearchActive) {
       const truncatedQuery =

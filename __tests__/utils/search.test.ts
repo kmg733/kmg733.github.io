@@ -1,4 +1,4 @@
-import { searchPosts, highlightText, findMatchIndices } from "@/utils/search";
+import { searchPosts, findMatchIndices } from "@/utils/search";
 import type { PostMeta } from "@/types";
 
 /**
@@ -193,91 +193,9 @@ describe("findMatchIndices", () => {
     const indices = findMatchIndices("제주도 여행 후기", "여행");
     expect(indices).toEqual([[4, 6]]);
   });
-});
 
-describe("highlightText", () => {
-  it("should return original text when no query", () => {
-    const result = highlightText("hello world", "");
-    expect(result).toBe("hello world");
-  });
-
-  it("should return original text when no match", () => {
-    const result = highlightText("hello world", "xyz");
-    expect(result).toBe("hello world");
-  });
-
-  it("should wrap matched text with mark tag", () => {
-    const result = highlightText("hello world", "world");
-    expect(result).toBe('hello <mark class="search-highlight">world</mark>');
-  });
-
-  it("should highlight multiple matches", () => {
-    const result = highlightText("hello hello", "hello");
-    expect(result).toBe(
-      '<mark class="search-highlight">hello</mark> <mark class="search-highlight">hello</mark>'
-    );
-  });
-
-  it("should be case insensitive but preserve original case", () => {
-    const result = highlightText("Hello WORLD", "hello");
-    expect(result).toBe('<mark class="search-highlight">Hello</mark> WORLD');
-  });
-
-  it("should highlight Korean text", () => {
-    const result = highlightText("제주도 여행", "여행");
-    expect(result).toBe('제주도 <mark class="search-highlight">여행</mark>');
-  });
-
-  it("should handle special regex characters safely", () => {
-    const result = highlightText("hello (world)", "(world)");
-    expect(result).toBe('hello <mark class="search-highlight">(world)</mark>');
-  });
-
-  describe("XSS 방지", () => {
-    it("should escape HTML characters in text", () => {
-      const result = highlightText("<script>alert('xss')</script>", "test");
-      expect(result).toBe("&lt;script&gt;alert(&#39;xss&#39;)&lt;/script&gt;");
-    });
-
-    it("should escape HTML characters in text even when matching", () => {
-      const result = highlightText("<script>alert</script>", "alert");
-      expect(result).toBe(
-        '&lt;script&gt;<mark class="search-highlight">alert</mark>&lt;/script&gt;'
-      );
-    });
-
-    it("should escape HTML characters in query", () => {
-      const result = highlightText("test <b>bold</b> text", "<b>");
-      expect(result).toBe(
-        'test <mark class="search-highlight">&lt;b&gt;</mark>bold&lt;/b&gt; text'
-      );
-    });
-
-    it("should escape ampersand in text", () => {
-      const result = highlightText("Tom & Jerry", "Tom");
-      expect(result).toBe(
-        '<mark class="search-highlight">Tom</mark> &amp; Jerry'
-      );
-    });
-
-    it("should escape quotes in text", () => {
-      const result = highlightText('Say "hello"', "hello");
-      expect(result).toBe(
-        'Say &quot;<mark class="search-highlight">hello</mark>&quot;'
-      );
-    });
-
-    it("should escape HTML when no query provided", () => {
-      const result = highlightText("<div>test</div>", "");
-      expect(result).toBe("&lt;div&gt;test&lt;/div&gt;");
-    });
-
-    it("should prevent onclick attribute injection", () => {
-      const result = highlightText('Click <a onclick="evil()">here</a>', "here");
-      // onclick 속성이 실행되지 않도록 < > " 가 이스케이프되어야 함
-      expect(result).toContain("&lt;a");
-      expect(result).toContain('onclick=&quot;');
-      expect(result).not.toContain('<a onclick');
-    });
+  it("should return empty array for whitespace-only query", () => {
+    const indices = findMatchIndices("hello world", "   ");
+    expect(indices).toEqual([]);
   });
 });

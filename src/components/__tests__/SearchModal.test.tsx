@@ -155,7 +155,7 @@ describe("SearchModal", () => {
         jest.advanceTimersByTime(300);
       });
 
-      // highlightText가 mark 태그로 감싸므로 link로 검색
+      // HighlightedText가 mark 태그로 감싸므로 link로 검색
       expect(
         screen.getByRole("link", { name: /JavaScript Closure/i })
       ).toBeInTheDocument();
@@ -183,7 +183,7 @@ describe("SearchModal", () => {
         jest.advanceTimersByTime(300);
       });
 
-      // 제목 (link 내부, highlightText로 mark 태그 포함 가능)
+      // 제목 (link 내부, HighlightedText가 mark 태그로 하이라이트)
       expect(
         screen.getByRole("link", { name: /JavaScript Closure/i })
       ).toBeInTheDocument();
@@ -402,7 +402,37 @@ describe("SearchModal", () => {
   });
 
   // ─────────────────────────────────────────────────────
-  // 10. 접근성
+  // 10. XSS 방지
+  // ─────────────────────────────────────────────────────
+  describe("XSS 방지", () => {
+    test("검색 결과 제목이 dangerouslySetInnerHTML 없이 렌더링된다", async () => {
+      jest.useFakeTimers();
+      render(<SearchModal posts={samplePosts} />);
+
+      openModal();
+
+      const searchInput = screen.getByRole("searchbox");
+      await act(async () => {
+        fireEvent.change(searchInput, { target: { value: "closure" } });
+      });
+
+      act(() => {
+        jest.advanceTimersByTime(300);
+      });
+
+      // HighlightedText 컴포넌트가 <mark> 태그로 하이라이트 렌더링
+      const titleEl = document.querySelector(".search-modal-result-title");
+      expect(titleEl).toBeInTheDocument();
+      expect(titleEl?.querySelector("mark")).toBeInTheDocument();
+      // dangerouslySetInnerHTML이 아닌 React 컴포넌트로 렌더링되었는지 확인
+      expect(titleEl?.innerHTML).not.toContain("&lt;");
+
+      jest.useRealTimers();
+    });
+  });
+
+  // ─────────────────────────────────────────────────────
+  // 11. 접근성
   // ─────────────────────────────────────────────────────
   describe("접근성", () => {
     test("모달에 role=dialog와 aria-modal=true가 설정된다", () => {

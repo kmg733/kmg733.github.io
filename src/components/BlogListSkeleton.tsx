@@ -1,3 +1,5 @@
+const SKELETON_CARD_COUNT = 3;
+
 function SkeletonLine({ className = "" }: { className?: string }) {
   return (
     <div
@@ -43,9 +45,9 @@ export default function BlogListSkeleton() {
 
         {/* 포스트 카드 스켈레톤 */}
         <div className="divide-y divide-gray-200 dark:divide-gray-700">
-          <SkeletonCard />
-          <SkeletonCard />
-          <SkeletonCard />
+          {Array.from({ length: SKELETON_CARD_COUNT }, (_, i) => (
+            <SkeletonCard key={i} />
+          ))}
         </div>
       </div>
     </div>
