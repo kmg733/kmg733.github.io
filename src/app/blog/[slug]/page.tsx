@@ -8,6 +8,7 @@ import { postService } from "@/lib/container";
 import { extractHeadings } from "@/lib/toc";
 import { DATE_FORMAT } from "@/lib/constants";
 import TableOfContents from "@/components/TableOfContents";
+import BlogPostSidebar from "@/components/BlogPostSidebar";
 import RelatedPosts from "@/components/RelatedPosts";
 import PostNavigation from "@/components/PostNavigation";
 import CodeBlock from "@/components/CodeBlock";
@@ -54,6 +55,7 @@ export default async function BlogPostPage({ params }: Props) {
     notFound();
   }
 
+  const allPosts = postService.getAllPosts();
   const headings = extractHeadings(post.content);
   const relatedPosts = postService.getRelatedPosts(slug, 3);
   const adjacentPosts = postService.getAdjacentPosts(slug);
@@ -73,11 +75,31 @@ export default async function BlogPostPage({ params }: Props) {
   );
 
   return (
-    <div className="relative mx-auto max-w-6xl px-4 py-16">
+    <div className="relative mx-auto max-w-7xl px-4 py-16">
       <div className="flex gap-8">
+        {/* 좌측 사이드바 - 카테고리 네비게이션 */}
+        <aside className="hidden w-56 shrink-0 xl:block">
+          <div className="sticky top-24">
+            <BlogPostSidebar posts={allPosts} currentSlug={slug} />
+          </div>
+        </aside>
+
         {/* 본문 영역 */}
         <article className="min-w-0 flex-1">
           <header className="mb-12">
+            <div className="mb-2 flex items-center gap-2">
+              <span className="text-xs font-medium text-blue-600 dark:text-blue-400">
+                {post.category}
+              </span>
+              {post.subcategory && (
+                <>
+                  <span className="text-zinc-300 dark:text-zinc-600">/</span>
+                  <span className="text-xs text-zinc-500">
+                    {post.subcategory}
+                  </span>
+                </>
+              )}
+            </div>
             <time
               dateTime={post.date}
               className="text-sm text-zinc-500 dark:text-zinc-500"
