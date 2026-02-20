@@ -57,16 +57,17 @@ export function useCategoryFilter(posts: PostMeta[]) {
     [selectedCategory, updateURL]
   );
 
-  // 서브카테고리 선택/해제
+  // 서브카테고리 선택/해제 (부모 카테고리도 함께 설정)
   const selectSubcategory = useCallback(
-    (subcategory: string) => {
-      if (selectedSubcategory === subcategory) {
-        // 같은 서브카테고리 재클릭 -> 서브만 해제
+    (category: string, subcategory: string) => {
+      if (selectedCategory === category && selectedSubcategory === subcategory) {
+        // 같은 서브카테고리 재클릭 -> 카테고리 선택 상태로 복귀
         setSelectedSubcategory(null);
-        updateURL(selectedCategory, null);
+        updateURL(category, null);
       } else {
+        setSelectedCategory(category);
         setSelectedSubcategory(subcategory);
-        updateURL(selectedCategory, subcategory);
+        updateURL(category, subcategory);
       }
     },
     [selectedCategory, selectedSubcategory, updateURL]

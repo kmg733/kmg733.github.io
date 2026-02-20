@@ -83,12 +83,10 @@ describe("useCategoryFilter", () => {
     const { result } = renderHook(() => useCategoryFilter(samplePosts));
 
     act(() => {
-      result.current.selectCategory("개발");
-    });
-    act(() => {
-      result.current.selectSubcategory("JavaScript");
+      result.current.selectSubcategory("개발", "JavaScript");
     });
 
+    expect(result.current.selectedCategory).toBe("개발");
     expect(result.current.selectedSubcategory).toBe("JavaScript");
     expect(result.current.filteredPosts).toHaveLength(1);
     expect(result.current.filteredPosts[0].slug).toBe("p1");
@@ -112,13 +110,10 @@ describe("useCategoryFilter", () => {
     const { result } = renderHook(() => useCategoryFilter(samplePosts));
 
     act(() => {
-      result.current.selectCategory("개발");
+      result.current.selectSubcategory("개발", "JavaScript");
     });
     act(() => {
-      result.current.selectSubcategory("JavaScript");
-    });
-    act(() => {
-      result.current.selectSubcategory("JavaScript");
+      result.current.selectSubcategory("개발", "JavaScript");
     });
 
     expect(result.current.selectedCategory).toBe("개발");
@@ -130,10 +125,7 @@ describe("useCategoryFilter", () => {
     const { result } = renderHook(() => useCategoryFilter(samplePosts));
 
     act(() => {
-      result.current.selectCategory("개발");
-    });
-    act(() => {
-      result.current.selectSubcategory("JavaScript");
+      result.current.selectSubcategory("개발", "JavaScript");
     });
     act(() => {
       result.current.clearFilter();
@@ -142,6 +134,23 @@ describe("useCategoryFilter", () => {
     expect(result.current.selectedCategory).toBeNull();
     expect(result.current.selectedSubcategory).toBeNull();
     expect(result.current.filteredPosts).toHaveLength(4);
+  });
+
+  it("전체 상태에서 서브카테고리 직접 선택 시 부모 카테고리도 함께 설정한다", () => {
+    const { result } = renderHook(() => useCategoryFilter(samplePosts));
+
+    // 초기 상태: 전체 (카테고리 미선택)
+    expect(result.current.selectedCategory).toBeNull();
+
+    // 서브카테고리 직접 선택
+    act(() => {
+      result.current.selectSubcategory("개발", "JavaScript");
+    });
+
+    expect(result.current.selectedCategory).toBe("개발");
+    expect(result.current.selectedSubcategory).toBe("JavaScript");
+    expect(result.current.filteredPosts).toHaveLength(1);
+    expect(result.current.filteredPosts[0].slug).toBe("p1");
   });
 
   it("트리 노드 접기/펼치기를 토글한다", () => {

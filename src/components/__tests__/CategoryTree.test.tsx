@@ -86,7 +86,7 @@ describe("CategoryTree", () => {
     render(<CategoryTree {...defaultProps} />);
 
     fireEvent.click(screen.getByText("JavaScript"));
-    expect(mockSelectSubcategory).toHaveBeenCalledWith("JavaScript");
+    expect(mockSelectSubcategory).toHaveBeenCalledWith("개발", "JavaScript");
   });
 
   it("전체 버튼 클릭 시 onClearFilter를 호출한다", () => {

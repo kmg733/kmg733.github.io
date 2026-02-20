@@ -9,7 +9,7 @@ interface CategoryMobileFilterProps {
   selectedCategory: string | null;
   selectedSubcategory: string | null;
   onSelectCategory: (category: string) => void;
-  onSelectSubcategory: (subcategory: string) => void;
+  onSelectSubcategory: (category: string, subcategory: string) => void;
   onClearFilter: () => void;
   toggleExpanded: (categoryName: string) => void;
   isExpanded: (categoryName: string) => boolean;
@@ -67,8 +67,8 @@ export default function CategoryMobileFilter(
               props.onSelectCategory(cat);
               setIsOpen(false);
             }}
-            onSelectSubcategory={(sub) => {
-              props.onSelectSubcategory(sub);
+            onSelectSubcategory={(cat, sub) => {
+              props.onSelectSubcategory(cat, sub);
               setIsOpen(false);
             }}
             onClearFilter={() => {

@@ -7,7 +7,7 @@ interface CategoryTreeProps {
   selectedCategory: string | null;
   selectedSubcategory: string | null;
   onSelectCategory: (category: string) => void;
-  onSelectSubcategory: (subcategory: string) => void;
+  onSelectSubcategory: (category: string, subcategory: string) => void;
   onClearFilter: () => void;
   toggleExpanded: (categoryName: string) => void;
   isExpanded: (categoryName: string) => boolean;
@@ -129,7 +129,7 @@ export default function CategoryTree({
                     return (
                       <li key={sub.name}>
                         <button
-                          onClick={() => onSelectSubcategory(sub.name)}
+                          onClick={() => onSelectSubcategory(category.name, sub.name)}
                           className={`flex w-full items-center justify-between rounded-md px-2 py-1.5 text-sm transition-colors ${
                             isSubActive
                               ? "category-item-active font-medium text-amber-700 dark:text-blue-400"
