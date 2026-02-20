@@ -47,7 +47,7 @@ glossary:
 매번 동일한 리소스를 반복해서 받는 것은 네트워크 트래픽 낭비이자 사용자 경험 저하의 원인이 됩니다.
 
 HTTP 캐싱은 이전에 가져온 리소스를 재사용하여 이 문제를 해결합니다.
-캐시의 핵심은 **저장(Store)**과 **재사용(Reuse)** 두 단계로 구성되며, 브라우저는 이 과정을 **강력 캐시**와 **협상 캐시**라는 두 가지 전략으로 처리합니다.
+캐시의 핵심은 <strong>저장(Store)</strong>과 <strong>재사용(Reuse)</strong> 두 단계로 구성되며, 브라우저는 이 과정을 **강력 캐시**와 **협상 캐시**라는 두 가지 전략으로 처리합니다.
 
 | 구분 | <Term id="strong-cache">강력 캐시</Term> | <Term id="negotiated-cache">협상 캐시</Term> |
 |------|------|------|
@@ -325,7 +325,7 @@ GET /api/servers?keyword=web     → 캐시 히트 [A]
 GET /api/servers?keyword=web&page=2  → 서버 요청 → 캐시 저장 [C]
 ```
 
-POST는 HTTP 스펙(RFC 7231)에서 **부수 효과(side effect)**가 있는 메서드로 정의됩니다.
+POST는 HTTP 스펙(RFC 7231)에서 <strong>부수 효과(side effect)</strong>가 있는 메서드로 정의됩니다.
 같은 요청을 보내도 서버 상태가 변경될 수 있으므로, 브라우저는 POST 응답을 캐시하지 않습니다.
 
 <details>
@@ -486,3 +486,8 @@ Chrome DevTools의 Network 탭에서 캐시 동작을 확인할 수 있습니다
 | Cache Busting | URL에 해시를 삽입하는 것이 가장 안정적인 캐시 무효화 전략 |
 | 휴리스틱 캐싱 | 모든 응답에 Cache-Control을 명시하여 방지 |
 | 베스트 프랙티스 | ETag와 Last-Modified를 함께 제공 |
+
+## 참고 자료
+
+- [HTTP Caching - MDN Web Docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Caching)
+- [헷갈리는 캐시 설정, 쉽게 정리해 드립니다(feat Cache-Control)](https://www.youtube.com/watch?v=iCo0Sz2736Y&t=1s)
