@@ -10,7 +10,7 @@ import { useScrollPosition } from "@/hooks/useScrollPosition";
  * - SSR hydration mismatch 방지를 위해 mounted 상태 관리
  * - 클릭 시 smooth scroll로 최상단 이동
  * - 라이트/다크 모드 대응
- * - 접근성: aria-label, focus-visible 스타일
+ * - 접근성: aria-label, aria-hidden, tabIndex, focus-visible 스타일
  */
 export default function ScrollToTop() {
   const [mounted, setMounted] = useState(false);
@@ -32,6 +32,8 @@ export default function ScrollToTop() {
       type="button"
       onClick={handleClick}
       aria-label="맨 위로 이동"
+      aria-hidden={!isScrolled}
+      tabIndex={isScrolled ? 0 : -1}
       className={`fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40
         w-10 h-10 sm:w-12 sm:h-12
         flex items-center justify-center

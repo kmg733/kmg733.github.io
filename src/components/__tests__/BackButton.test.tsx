@@ -5,8 +5,8 @@ import BackButton from "../BackButton";
  * BackButton 컴포넌트 테스트.
  *
  * - "목록으로" 텍스트와 좌측 화살표 SVG 아이콘을 표시
- * - history.length > 1 이면 router.back() 호출 (이전 페이지로 복귀)
- * - history.length <= 1 이면 router.push("/blog") 호출 (직접 접근 시 목록으로)
+ * - same origin referrer가 있으면 router.back() 호출 (이전 페이지로 복귀)
+ * - referrer가 없거나 외부 사이트이면 router.push("/blog") 호출 (목록으로)
  * - 접근성: aria-label="뒤로 가기"
  * - 스타일: text-sm, mb-6, transition-colors, duration-200
  */
@@ -55,14 +55,13 @@ describe("BackButton", () => {
   });
 
   // ─────────────────────────────────────────────────────
-  // 2. 클릭 동작
+  // 2. 클릭 동작 (referrer 기반)
   // ─────────────────────────────────────────────────────
   describe("클릭 동작", () => {
-    test("history.length > 1일 때 클릭 시 router.back()이 호출된다", () => {
-      Object.defineProperty(window.history, "length", {
-        value: 3,
-        writable: true,
+    test("same origin referrer가 있을 때 클릭 시 router.back()이 호출된다", () => {
+      Object.defineProperty(document, "referrer", {
         configurable: true,
+        get: () => "http://localhost/blog",
       });
 
       render(<BackButton />);
@@ -74,11 +73,26 @@ describe("BackButton", () => {
       expect(mockPush).not.toHaveBeenCalled();
     });
 
-    test("history.length <= 1일 때 클릭 시 router.push('/blog')가 호출된다", () => {
-      Object.defineProperty(window.history, "length", {
-        value: 1,
-        writable: true,
+    test("referrer가 없을 때 (직접 접근) 클릭 시 router.push('/blog')가 호출된다", () => {
+      Object.defineProperty(document, "referrer", {
         configurable: true,
+        get: () => "",
+      });
+
+      render(<BackButton />);
+
+      const button = screen.getByRole("button", { name: "뒤로 가기" });
+      fireEvent.click(button);
+
+      expect(mockPush).toHaveBeenCalledWith("/blog");
+      expect(mockPush).toHaveBeenCalledTimes(1);
+      expect(mockBack).not.toHaveBeenCalled();
+    });
+
+    test("외부 사이트 referrer일 때 클릭 시 router.push('/blog')가 호출된다", () => {
+      Object.defineProperty(document, "referrer", {
+        configurable: true,
+        get: () => "https://external-site.com/page",
       });
 
       render(<BackButton />);

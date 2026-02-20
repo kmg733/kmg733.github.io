@@ -7,7 +7,7 @@ import ScrollToTop from "../ScrollToTop";
  * - useScrollPosition 훅을 사용하여 스크롤 위치에 따라 버튼 표시/숨김
  * - SSR hydration mismatch 방지를 위한 mounted 상태 관리
  * - 클릭 시 window.scrollTo({ top: 0, behavior: 'smooth' }) 호출
- * - 접근성: aria-label, focus-visible 스타일
+ * - 접근성: aria-label, aria-hidden, tabIndex, focus-visible 스타일
  */
 
 // window.scrollTo 모킹
@@ -17,6 +17,11 @@ Object.defineProperty(window, "scrollTo", {
   writable: true,
 });
 
+/**
+ * 숨김 상태(aria-hidden="true")에서는 getByRole의 name 매칭이 동작하지 않으므로
+ * getByLabelText를 사용하여 버튼을 조회한다.
+ * 표시 상태(aria-hidden="false")에서는 getByRole을 사용한다.
+ */
 describe("ScrollToTop", () => {
   beforeEach(() => {
     scrollToMock.mockClear();
@@ -33,7 +38,7 @@ describe("ScrollToTop", () => {
       // 여기서는 마운트 후 scrollY=0일 때 버튼이 숨겨진(opacity-0, pointer-events-none) 상태인지 검증.
       render(<ScrollToTop />);
 
-      const button = screen.getByRole("button", { name: "맨 위로 이동" });
+      const button = screen.getByLabelText("맨 위로 이동");
       expect(button).toHaveClass("opacity-0");
       expect(button).toHaveClass("pointer-events-none");
     });
@@ -55,12 +60,8 @@ describe("ScrollToTop", () => {
         window.dispatchEvent(new Event("scroll"));
       });
 
-      // 버튼이 없거나 숨겨진 상태
-      const button = screen.queryByRole("button", { name: "맨 위로 이동" });
-      if (button) {
-        // 버튼이 DOM에 있더라도 opacity-0으로 숨겨진 상태
-        expect(button).toHaveClass("opacity-0");
-      }
+      const button = screen.getByLabelText("맨 위로 이동");
+      expect(button).toHaveClass("opacity-0");
     });
 
     test("스크롤 위치가 threshold 이상이면 버튼이 표시된다", () => {
@@ -168,6 +169,36 @@ describe("ScrollToTop", () => {
       expect(svg).toBeInTheDocument();
       expect(svg).toHaveAttribute("aria-hidden", "true");
     });
+
+    test("숨김 상태에서 aria-hidden='true'이고 tabIndex=-1이다", () => {
+      Object.defineProperty(window, "scrollY", {
+        value: 0,
+        writable: true,
+      });
+
+      render(<ScrollToTop />);
+
+      const button = screen.getByLabelText("맨 위로 이동");
+      expect(button).toHaveAttribute("aria-hidden", "true");
+      expect(button).toHaveAttribute("tabindex", "-1");
+    });
+
+    test("표시 상태에서 aria-hidden='false'이고 tabIndex=0이다", () => {
+      Object.defineProperty(window, "scrollY", {
+        value: 500,
+        writable: true,
+      });
+
+      render(<ScrollToTop />);
+
+      act(() => {
+        window.dispatchEvent(new Event("scroll"));
+      });
+
+      const button = screen.getByRole("button", { name: "맨 위로 이동" });
+      expect(button).toHaveAttribute("aria-hidden", "false");
+      expect(button).toHaveAttribute("tabindex", "0");
+    });
   });
 
   // ─────────────────────────────────────────────────────
@@ -240,11 +271,9 @@ describe("ScrollToTop", () => {
         window.dispatchEvent(new Event("scroll"));
       });
 
-      const button = screen.queryByRole("button", { name: "맨 위로 이동" });
-      if (button) {
-        expect(button).toHaveClass("opacity-0");
-        expect(button).toHaveClass("translate-y-4");
-      }
+      const button = screen.getByLabelText("맨 위로 이동");
+      expect(button).toHaveClass("opacity-0");
+      expect(button).toHaveClass("translate-y-4");
     });
 
     test("duration-300 전환 클래스가 적용된다", () => {

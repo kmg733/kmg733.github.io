@@ -6,7 +6,12 @@ export default function BackButton() {
   const router = useRouter();
 
   const handleClick = () => {
-    if (window.history.length > 1) {
+    const referrer = document.referrer;
+    const isSameOrigin =
+      referrer !== "" &&
+      new URL(referrer).origin === window.location.origin;
+
+    if (isSameOrigin) {
       router.back();
     } else {
       router.push("/blog");
