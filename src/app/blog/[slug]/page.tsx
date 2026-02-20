@@ -12,6 +12,7 @@ import BlogPostSidebar from "@/components/BlogPostSidebar";
 import RelatedPosts from "@/components/RelatedPosts";
 import PostNavigation from "@/components/PostNavigation";
 import CodeBlock from "@/components/CodeBlock";
+import BackButton from "@/components/BackButton";
 import { GlossaryProvider, GlossarySection, Term } from "@/components/glossary";
 import type { Metadata } from "next";
 
@@ -86,6 +87,7 @@ export default async function BlogPostPage({ params }: Props) {
 
         {/* 본문 영역 */}
         <article className="min-w-0 flex-1">
+          <BackButton />
           <header className="mb-12">
             <div className="mb-2 flex items-center gap-2">
               <span className="text-xs font-medium text-blue-600 dark:text-blue-400">
