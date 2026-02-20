@@ -42,6 +42,7 @@ Category별 하위 분류입니다.
 | `OpenSearch` | 검색엔진, Elasticsearch |
 | `데이터베이스` | DB, SQL, NoSQL |
 | `아키텍처` | 설계, 패턴, 클린 아키텍처 |
+| `웹` | HTTP, 브라우저, 캐싱, 웹 성능 |
 | `운영` | DevOps, 배포, 인프라 |
 | `테스트` | TDD, 테스트 전략 |
 
