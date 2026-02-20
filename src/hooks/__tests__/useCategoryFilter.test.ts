@@ -191,4 +191,35 @@ describe("useCategoryFilter", () => {
     expect(result.current.selectedSubcategory).toBe("JavaScript");
     expect(result.current.filteredPosts).toHaveLength(1);
   });
+
+  // M-2: URL 유효성 검증
+  it("존재하지 않는 카테고리가 URL에 있으면 무시한다", () => {
+    mockSearchParams.set("category", "존재하지않는카테고리");
+
+    const { result } = renderHook(() => useCategoryFilter(samplePosts));
+
+    expect(result.current.selectedCategory).toBeNull();
+    expect(result.current.filteredPosts).toHaveLength(4);
+  });
+
+  it("카테고리 없이 서브카테고리만 URL에 있으면 무시한다", () => {
+    mockSearchParams.set("subcategory", "JavaScript");
+
+    const { result } = renderHook(() => useCategoryFilter(samplePosts));
+
+    expect(result.current.selectedCategory).toBeNull();
+    expect(result.current.selectedSubcategory).toBeNull();
+    expect(result.current.filteredPosts).toHaveLength(4);
+  });
+
+  it("카테고리에 속하지 않는 서브카테고리가 URL에 있으면 서브카테고리만 무시한다", () => {
+    mockSearchParams.set("category", "개발");
+    mockSearchParams.set("subcategory", "분석"); // 분석은 주식의 서브카테고리
+
+    const { result } = renderHook(() => useCategoryFilter(samplePosts));
+
+    expect(result.current.selectedCategory).toBe("개발");
+    expect(result.current.selectedSubcategory).toBeNull();
+    expect(result.current.filteredPosts).toHaveLength(3);
+  });
 });
