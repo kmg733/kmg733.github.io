@@ -11,6 +11,7 @@ import TableOfContents from "@/components/TableOfContents";
 import RelatedPosts from "@/components/RelatedPosts";
 import PostNavigation from "@/components/PostNavigation";
 import CodeBlock from "@/components/CodeBlock";
+import BackButton from "@/components/BackButton";
 import { GlossaryProvider, GlossarySection, Term } from "@/components/glossary";
 import type { Metadata } from "next";
 
@@ -77,6 +78,7 @@ export default async function BlogPostPage({ params }: Props) {
       <div className="flex gap-8">
         {/* 본문 영역 */}
         <article className="min-w-0 flex-1">
+          <BackButton />
           <header className="mb-12">
             <time
               dateTime={post.date}
