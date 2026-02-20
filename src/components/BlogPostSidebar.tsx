@@ -2,11 +2,12 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import type { PostMeta } from "@/types";
+import type { SidebarPost } from "@/types";
 import { buildCategoryTree } from "@/lib/category";
+import { toggleSetItem } from "@/utils/set";
 
 interface BlogPostSidebarProps {
-  posts: PostMeta[];
+  posts: SidebarPost[];
   currentSlug: string;
 }
 
@@ -23,7 +24,7 @@ export default function BlogPostSidebar({
 
   // 글을 카테고리 → 서브카테고리로 그룹핑
   const postGroups = useMemo(() => {
-    const groups = new Map<string, Map<string, PostMeta[]>>();
+    const groups = new Map<string, Map<string, SidebarPost[]>>();
     for (const post of posts) {
       if (!groups.has(post.category)) {
         groups.set(post.category, new Map());
@@ -69,27 +70,11 @@ export default function BlogPostSidebar({
   });
 
   const toggleCategory = (name: string) => {
-    setCollapsedSet((prev) => {
-      const next = new Set(prev);
-      if (next.has(name)) {
-        next.delete(name);
-      } else {
-        next.add(name);
-      }
-      return next;
-    });
+    setCollapsedSet((prev) => toggleSetItem(prev, name));
   };
 
   const toggleSubcategory = (key: string) => {
-    setCollapsedSubs((prev) => {
-      const next = new Set(prev);
-      if (next.has(key)) {
-        next.delete(key);
-      } else {
-        next.add(key);
-      }
-      return next;
-    });
+    setCollapsedSubs((prev) => toggleSetItem(prev, key));
   };
 
   return (

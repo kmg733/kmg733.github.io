@@ -4,7 +4,7 @@ import type { PostMeta } from "@/types";
 
 // Next.js useSearchParams/useRouter mock
 const mockPush = jest.fn();
-const mockSearchParams = new URLSearchParams();
+let mockSearchParams = new URLSearchParams();
 
 jest.mock("next/navigation", () => ({
   useSearchParams: () => mockSearchParams,
@@ -33,10 +33,8 @@ const samplePosts: PostMeta[] = [
 describe("useCategoryFilter", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    // reset search params
-    [...mockSearchParams.keys()].forEach((key) =>
-      mockSearchParams.delete(key)
-    );
+    // reset search params (새 객체로 교체)
+    mockSearchParams = new URLSearchParams();
   });
 
   it("초기 상태에서 카테고리 선택 없이 전체 포스트를 반환한다", () => {
@@ -190,5 +188,70 @@ describe("useCategoryFilter", () => {
     expect(result.current.selectedCategory).toBe("개발");
     expect(result.current.selectedSubcategory).toBe("JavaScript");
     expect(result.current.filteredPosts).toHaveLength(1);
+  });
+
+  // M-2: URL 유효성 검증
+  it("존재하지 않는 카테고리가 URL에 있으면 무시한다", () => {
+    mockSearchParams.set("category", "존재하지않는카테고리");
+
+    const { result } = renderHook(() => useCategoryFilter(samplePosts));
+
+    expect(result.current.selectedCategory).toBeNull();
+    expect(result.current.filteredPosts).toHaveLength(4);
+  });
+
+  it("카테고리 없이 서브카테고리만 URL에 있으면 무시한다", () => {
+    mockSearchParams.set("subcategory", "JavaScript");
+
+    const { result } = renderHook(() => useCategoryFilter(samplePosts));
+
+    expect(result.current.selectedCategory).toBeNull();
+    expect(result.current.selectedSubcategory).toBeNull();
+    expect(result.current.filteredPosts).toHaveLength(4);
+  });
+
+  it("카테고리에 속하지 않는 서브카테고리가 URL에 있으면 서브카테고리만 무시한다", () => {
+    mockSearchParams.set("category", "개발");
+    mockSearchParams.set("subcategory", "분석"); // 분석은 주식의 서브카테고리
+
+    const { result } = renderHook(() => useCategoryFilter(samplePosts));
+
+    expect(result.current.selectedCategory).toBe("개발");
+    expect(result.current.selectedSubcategory).toBeNull();
+    expect(result.current.filteredPosts).toHaveLength(3);
+  });
+
+  // M-2: URL-State 동기화
+  it("URL 파라미터 변경 시 선택 상태가 동기화된다 (브라우저 뒤로가기)", () => {
+    // 초기 상태: URL 파라미터 없음
+    const { result, rerender } = renderHook(() =>
+      useCategoryFilter(samplePosts)
+    );
+    expect(result.current.selectedCategory).toBeNull();
+
+    // 브라우저 뒤로가기 시뮬레이션: URL이 변경됨
+    mockSearchParams = new URLSearchParams("category=개발");
+    rerender();
+
+    expect(result.current.selectedCategory).toBe("개발");
+    expect(result.current.filteredPosts).toHaveLength(3);
+  });
+
+  it("URL에서 카테고리가 제거되면 선택이 해제된다", () => {
+    // 초기 상태: 카테고리 선택됨
+    mockSearchParams = new URLSearchParams("category=개발&subcategory=JavaScript");
+    const { result, rerender } = renderHook(() =>
+      useCategoryFilter(samplePosts)
+    );
+    expect(result.current.selectedCategory).toBe("개발");
+    expect(result.current.selectedSubcategory).toBe("JavaScript");
+
+    // URL에서 파라미터 제거 (브라우저 뒤로가기)
+    mockSearchParams = new URLSearchParams();
+    rerender();
+
+    expect(result.current.selectedCategory).toBeNull();
+    expect(result.current.selectedSubcategory).toBeNull();
+    expect(result.current.filteredPosts).toHaveLength(4);
   });
 });

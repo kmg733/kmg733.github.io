@@ -57,6 +57,12 @@ export default async function BlogPostPage({ params }: Props) {
   }
 
   const allPosts = postService.getAllPosts();
+  const sidebarPosts = allPosts.map(({ slug, title, category, subcategory }) => ({
+    slug,
+    title,
+    category,
+    subcategory,
+  }));
   const headings = extractHeadings(post.content);
   const relatedPosts = postService.getRelatedPosts(slug, 3);
   const adjacentPosts = postService.getAdjacentPosts(slug);
@@ -81,7 +87,7 @@ export default async function BlogPostPage({ params }: Props) {
         {/* 좌측 사이드바 - 카테고리 네비게이션 */}
         <aside className="hidden w-56 shrink-0 xl:block">
           <div className="sticky top-24">
-            <BlogPostSidebar posts={allPosts} currentSlug={slug} />
+            <BlogPostSidebar posts={sidebarPosts} currentSlug={slug} />
           </div>
         </aside>
 

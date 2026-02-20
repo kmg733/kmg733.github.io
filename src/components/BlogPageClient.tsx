@@ -6,6 +6,7 @@ import { useCategoryFilter } from "@/hooks/useCategoryFilter";
 import CategoryTree from "./CategoryTree";
 import CategoryMobileFilter from "./CategoryMobileFilter";
 import BlogFilter from "./BlogFilter";
+import BlogListSkeleton from "./BlogListSkeleton";
 
 interface BlogPageClientProps {
   posts: PostMeta[];
@@ -64,7 +65,7 @@ function BlogPageContent({ posts }: BlogPageClientProps) {
 
 export default function BlogPageClient({ posts }: BlogPageClientProps) {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<BlogListSkeleton />}>
       <BlogPageContent posts={posts} />
     </Suspense>
   );

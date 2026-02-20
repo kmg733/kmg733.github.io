@@ -1,28 +1,10 @@
-"use client";
-
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function BackButton() {
-  const router = useRouter();
-
-  const handleClick = () => {
-    const referrer = document.referrer;
-    const isSameOrigin =
-      referrer !== "" &&
-      new URL(referrer).origin === window.location.origin;
-
-    if (isSameOrigin) {
-      router.back();
-    } else {
-      router.push("/blog");
-    }
-  };
-
   return (
-    <button
-      type="button"
-      aria-label="뒤로 가기"
-      onClick={handleClick}
+    <Link
+      href="/blog"
+      aria-label="블로그 목록으로"
       className="mb-6 flex items-center gap-1 text-sm text-zinc-500 transition-colors duration-200 hover:text-amber-700 dark:text-zinc-400 dark:hover:text-zinc-100"
     >
       <svg
@@ -39,6 +21,6 @@ export default function BackButton() {
         />
       </svg>
       목록으로
-    </button>
+    </Link>
   );
 }

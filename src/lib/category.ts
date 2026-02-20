@@ -5,7 +5,9 @@ import type { PostMeta, CategoryTree, CategoryNode, SubcategoryNode } from "@/ty
  * - 실제 글이 있는 카테고리만 포함
  * - 카테고리/서브카테고리 모두 가나다순 정렬
  */
-export function buildCategoryTree(posts: PostMeta[]): CategoryTree {
+export function buildCategoryTree(
+  posts: Pick<PostMeta, "category" | "subcategory">[]
+): CategoryTree {
   if (posts.length === 0) return [];
 
   const categoryMap = new Map<

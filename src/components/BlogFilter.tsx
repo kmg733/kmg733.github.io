@@ -3,8 +3,8 @@
 import Link from "next/link";
 import type { PostMeta } from "@/types";
 import { useSearch } from "@/hooks/useSearch";
-import { highlightText } from "@/utils/search";
 import SearchInput from "./SearchInput";
+import HighlightedText from "./HighlightedText";
 
 interface BlogFilterProps {
   posts: PostMeta[];
@@ -33,21 +33,16 @@ export default function BlogFilter({
   // 최종 표시할 포스트
   const displayPosts = isSearchActive ? results.map((r) => r.post) : posts;
 
-  // 검색 결과에서 하이라이트된 텍스트 생성
-  const getHighlightedTitle = (post: PostMeta) => {
-    if (!isSearchActive) return post.title;
-    return highlightText(post.title, query);
-  };
-
-  const getHighlightedDescription = (post: PostMeta) => {
-    if (!isSearchActive) return post.description;
-    return highlightText(post.description, query);
-  };
+  // 검색 시 사용할 쿼리 (검색 비활성 시 빈 문자열)
+  const highlightQuery = isSearchActive ? query : "";
 
   // 빈 결과 메시지 생성
+  // React JSX 텍스트 노드로 렌더링되므로 자동 이스케이프됨 (XSS 안전)
   const getEmptyMessage = () => {
     if (isSearchActive) {
-      return `'${query}'에 대한 검색 결과가 없습니다.`;
+      const truncatedQuery =
+        query.length > 50 ? `${query.slice(0, 50)}...` : query;
+      return `'${truncatedQuery}'에 대한 검색 결과가 없습니다.`;
     }
     if (selectedCategory) {
       return `'${selectedCategory}${selectedSubcategory ? ` > ${selectedSubcategory}` : ""}' 카테고리에 포스트가 없습니다.`;
@@ -103,30 +98,30 @@ export default function BlogFilter({
                     day: "numeric",
                   })}
                 </time>
-                <h2
-                  className="mt-2 text-xl font-semibold group-hover:text-blue-600 dark:group-hover:text-blue-400"
-                  dangerouslySetInnerHTML={{
-                    __html: getHighlightedTitle(post),
-                  }}
-                />
-                <p
-                  className="mt-2 text-zinc-600 dark:text-zinc-400"
-                  dangerouslySetInnerHTML={{
-                    __html: getHighlightedDescription(post),
-                  }}
-                />
+                <h2 className="mt-2 text-xl font-semibold group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                  <HighlightedText
+                    text={post.title}
+                    query={highlightQuery}
+                  />
+                </h2>
+                <p className="mt-2 text-zinc-600 dark:text-zinc-400">
+                  <HighlightedText
+                    text={post.description}
+                    query={highlightQuery}
+                  />
+                </p>
                 {post.tags.length > 0 && (
                   <div className="mt-4 flex flex-wrap gap-2">
                     {post.tags.map((tag) => (
                       <span
                         key={tag}
                         className="rounded-full bg-zinc-100 px-3 py-1 text-xs text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
-                        dangerouslySetInnerHTML={{
-                          __html: isSearchActive
-                            ? highlightText(tag, query)
-                            : tag,
-                        }}
-                      />
+                      >
+                        <HighlightedText
+                          text={tag}
+                          query={highlightQuery}
+                        />
+                      </span>
                     ))}
                   </div>
                 )}

@@ -18,25 +18,6 @@ const SCORE_WEIGHTS = {
 } as const;
 
 /**
- * 정규표현식 특수문자 이스케이프
- */
-function escapeRegExp(str: string): string {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
-/**
- * HTML 특수문자 이스케이프 (XSS 방지)
- */
-function escapeHtml(str: string): string {
-  return str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
-
-/**
  * 텍스트에서 검색어 매치 인덱스 찾기
  * @param text 검색 대상 텍스트
  * @param query 검색어
@@ -46,7 +27,7 @@ export function findMatchIndices(
   text: string,
   query: string
 ): [number, number][] {
-  if (!query || !text) return [];
+  if (!query?.trim() || !text) return [];
 
   const indices: [number, number][] = [];
   const lowerText = text.toLowerCase();
@@ -126,24 +107,3 @@ export function searchPosts(
   return results.sort((a, b) => b.score - a.score);
 }
 
-/**
- * 텍스트에서 검색어를 하이라이트 처리
- * XSS 방지를 위해 HTML 이스케이프 후 하이라이트 적용
- * @param text 원본 텍스트
- * @param query 검색어
- * @returns 하이라이트 마크업이 포함된 문자열
- */
-export function highlightText(text: string, query: string): string {
-  if (!text) return text;
-  if (!query) return escapeHtml(text);
-
-  // 1. 먼저 HTML 이스케이프 적용 (XSS 방지)
-  const escapedText = escapeHtml(text);
-  const escapedQuery = escapeHtml(query);
-
-  // 2. 이스케이프된 텍스트에서 이스케이프된 검색어로 하이라이트
-  const regexQuery = escapeRegExp(escapedQuery);
-  const regex = new RegExp(`(${regexQuery})`, "gi");
-
-  return escapedText.replace(regex, '<mark class="search-highlight">$1</mark>');
-}

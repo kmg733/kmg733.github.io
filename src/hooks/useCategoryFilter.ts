@@ -1,32 +1,68 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import type { PostMeta, CategoryTree } from "@/types";
 import { buildCategoryTree } from "@/lib/category";
+import { toggleSetItem } from "@/utils/set";
+
+/**
+ * URL 파라미터에서 카테고리/서브카테고리를 읽고 유효성을 검증한다.
+ */
+function validateURLParams(
+  searchParams: URLSearchParams,
+  tree: CategoryTree
+): { category: string | null; subcategory: string | null } {
+  const rawCategory = searchParams.get("category");
+  const rawSubcategory = searchParams.get("subcategory");
+
+  // 카테고리가 없거나 트리에 존재하지 않으면 무시
+  if (!rawCategory) return { category: null, subcategory: null };
+
+  const categoryNode = tree.find((c) => c.name === rawCategory);
+  if (!categoryNode) return { category: null, subcategory: null };
+
+  // 서브카테고리가 해당 카테고리에 속하는지 검증
+  if (rawSubcategory) {
+    const hasSubcategory = categoryNode.subcategories?.some(
+      (s) => s.name === rawSubcategory
+    );
+    if (!hasSubcategory) return { category: rawCategory, subcategory: null };
+  }
+
+  return { category: rawCategory, subcategory: rawSubcategory };
+}
 
 export function useCategoryFilter(posts: PostMeta[]) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
 
-  // URL에서 초기값 읽기
-  const initialCategory = searchParams.get("category");
-  const initialSubcategory = searchParams.get("subcategory");
-
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(
-    initialCategory
-  );
-  const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(
-    initialSubcategory
-  );
-  const [collapsedSet, setCollapsedSet] = useState<Set<string>>(new Set());
-
   // 카테고리 트리 빌드
   const categoryTree: CategoryTree = useMemo(
     () => buildCategoryTree(posts),
     [posts]
   );
+
+  // URL에서 검증된 파라미터
+  const validatedParams = useMemo(
+    () => validateURLParams(searchParams, categoryTree),
+    [searchParams, categoryTree]
+  );
+
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(
+    validatedParams.category
+  );
+  const [selectedSubcategory, setSelectedSubcategory] = useState<
+    string | null
+  >(validatedParams.subcategory);
+  const [collapsedSet, setCollapsedSet] = useState<Set<string>>(new Set());
+
+  // URL 변경 시 state 동기화 (브라우저 뒤로가기/앞으로가기 대응)
+  useEffect(() => {
+    setSelectedCategory(validatedParams.category);
+    setSelectedSubcategory(validatedParams.subcategory);
+  }, [validatedParams.category, validatedParams.subcategory]);
 
   // URL 업데이트
   const updateURL = useCallback(
@@ -44,7 +80,6 @@ export function useCategoryFilter(posts: PostMeta[]) {
   const selectCategory = useCallback(
     (category: string) => {
       if (selectedCategory === category) {
-        // 같은 카테고리 재클릭 -> 해제
         setSelectedCategory(null);
         setSelectedSubcategory(null);
         updateURL(null, null);
@@ -61,7 +96,6 @@ export function useCategoryFilter(posts: PostMeta[]) {
   const selectSubcategory = useCallback(
     (category: string, subcategory: string) => {
       if (selectedCategory === category && selectedSubcategory === subcategory) {
-        // 같은 서브카테고리 재클릭 -> 카테고리 선택 상태로 복귀
         setSelectedSubcategory(null);
         updateURL(category, null);
       } else {
@@ -80,17 +114,9 @@ export function useCategoryFilter(posts: PostMeta[]) {
     updateURL(null, null);
   }, [updateURL]);
 
-  // 트리 접기/펼치기
+  // 트리 접기/펼치기 (toggleSetItem 유틸리티 사용)
   const toggleExpanded = useCallback((categoryName: string) => {
-    setCollapsedSet((prev) => {
-      const next = new Set(prev);
-      if (next.has(categoryName)) {
-        next.delete(categoryName);
-      } else {
-        next.add(categoryName);
-      }
-      return next;
-    });
+    setCollapsedSet((prev) => toggleSetItem(prev, categoryName));
   }, []);
 
   const isExpanded = useCallback(

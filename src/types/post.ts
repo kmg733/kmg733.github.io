@@ -15,6 +15,14 @@ export interface PostMeta {
 }
 
 /**
+ * 사이드바 네비게이션용 경량 포스트 데이터
+ */
+export type SidebarPost = Pick<
+  PostMeta,
+  "slug" | "title" | "category" | "subcategory"
+>;
+
+/**
  * 블로그 포스트 전체 데이터 (Domain Entity)
  */
 export interface Post extends PostMeta {

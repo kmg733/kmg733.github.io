@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import type { PostMeta } from "@/types";
 import { useSearch } from "@/hooks/useSearch";
 import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
-import { highlightText } from "@/utils/search";
+import HighlightedText from "./HighlightedText";
 
 interface SearchModalProps {
   posts: PostMeta[];
@@ -202,12 +202,12 @@ export default function SearchModal({ posts }: SearchModalProps) {
                   onClick={handleResultClick}
                   className="search-modal-result-link"
                 >
-                  <span
-                    className="search-modal-result-title"
-                    dangerouslySetInnerHTML={{
-                      __html: highlightText(result.post.title, query),
-                    }}
-                  />
+                  <span className="search-modal-result-title">
+                    <HighlightedText
+                      text={result.post.title}
+                      query={query}
+                    />
+                  </span>
                   <span className="search-modal-result-description">
                     {result.post.description}
                   </span>
