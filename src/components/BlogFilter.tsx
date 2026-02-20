@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useMemo } from "react";
 import Link from "next/link";
 import type { PostMeta } from "@/types";
 import { useSearch } from "@/hooks/useSearch";
@@ -9,28 +8,16 @@ import SearchInput from "./SearchInput";
 
 interface BlogFilterProps {
   posts: PostMeta[];
+  selectedCategory: string | null;
+  selectedSubcategory: string | null;
 }
 
-export default function BlogFilter({ posts }: BlogFilterProps) {
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(
-    null
-  );
-
-  // 카테고리 필터링된 포스트
-  const categoryFilteredPosts = useMemo(() => {
-    if (!selectedCategory) return posts;
-    if (selectedSubcategory) {
-      return posts.filter(
-        (post) =>
-          post.category === selectedCategory &&
-          post.subcategory === selectedSubcategory
-      );
-    }
-    return posts.filter((post) => post.category === selectedCategory);
-  }, [posts, selectedCategory, selectedSubcategory]);
-
-  // 검색 훅 (카테고리 필터링된 포스트에서 검색)
+export default function BlogFilter({
+  posts,
+  selectedCategory,
+  selectedSubcategory,
+}: BlogFilterProps) {
+  // 검색 훅 (필터링된 포스트에서 검색)
   const {
     query,
     setQuery,
@@ -38,41 +25,13 @@ export default function BlogFilter({ posts }: BlogFilterProps) {
     resultCount,
     isSearching,
     clearSearch,
-  } = useSearch(categoryFilteredPosts);
-
-  // 카테고리 목록 추출 (정렬)
-  const categories = useMemo(() => {
-    const cats = posts.map((post) => post.category);
-    return [...new Set(cats)].sort();
-  }, [posts]);
-
-  // 카테고리 활성화 상태 확인 헬퍼 함수
-  const isCategoryActive = (category: string) =>
-    selectedCategory === category && !selectedSubcategory;
-
-  // 선택된 카테고리의 서브카테고리 목록 (정렬)
-  const subcategories = useMemo(() => {
-    if (!selectedCategory) return [];
-    const subs = posts
-      .filter((post) => post.category === selectedCategory && post.subcategory)
-      .map((post) => post.subcategory as string);
-    return [...new Set(subs)].sort();
-  }, [posts, selectedCategory]);
+  } = useSearch(posts);
 
   // 검색어가 최소 길이 이상인지 확인
   const isSearchActive = query.trim().length >= 2;
 
-  // 최종 표시할 포스트 (검색어가 있으면 검색 결과, 아니면 카테고리 필터 결과)
-  const displayPosts = isSearchActive
-    ? results.map((r) => r.post)
-    : categoryFilteredPosts;
-
-  const handleCategoryClick = (category: string | null) => {
-    setSelectedCategory(category);
-    setSelectedSubcategory(null);
-    // 카테고리 변경 시 검색어 초기화
-    clearSearch();
-  };
+  // 최종 표시할 포스트
+  const displayPosts = isSearchActive ? results.map((r) => r.post) : posts;
 
   // 검색 결과에서 하이라이트된 텍스트 생성
   const getHighlightedTitle = (post: PostMeta) => {
@@ -110,54 +69,6 @@ export default function BlogFilter({ posts }: BlogFilterProps) {
         />
       </div>
 
-      {/* 카테고리 필터 */}
-      <nav className="mb-8">
-        <div className="flex flex-wrap gap-2">
-          <button
-            onClick={() => handleCategoryClick(null)}
-            className={`rounded-full px-4 py-2 text-sm transition-colors ${
-              !selectedCategory
-                ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900"
-                : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700"
-            }`}
-          >
-            전체
-          </button>
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => handleCategoryClick(cat)}
-              className={`rounded-full px-4 py-2 text-sm transition-colors ${
-                isCategoryActive(cat)
-                  ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900"
-                  : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700"
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
-
-        {/* 서브카테고리 필터 */}
-        {subcategories.length > 0 && (
-          <div className="mt-3 flex flex-wrap gap-2">
-            {subcategories.map((sub) => (
-              <button
-                key={sub}
-                onClick={() => setSelectedSubcategory(sub)}
-                className={`rounded-full px-3 py-1 text-xs transition-colors ${
-                  selectedSubcategory === sub
-                    ? "bg-blue-600 text-white"
-                    : "bg-zinc-50 text-zinc-500 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-500 dark:hover:bg-zinc-800"
-                }`}
-              >
-                {sub}
-              </button>
-            ))}
-          </div>
-        )}
-      </nav>
-
       {/* 포스트 목록 */}
       {displayPosts.length > 0 ? (
         <div className="grid gap-8">
@@ -173,7 +84,9 @@ export default function BlogFilter({ posts }: BlogFilterProps) {
                   </span>
                   {post.subcategory && (
                     <>
-                      <span className="text-zinc-300 dark:text-zinc-600">/</span>
+                      <span className="text-zinc-300 dark:text-zinc-600">
+                        /
+                      </span>
                       <span className="text-xs text-zinc-500">
                         {post.subcategory}
                       </span>
@@ -192,7 +105,9 @@ export default function BlogFilter({ posts }: BlogFilterProps) {
                 </time>
                 <h2
                   className="mt-2 text-xl font-semibold group-hover:text-blue-600 dark:group-hover:text-blue-400"
-                  dangerouslySetInnerHTML={{ __html: getHighlightedTitle(post) }}
+                  dangerouslySetInnerHTML={{
+                    __html: getHighlightedTitle(post),
+                  }}
                 />
                 <p
                   className="mt-2 text-zinc-600 dark:text-zinc-400"

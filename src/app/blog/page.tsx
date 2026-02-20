@@ -1,5 +1,5 @@
 import { postService } from "@/lib/container";
-import BlogFilter from "@/components/BlogFilter";
+import BlogPageClient from "@/components/BlogPageClient";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -11,7 +11,7 @@ export default function BlogPage() {
   const posts = postService.getAllPosts();
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-16">
+    <div className="mx-auto max-w-6xl px-4 py-16">
       <header className="mb-12">
         <h1 className="mb-4 text-3xl font-bold">Blog</h1>
         <p className="text-zinc-600 dark:text-zinc-400">
@@ -19,7 +19,7 @@ export default function BlogPage() {
         </p>
       </header>
 
-      <BlogFilter posts={posts} />
+      <BlogPageClient posts={posts} />
     </div>
   );
 }
