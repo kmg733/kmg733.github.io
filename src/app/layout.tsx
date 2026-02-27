@@ -6,6 +6,8 @@ import ImageLightbox from "@/components/ImageLightbox";
 import SearchModal from "@/components/SearchModal";
 import SearchButton from "@/components/SearchButton";
 import ScrollToTop from "@/components/ScrollToTop";
+import MouseRipple from "@/components/MouseRipple";
+import NavLink from "@/components/NavLink";
 import { postService } from "@/lib/container";
 import "./globals.css";
 
@@ -52,36 +54,17 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${sacramento.variable} antialiased min-h-screen flex flex-col`}
       >
+        <MouseRipple />
         <header className="sticky top-0 z-50 border-b border-zinc-200 bg-white/80 backdrop-blur-sm dark:border-zinc-800 dark:bg-zinc-900/80">
           <nav className="mx-auto flex h-16 max-w-4xl items-center justify-between px-4">
             <Link href="/" className="text-2xl font-bold font-[family-name:var(--font-sacramento)]">
               Manuel
             </Link>
             <div className="flex items-center gap-6">
-              <Link
-                href="/"
-                className="text-amber-700 hover:text-amber-900 dark:text-zinc-400 dark:hover:text-zinc-100"
-              >
-                Home
-              </Link>
-              <Link
-                href="/blog"
-                className="text-amber-700 hover:text-amber-900 dark:text-zinc-400 dark:hover:text-zinc-100"
-              >
-                Blog
-              </Link>
-              <Link
-                href="/projects"
-                className="text-amber-700 hover:text-amber-900 dark:text-zinc-400 dark:hover:text-zinc-100"
-              >
-                Projects
-              </Link>
-              <Link
-                href="/about"
-                className="text-amber-700 hover:text-amber-900 dark:text-zinc-400 dark:hover:text-zinc-100"
-              >
-                About
-              </Link>
+              <NavLink href="/">Home</NavLink>
+              <NavLink href="/blog">Blog</NavLink>
+              <NavLink href="/projects">Projects</NavLink>
+              <NavLink href="/about">About</NavLink>
               <SearchButton />
               <ThemeToggle />
             </div>

@@ -5,6 +5,7 @@ import type { PostMeta } from "@/types";
 import { useSearch } from "@/hooks/useSearch";
 import SearchInput from "./SearchInput";
 import HighlightedText from "./HighlightedText";
+import ScrollReveal from "./ScrollReveal";
 
 interface BlogFilterProps {
   posts: PostMeta[];
@@ -67,66 +68,65 @@ export default function BlogFilter({
       {/* 포스트 목록 */}
       {displayPosts.length > 0 ? (
         <div className="grid gap-8">
-          {displayPosts.map((post) => (
-            <article
-              key={post.slug}
-              className="group border-b border-zinc-200 pb-8 last:border-0 dark:border-zinc-800"
-            >
-              <Link href={`/blog/${post.slug}`}>
-                <div className="mb-2 flex items-center gap-2">
-                  <span className="text-xs font-medium text-blue-600 dark:text-blue-400">
-                    {post.category}
-                  </span>
-                  {post.subcategory && (
-                    <>
-                      <span className="text-zinc-300 dark:text-zinc-600">
-                        /
-                      </span>
-                      <span className="text-xs text-zinc-500">
-                        {post.subcategory}
-                      </span>
-                    </>
-                  )}
-                </div>
-                <time
-                  dateTime={post.date}
-                  className="text-sm text-zinc-500 dark:text-zinc-500"
-                >
-                  {new Date(post.date).toLocaleDateString("ko-KR", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </time>
-                <h2 className="mt-2 text-xl font-semibold group-hover:text-blue-600 dark:group-hover:text-blue-400">
-                  <HighlightedText
-                    text={post.title}
-                    query={highlightQuery}
-                  />
-                </h2>
-                <p className="mt-2 text-zinc-600 dark:text-zinc-400">
-                  <HighlightedText
-                    text={post.description}
-                    query={highlightQuery}
-                  />
-                </p>
-                {post.tags.length > 0 && (
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {post.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="rounded-full bg-zinc-100 px-3 py-1 text-xs text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
-                      >
-                        <HighlightedText
-                          text={tag}
-                          query={highlightQuery}
-                        />
-                      </span>
-                    ))}
+          {displayPosts.map((post, index) => (
+            <ScrollReveal key={post.slug} direction="up" index={index} staggerDelay={80}>
+              <article className="card-hover-accent group border-b border-zinc-200 pb-8 last:border-0 dark:border-zinc-800">
+                <Link href={`/blog/${post.slug}`}>
+                  <div className="mb-2 flex items-center gap-2">
+                    <span className="text-xs font-medium text-blue-600 dark:text-blue-400">
+                      {post.category}
+                    </span>
+                    {post.subcategory && (
+                      <>
+                        <span className="text-zinc-300 dark:text-zinc-600">
+                          /
+                        </span>
+                        <span className="text-xs text-zinc-500">
+                          {post.subcategory}
+                        </span>
+                      </>
+                    )}
                   </div>
-                )}
-              </Link>
-            </article>
+                  <time
+                    dateTime={post.date}
+                    className="text-sm text-zinc-500 dark:text-zinc-500"
+                  >
+                    {new Date(post.date).toLocaleDateString("ko-KR", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </time>
+                  <h2 className="mt-2 text-xl font-semibold group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                    <HighlightedText
+                      text={post.title}
+                      query={highlightQuery}
+                    />
+                  </h2>
+                  <p className="mt-2 text-zinc-600 dark:text-zinc-400">
+                    <HighlightedText
+                      text={post.description}
+                      query={highlightQuery}
+                    />
+                  </p>
+                  {post.tags.length > 0 && (
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {post.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="rounded-full bg-zinc-100 px-3 py-1 text-xs text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
+                        >
+                          <HighlightedText
+                            text={tag}
+                            query={highlightQuery}
+                          />
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </Link>
+              </article>
+            </ScrollReveal>
           ))}
         </div>
       ) : (
