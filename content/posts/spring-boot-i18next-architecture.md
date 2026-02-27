@@ -20,6 +20,15 @@ glossary:
     detail: "Spring Framework에서 다국어 메시지를 관리하는 핵심 인터페이스이다. ReloadableResourceBundleMessageSource 구현체를 사용하면 .properties 파일 기반으로 메시지를 로드하고 locale에 따라 적절한 메시지를 반환한다."
 ---
 
+<figure>
+  <div className="figure-content">
+    <div className="image-frame">
+      <img className="theme-light" src="/images/posts/spring-boot-i18next-architecture/thymeleaf-i18next-light.png" alt="Thymeleaf + i18next 다국어 아키텍처" />
+      <img className="theme-dark" src="/images/posts/spring-boot-i18next-architecture/thymeleaf-i18next-dark.png" alt="Thymeleaf + i18next 다국어 아키텍처" />
+    </div>
+  </div>
+</figure>
+
 Spring Boot + Thymeleaf 환경에서 다국어를 지원하려면 서버 렌더링과 클라이언트 JavaScript 양쪽에서 번역 메시지를 사용할 수 있어야 합니다.
 이 글에서는 서버 사이드의 <Term id="message-source">MessageSource</Term>와 클라이언트 사이드의 <Term id="i18next">i18next</Term>를 결합하고,
 localStorage 기반 <Term id="swr">SWR 캐싱</Term>으로 네트워크 요청을 최소화하는 하이브리드 다국어 아키텍처를 소개합니다.
