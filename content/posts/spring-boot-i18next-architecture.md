@@ -63,7 +63,8 @@ i18next는 내장 interpolation, fallback 체계, 경량 코어(약 40KB minifie
 <figure>
   <div className="figure-content">
     <div className="image-frame">
-      <img src="/images/posts/spring-boot-i18next-architecture/architecture-flow.svg" alt="전체 아키텍처 흐름 - 서버 시작, Thymeleaf 렌더링, localStorage SWR 캐싱 분기" />
+      <img className="theme-light" src="/images/posts/spring-boot-i18next-architecture/architecture-flow-light.svg" alt="전체 아키텍처 흐름 - 서버 시작, Thymeleaf 렌더링, localStorage SWR 캐싱 분기" />
+      <img className="theme-dark" src="/images/posts/spring-boot-i18next-architecture/architecture-flow-dark.svg" alt="전체 아키텍처 흐름 - 서버 시작, Thymeleaf 렌더링, localStorage SWR 캐싱 분기" />
     </div>
     <figcaption>그림 1. 서버 시작 → Thymeleaf 렌더링 → i18n-init.js SWR 캐싱 분기까지의 전체 흐름</figcaption>
   </div>
@@ -80,7 +81,8 @@ i18next는 내장 interpolation, fallback 체계, 경량 코어(약 40KB minifie
 <figure>
   <div className="figure-content">
     <div className="image-frame">
-      <img src="/images/posts/spring-boot-i18next-architecture/component-structure.svg" alt="컴포넌트 구조 - MessageConfig, I18nMessageProvider, I18nRestController, Thymeleaf, i18n-init.js 간의 관계" />
+      <img className="theme-light" src="/images/posts/spring-boot-i18next-architecture/component-structure-light.svg" alt="컴포넌트 구조 - MessageConfig, I18nMessageProvider, I18nRestController, Thymeleaf, i18n-init.js 간의 관계" />
+      <img className="theme-dark" src="/images/posts/spring-boot-i18next-architecture/component-structure-dark.svg" alt="컴포넌트 구조 - MessageConfig, I18nMessageProvider, I18nRestController, Thymeleaf, i18n-init.js 간의 관계" />
     </div>
     <figcaption>그림 2. 서버와 클라이언트 컴포넌트 간의 의존 관계</figcaption>
   </div>
@@ -217,7 +219,8 @@ _server.audit.login.success=로그인 성공
 <figure>
   <div className="figure-content">
     <div className="image-frame">
-      <img src="/images/posts/spring-boot-i18next-architecture/server-init-flow.svg" alt="I18nMessageProvider 초기화 흐름 - ResourceBundle 로드, 블랙리스트 필터링, 불변 캐시 생성, SHA-256 해시 계산" />
+      <img className="theme-light" src="/images/posts/spring-boot-i18next-architecture/server-init-flow-light.svg" alt="I18nMessageProvider 초기화 흐름 - ResourceBundle 로드, 블랙리스트 필터링, 불변 캐시 생성, SHA-256 해시 계산" />
+      <img className="theme-dark" src="/images/posts/spring-boot-i18next-architecture/server-init-flow-dark.svg" alt="I18nMessageProvider 초기화 흐름 - ResourceBundle 로드, 블랙리스트 필터링, 불변 캐시 생성, SHA-256 해시 계산" />
     </div>
     <figcaption>그림 3. I18nMessageProvider 서버 시작 시 초기화 흐름</figcaption>
   </div>
@@ -301,7 +304,8 @@ public class I18nRestController {
 <figure>
   <div className="figure-content">
     <div className="image-frame">
-      <img src="/images/posts/spring-boot-i18next-architecture/swr-cache-flow.svg" alt="SWR 캐싱 분기 플로차트 - Cache Hit, Stale, Cold Start 3가지 경로" />
+      <img className="theme-light" src="/images/posts/spring-boot-i18next-architecture/swr-cache-flow-light.svg" alt="SWR 캐싱 분기 플로차트 - Cache Hit, Stale, Cold Start 3가지 경로" />
+      <img className="theme-dark" src="/images/posts/spring-boot-i18next-architecture/swr-cache-flow-dark.svg" alt="SWR 캐싱 분기 플로차트 - Cache Hit, Stale, Cold Start 3가지 경로" />
     </div>
     <figcaption>그림 4. localStorage SWR 캐싱의 3가지 분기 - Cache Hit, Stale, Cold Start</figcaption>
   </div>
