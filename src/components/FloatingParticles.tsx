@@ -58,9 +58,12 @@ export default function FloatingParticles() {
     window.addEventListener("mousemove", onMouseMove, { passive: true });
 
     let rafId: number;
+    let isRunning = true;
     const startTime = performance.now();
 
     const tick = (now: number) => {
+      if (!isRunning) return;
+
       const elapsed = (now - startTime) / 1000; // seconds
       const container = containerRef.current;
       if (!container) {
@@ -114,9 +117,23 @@ export default function FloatingParticles() {
 
     rafId = requestAnimationFrame(tick);
 
+    // Page Visibility API: 비활성 탭에서 rAF 중단
+    const onVisibilityChange = () => {
+      if (document.hidden) {
+        isRunning = false;
+        cancelAnimationFrame(rafId);
+      } else {
+        isRunning = true;
+        rafId = requestAnimationFrame(tick);
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
     return () => {
+      isRunning = false;
       cancelAnimationFrame(rafId);
       window.removeEventListener("mousemove", onMouseMove);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
     };
   }, []);
 

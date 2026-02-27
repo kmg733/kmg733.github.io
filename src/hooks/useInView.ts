@@ -17,18 +17,23 @@ export function useInView({
   const [isInView, setIsInView] = useState(false);
 
   useEffect(() => {
-    // prefers-reduced-motion: 즉시 visible 처리
-    const prefersReducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
+    // prefers-reduced-motion: 즉시 visible 처리 + 실시간 반영
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
 
-    if (prefersReducedMotion) {
+    if (mq.matches) {
       setIsInView(true);
       return;
     }
 
+    const onMqChange = (e: MediaQueryListEvent) => {
+      if (e.matches) setIsInView(true);
+    };
+    mq.addEventListener("change", onMqChange);
+
     const element = ref.current;
-    if (!element) return;
+    if (!element) {
+      return () => mq.removeEventListener("change", onMqChange);
+    }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -46,7 +51,10 @@ export function useInView({
 
     observer.observe(element);
 
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      mq.removeEventListener("change", onMqChange);
+    };
   }, [threshold, rootMargin, once]);
 
   return { ref, isInView };

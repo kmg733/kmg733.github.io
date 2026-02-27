@@ -18,6 +18,11 @@ function CountUp({ target, suffix = "" }: { target: number; suffix?: string }) {
   const { ref, isInView } = useInView({ threshold: 0.3 });
   const hasAnimated = useRef(false);
 
+  // target 변경 시 재애니메이션 허용
+  useEffect(() => {
+    hasAnimated.current = false;
+  }, [target]);
+
   useEffect(() => {
     if (!isInView || hasAnimated.current) return;
     hasAnimated.current = true;

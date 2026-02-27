@@ -30,13 +30,27 @@ const RINGS = [
 const BOUNCE_SELECTORS =
   "header, footer, pre, figure, img, button, [role='button'], .code-block-wrapper, .toc-nav, .category-tree-nav, .glossary-section";
 
-/* ─── Bounce detection (pure function, no state) ─── */
+/* ─── Bounce detection (cached querySelectorAll) ─── */
+
+let cachedBounceEls: Element[] | null = null;
+let cacheTimestamp = 0;
+const CACHE_TTL = 2000; // 2초 캐시
+
+function getBounceElements(): Element[] {
+  const now = Date.now();
+  if (cachedBounceEls && now - cacheTimestamp < CACHE_TTL) {
+    return cachedBounceEls;
+  }
+  cachedBounceEls = Array.from(document.querySelectorAll(BOUNCE_SELECTORS));
+  cacheTimestamp = now;
+  return cachedBounceEls;
+}
 
 function detectBouncePoints(
   cx: number,
   cy: number,
 ): Omit<BounceRipple, "id">[] {
-  const els = document.querySelectorAll(BOUNCE_SELECTORS);
+  const els = getBounceElements();
   const points: Omit<BounceRipple, "id">[] = [];
 
   for (let i = 0; i < els.length; i++) {

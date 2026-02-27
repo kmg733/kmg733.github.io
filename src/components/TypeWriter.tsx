@@ -32,6 +32,8 @@ export default function TypeWriter({
   }, []);
 
   useEffect(() => {
+    if (words.length === 0) return;
+
     if (isReducedMotion) {
       setText(words[0]);
       return;
@@ -73,20 +75,26 @@ export default function TypeWriter({
     isReducedMotion,
   ]);
 
+  if (words.length === 0) {
+    return <span className={className} />;
+  }
+
   if (isReducedMotion) {
     return <span className={className}>{words[0]}</span>;
   }
 
   return (
     <span className={className}>
-      {text}
-      <span
-        className="inline-block w-[2px] h-[1em] bg-current align-middle ml-0.5"
-        style={{
-          animation: "typewriter-cursor 0.7s steps(1) infinite",
-        }}
-        aria-hidden="true"
-      />
+      <span aria-hidden="true">
+        {text}
+        <span
+          className="inline-block w-[2px] h-[1em] bg-current align-middle ml-0.5"
+          style={{
+            animation: "typewriter-cursor 0.7s steps(1) infinite",
+          }}
+        />
+      </span>
+      <span className="sr-only">{words[wordIndex]}</span>
     </span>
   );
 }
