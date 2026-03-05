@@ -200,6 +200,77 @@ tags: []
     });
   });
 
+  describe("findAll - thumbnail parsing", () => {
+    it("should parse thumbnail from frontmatter", () => {
+      const mockFileContent = `---
+title: Post With Thumbnail
+date: 2025-01-15
+description: Test description
+category: 개발
+tags:
+  - react
+thumbnail: "/images/thumbnails/javascript"
+---
+# Content
+`;
+
+      mockedFs.existsSync.mockReturnValue(true);
+      mockedFs.readdirSync.mockReturnValue(["thumb-post.md"] as unknown as fs.Dirent[]);
+      mockedFs.readFileSync.mockReturnValue(mockFileContent);
+
+      const posts = repository.findAll();
+
+      expect(posts).toHaveLength(1);
+      expect(posts[0].thumbnail).toBe("/images/thumbnails/javascript");
+    });
+
+    it("should not include thumbnail when not specified in frontmatter", () => {
+      const mockFileContent = `---
+title: Post Without Thumbnail
+date: 2025-01-15
+description: Test description
+category: 개발
+tags: []
+---
+# Content
+`;
+
+      mockedFs.existsSync.mockReturnValue(true);
+      mockedFs.readdirSync.mockReturnValue(["no-thumb.md"] as unknown as fs.Dirent[]);
+      mockedFs.readFileSync.mockReturnValue(mockFileContent);
+
+      const posts = repository.findAll();
+
+      expect(posts).toHaveLength(1);
+      expect(posts[0].thumbnail).toBeUndefined();
+    });
+  });
+
+  describe("findBySlug - thumbnail parsing", () => {
+    it("should parse thumbnail when finding by slug", () => {
+      const mockFileContent = `---
+title: Slug Post
+date: 2025-01-15
+description: Test
+category: 개발
+tags: []
+thumbnail: "/images/thumbnails/springboot"
+---
+# Content
+`;
+
+      mockedFs.existsSync.mockImplementation((filePath) => {
+        return (filePath as string).endsWith("slug-post.md");
+      });
+      mockedFs.readFileSync.mockReturnValue(mockFileContent);
+
+      const post = repository.findBySlug("slug-post");
+
+      expect(post).not.toBeNull();
+      expect(post?.thumbnail).toBe("/images/thumbnails/springboot");
+    });
+  });
+
   describe("edge cases", () => {
     it("should return empty array when directory does not exist", () => {
       mockedFs.existsSync.mockReturnValue(false);

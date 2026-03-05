@@ -10,6 +10,7 @@ export interface PostMeta {
   subcategory?: string;
   tags: string[];
   readingTime: string;
+  thumbnail?: string;
   series?: string;
   seriesOrder?: number;
 }
@@ -40,6 +41,7 @@ export interface PostFrontmatter {
   category?: string;
   subcategory?: string;
   tags?: string[];
+  thumbnail?: string;
   series?: string;
   seriesOrder?: number;
 }

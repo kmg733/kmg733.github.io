@@ -2,6 +2,7 @@ import Link from "next/link";
 import { postService } from "@/lib/container";
 import { HOME_DEFAULTS, DATE_FORMAT } from "@/lib/constants";
 import ScrollReveal from "@/components/ScrollReveal";
+import PostThumbnail from "@/components/PostThumbnail";
 import TypeWriter from "@/components/TypeWriter";
 import FloatingParticles from "@/components/FloatingParticles";
 import BlogStats from "@/components/BlogStats";
@@ -92,22 +93,43 @@ export default function Home() {
           <div className="grid gap-6">
             {recentPosts.map((post, index) => (
               <ScrollReveal key={post.slug} direction="up" index={index} staggerDelay={100}>
-                <article className="card-hover-accent group rounded-lg border border-zinc-200 p-6 transition-colors hover:border-zinc-300 dark:border-zinc-800 dark:hover:border-zinc-700">
-                  <Link href={`/blog/${post.slug}`}>
-                    <h3 className="mb-2 text-xl font-semibold group-hover:text-blue-600 dark:group-hover:text-blue-400">
-                      {post.title}
-                    </h3>
-                    <p className="mb-4 text-zinc-600 dark:text-zinc-400">
-                      {post.description}
-                    </p>
-                    <div className="flex items-center gap-4 text-sm text-zinc-500">
-                      <time dateTime={post.date}>
-                        {new Date(post.date).toLocaleDateString(
-                          DATE_FORMAT.LOCALE,
-                          DATE_FORMAT.OPTIONS
+                <article className="card-hover-accent group overflow-hidden rounded-lg border border-zinc-200 transition-colors hover:border-zinc-300 dark:border-zinc-800 dark:hover:border-zinc-700">
+                  <Link href={`/blog/${post.slug}`} className="flex flex-col sm:flex-row">
+                    {/* 썸네일 영역 */}
+                    <div className="aspect-[3/2] shrink-0 overflow-hidden bg-zinc-100 dark:bg-zinc-800 sm:aspect-auto sm:h-auto sm:w-64">
+                      <PostThumbnail thumbnail={post.thumbnail} alt={post.title} />
+                    </div>
+                    {/* 텍스트 영역 */}
+                    <div className="flex flex-1 flex-col justify-center p-6">
+                      {/* 카테고리 뱃지 */}
+                      <div className="mb-2 flex items-center gap-2">
+                        <span className="text-xs font-medium text-blue-600 dark:text-blue-400">
+                          {post.category}
+                        </span>
+                        {post.subcategory && (
+                          <>
+                            <span className="text-xs text-zinc-400 dark:text-zinc-500">/</span>
+                            <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+                              {post.subcategory}
+                            </span>
+                          </>
                         )}
-                      </time>
-                      <span>{post.readingTime}</span>
+                      </div>
+                      <h3 className="mb-2 text-xl font-semibold group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                        {post.title}
+                      </h3>
+                      <p className="mb-4 line-clamp-2 text-zinc-600 dark:text-zinc-400">
+                        {post.description}
+                      </p>
+                      <div className="flex items-center gap-4 text-sm text-zinc-500">
+                        <time dateTime={post.date}>
+                          {new Date(post.date).toLocaleDateString(
+                            DATE_FORMAT.LOCALE,
+                            DATE_FORMAT.OPTIONS
+                          )}
+                        </time>
+                        <span>{post.readingTime}</span>
+                      </div>
                     </div>
                   </Link>
                 </article>
