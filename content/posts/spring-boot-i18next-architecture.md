@@ -5,6 +5,7 @@ description: "Spring Boot + Thymeleaf 환경에서 i18next와 localStorage SWR �
 category: "개발"
 subcategory: "Spring Boot"
 tags: ["guide", "intermediate"]
+thumbnail: "/images/thumbnails/springboot"
 glossary:
   - id: "swr"
     term: "SWR(Stale-While-Revalidate)"

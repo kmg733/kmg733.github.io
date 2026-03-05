@@ -10,6 +10,12 @@ export const POST_DEFAULTS = {
   TAGS: [] as readonly string[],
 } as const;
 
+// 썸네일 관련 상수
+export const THUMBNAIL_DEFAULTS = {
+  DEFAULT_LIGHT: "/images/default-thumbnail-light.svg",
+  DEFAULT_DARK: "/images/default-thumbnail-dark.svg",
+} as const;
+
 // 홈페이지 관련 상수
 export const HOME_DEFAULTS = {
   RECENT_POSTS_COUNT: 3,

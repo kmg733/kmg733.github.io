@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type { PostMeta } from "@/types";
 import { useSearch } from "@/hooks/useSearch";
+import PostThumbnail from "./PostThumbnail";
 import SearchInput from "./SearchInput";
 import HighlightedText from "./HighlightedText";
 import ScrollReveal from "./ScrollReveal";
@@ -71,59 +72,66 @@ export default function BlogFilter({
           {displayPosts.map((post, index) => (
             <ScrollReveal key={post.slug} direction="up" index={index} staggerDelay={80}>
               <article className="card-hover-accent group border-b border-zinc-200 pb-8 last:border-0 dark:border-zinc-800">
-                <Link href={`/blog/${post.slug}`}>
-                  <div className="mb-2 flex items-center gap-2">
-                    <span className="text-xs font-medium text-blue-600 dark:text-blue-400">
-                      {post.category}
-                    </span>
-                    {post.subcategory && (
-                      <>
-                        <span className="text-zinc-300 dark:text-zinc-600">
-                          /
-                        </span>
-                        <span className="text-xs text-zinc-500">
-                          {post.subcategory}
-                        </span>
-                      </>
+                <Link href={`/blog/${post.slug}`} className="flex flex-col gap-4 sm:flex-row">
+                  {/* 썸네일 영역 */}
+                  <div className="aspect-[3/2] shrink-0 overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800 sm:aspect-auto sm:h-auto sm:w-64">
+                    <PostThumbnail thumbnail={post.thumbnail} alt={post.title} />
+                  </div>
+                  {/* 텍스트 영역 */}
+                  <div className="min-w-0 flex-1">
+                    <div className="mb-2 flex items-center gap-2">
+                      <span className="text-xs font-medium text-blue-600 dark:text-blue-400">
+                        {post.category}
+                      </span>
+                      {post.subcategory && (
+                        <>
+                          <span className="text-zinc-300 dark:text-zinc-600">
+                            /
+                          </span>
+                          <span className="text-xs text-zinc-500">
+                            {post.subcategory}
+                          </span>
+                        </>
+                      )}
+                    </div>
+                    <time
+                      dateTime={post.date}
+                      className="text-sm text-zinc-500 dark:text-zinc-500"
+                    >
+                      {new Date(post.date).toLocaleDateString("ko-KR", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
+                    </time>
+                    <h2 className="mt-2 text-xl font-semibold group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                      <HighlightedText
+                        text={post.title}
+                        query={highlightQuery}
+                      />
+                    </h2>
+                    <p className="mt-2 line-clamp-2 text-zinc-600 dark:text-zinc-400">
+                      <HighlightedText
+                        text={post.description}
+                        query={highlightQuery}
+                      />
+                    </p>
+                    {post.tags.length > 0 && (
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        {post.tags.map((tag) => (
+                          <span
+                            key={tag}
+                            className="rounded-full bg-zinc-100 px-3 py-1 text-xs text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
+                          >
+                            <HighlightedText
+                              text={tag}
+                              query={highlightQuery}
+                            />
+                          </span>
+                        ))}
+                      </div>
                     )}
                   </div>
-                  <time
-                    dateTime={post.date}
-                    className="text-sm text-zinc-500 dark:text-zinc-500"
-                  >
-                    {new Date(post.date).toLocaleDateString("ko-KR", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                  </time>
-                  <h2 className="mt-2 text-xl font-semibold group-hover:text-blue-600 dark:group-hover:text-blue-400">
-                    <HighlightedText
-                      text={post.title}
-                      query={highlightQuery}
-                    />
-                  </h2>
-                  <p className="mt-2 text-zinc-600 dark:text-zinc-400">
-                    <HighlightedText
-                      text={post.description}
-                      query={highlightQuery}
-                    />
-                  </p>
-                  {post.tags.length > 0 && (
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      {post.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="rounded-full bg-zinc-100 px-3 py-1 text-xs text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
-                        >
-                          <HighlightedText
-                            text={tag}
-                            query={highlightQuery}
-                          />
-                        </span>
-                      ))}
-                    </div>
-                  )}
                 </Link>
               </article>
             </ScrollReveal>

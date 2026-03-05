@@ -29,12 +29,11 @@ describe("RelatedPosts", () => {
     expect(screen.getByText("Second Post")).toBeInTheDocument();
   });
 
-  it("각 항목에 제목, 설명, 날짜가 표시된다", () => {
+  it("각 항목에 제목, 날짜가 표시된다", () => {
     const posts = [
       createPostMeta({
         slug: "test",
         title: "Test Title",
-        description: "Test Desc",
         date: "2025-06-15",
       }),
     ];
@@ -42,7 +41,50 @@ describe("RelatedPosts", () => {
     render(<RelatedPosts posts={posts} />);
 
     expect(screen.getByText("Test Title")).toBeInTheDocument();
-    expect(screen.getByText("Test Desc")).toBeInTheDocument();
+  });
+
+  it("썸네일 이미지가 다크/라이트 쌍으로 표시된다", () => {
+    const posts = [
+      createPostMeta({
+        slug: "thumb-test",
+        title: "Thumb Post",
+        thumbnail: "/images/thumbnails/javascript",
+      }),
+    ];
+
+    render(<RelatedPosts posts={posts} />);
+
+    const imgs = screen.getAllByAltText("Thumb Post");
+    expect(imgs).toHaveLength(2);
+    expect(imgs[0]).toHaveAttribute("src", "/images/thumbnails/javascript-light.png");
+    expect(imgs[1]).toHaveAttribute("src", "/images/thumbnails/javascript-dark.png");
+  });
+
+  it("썸네일 미지정 시 기본 이미지 다크/라이트 쌍이 표시된다", () => {
+    const posts = [
+      createPostMeta({ slug: "no-thumb", title: "No Thumb" }),
+    ];
+
+    render(<RelatedPosts posts={posts} />);
+
+    const imgs = screen.getAllByAltText("No Thumb");
+    expect(imgs).toHaveLength(2);
+    expect(imgs[0]).toHaveAttribute("src", "/images/default-thumbnail-light.svg");
+    expect(imgs[1]).toHaveAttribute("src", "/images/default-thumbnail-dark.svg");
+  });
+
+  it("subcategory가 있으면 뱃지가 표시된다", () => {
+    const posts = [
+      createPostMeta({
+        slug: "cat-test",
+        title: "Cat Post",
+        subcategory: "React",
+      }),
+    ];
+
+    render(<RelatedPosts posts={posts} />);
+
+    expect(screen.getByText("React")).toBeInTheDocument();
   });
 
   it("각 항목의 링크가 /blog/{slug}로 연결된다", () => {
