@@ -28,7 +28,7 @@ export default function PostThumbnail({
       />
       <img
         src={darkSrc}
-        alt={alt}
+        alt=""
         className={`${className} hidden dark:block`}
         loading="lazy"
       />

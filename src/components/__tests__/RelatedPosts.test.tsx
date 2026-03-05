@@ -52,9 +52,9 @@ describe("RelatedPosts", () => {
       }),
     ];
 
-    render(<RelatedPosts posts={posts} />);
+    const { container } = render(<RelatedPosts posts={posts} />);
 
-    const imgs = screen.getAllByAltText("Thumb Post");
+    const imgs = container.querySelectorAll("img");
     expect(imgs).toHaveLength(2);
     expect(imgs[0]).toHaveAttribute("src", "/images/thumbnails/javascript-light.png");
     expect(imgs[1]).toHaveAttribute("src", "/images/thumbnails/javascript-dark.png");
@@ -65,9 +65,9 @@ describe("RelatedPosts", () => {
       createPostMeta({ slug: "no-thumb", title: "No Thumb" }),
     ];
 
-    render(<RelatedPosts posts={posts} />);
+    const { container } = render(<RelatedPosts posts={posts} />);
 
-    const imgs = screen.getAllByAltText("No Thumb");
+    const imgs = container.querySelectorAll("img");
     expect(imgs).toHaveLength(2);
     expect(imgs[0]).toHaveAttribute("src", "/images/default-thumbnail-light.svg");
     expect(imgs[1]).toHaveAttribute("src", "/images/default-thumbnail-dark.svg");
