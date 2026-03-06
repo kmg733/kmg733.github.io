@@ -5,6 +5,7 @@ description: "HTTP 캐싱의 동작 원리를 정리합니다. 강력 캐시와 
 category: "개발"
 subcategory: "웹"
 tags: ["guide", "intermediate"]
+thumbnail: "/images/thumbnails/web"
 glossary:
   - id: "strong-cache"
     term: "강력 캐시(Strong Cache)"
