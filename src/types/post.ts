@@ -13,6 +13,7 @@ export interface PostMeta {
   thumbnail?: string;
   series?: string;
   seriesOrder?: number;
+  relatedSlugs?: string[];
 }
 
 /**
@@ -44,4 +45,5 @@ export interface PostFrontmatter {
   thumbnail?: string;
   series?: string;
   seriesOrder?: number;
+  relatedSlugs?: string[];
 }

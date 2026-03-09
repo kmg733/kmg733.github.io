@@ -129,6 +129,10 @@ export class FilePostRepository implements IPostRepository {
       ...(frontmatter.seriesOrder != null && {
         seriesOrder: frontmatter.seriesOrder,
       }),
+      ...(frontmatter.relatedSlugs &&
+        frontmatter.relatedSlugs.length > 0 && {
+          relatedSlugs: frontmatter.relatedSlugs,
+        }),
     };
   }
 

@@ -5,6 +5,8 @@ description: "브라우저의 localStorage에 데이터를 캐시하고, 해시 
 category: "개발"
 subcategory: "웹"
 tags: ["guide", "beginner"]
+relatedSlugs:
+  - spring-boot-i18next-architecture
 thumbnail: "/images/thumbnails/web"
 glossary:
   - id: "swr"
@@ -406,8 +408,3 @@ localStorage는 JavaScript로 누구나 접근할 수 있습니다.
 단, 항상 최신이어야 하는 데이터(결제 금액, 실시간 정보 등)에는 적합하지 않습니다.
 **"잠깐 이전 데이터가 보여도 괜찮은가?"**가 이 패턴 적용 여부의 핵심 판단 기준입니다.
 
----
-
-## 관련 글
-
-- [Spring Boot에서 i18next로 다국어 구현하기](/blog/spring-boot-i18next-architecture) — 이 캐싱 패턴을 Spring Boot + Thymeleaf 환경의 다국어 아키텍처에 실제 적용한 전체 구현을 다룹니다. 서버 사이드 설계부터 클라이언트 초기화 스크립트까지 포함합니다.

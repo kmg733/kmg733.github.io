@@ -15,6 +15,30 @@ import type { PostMeta } from "@/types";
  * BlogFilter는 검색 + 포스트 목록 렌더링만 담당.
  */
 
+// IntersectionObserver mock (ScrollReveal → useInView에서 사용)
+const mockIntersectionObserver = jest.fn();
+mockIntersectionObserver.mockReturnValue({
+  observe: jest.fn(),
+  unobserve: jest.fn(),
+  disconnect: jest.fn(),
+});
+window.IntersectionObserver = mockIntersectionObserver;
+
+// matchMedia mock (useInView에서 prefers-reduced-motion 체크)
+Object.defineProperty(window, "matchMedia", {
+  writable: true,
+  value: jest.fn().mockImplementation((query: string) => ({
+    matches: true, // reduced-motion: true → 즉시 visible 처리
+    media: query,
+    onchange: null,
+    addListener: jest.fn(),
+    removeListener: jest.fn(),
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    dispatchEvent: jest.fn(),
+  })),
+});
+
 // Next.js Link 컴포넌트 모킹
 jest.mock("next/link", () => {
   return function MockLink({

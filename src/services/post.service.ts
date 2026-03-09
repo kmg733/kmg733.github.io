@@ -59,24 +59,75 @@ export class PostService {
 
   /**
    * 관련 포스트를 조회합니다.
-   * 같은 subcategory 내에서 tags 기반 점수로 정렬하며,
-   * 관련 글이 없으면 같은 subcategory 최신 글을 반환합니다.
+   * frontmatter의 relatedSlugs로 수동 지정된 글을 우선 반환하고,
+   * 남은 슬롯을 같은 subcategory 내 tags 기반 자동 추천으로 채웁니다.
    * @param slug 현재 포스트 slug
    * @param maxCount 최대 반환 개수
    */
   getRelatedPosts(slug: string, maxCount: number = 3): PostMeta[] {
     const currentPost = this.postRepository.findBySlug(slug);
-    if (!currentPost?.subcategory) {
+    if (!currentPost) {
       return [];
     }
 
-    const candidates = this.postRepository
-      .findAll()
-      .filter(
-        (post) =>
-          post.slug !== slug &&
-          post.subcategory === currentPost.subcategory
-      );
+    const allPosts = this.postRepository.findAll();
+
+    // 1. 수동 지정 글 조회 (relatedSlugs)
+    const manualPosts = this.resolveManualRelated(
+      currentPost.relatedSlugs,
+      allPosts
+    );
+
+    // 2. 남은 슬롯을 자동 추천으로 채움
+    const remainingSlots = maxCount - manualPosts.length;
+    if (remainingSlots <= 0) {
+      return manualPosts.slice(0, maxCount);
+    }
+
+    // subcategory 없으면 수동 지정만 반환
+    if (!currentPost.subcategory) {
+      return manualPosts;
+    }
+
+    const manualSlugs = new Set(manualPosts.map((p) => p.slug));
+    const autoPosts = this.getAutoRelated(
+      slug,
+      currentPost,
+      allPosts,
+      manualSlugs,
+      remainingSlots
+    );
+
+    return [...manualPosts, ...autoPosts];
+  }
+
+  private resolveManualRelated(
+    relatedSlugs: string[] | undefined,
+    allPosts: PostMeta[]
+  ): PostMeta[] {
+    if (!relatedSlugs || relatedSlugs.length === 0) {
+      return [];
+    }
+
+    const postMap = new Map(allPosts.map((p) => [p.slug, p]));
+    return relatedSlugs
+      .map((s) => postMap.get(s))
+      .filter((p): p is PostMeta => p != null);
+  }
+
+  private getAutoRelated(
+    currentSlug: string,
+    currentPost: Post,
+    allPosts: PostMeta[],
+    excludeSlugs: Set<string>,
+    maxCount: number
+  ): PostMeta[] {
+    const candidates = allPosts.filter(
+      (post) =>
+        post.slug !== currentSlug &&
+        !excludeSlugs.has(post.slug) &&
+        post.subcategory === currentPost.subcategory
+    );
 
     if (candidates.length === 0) {
       return [];
@@ -90,7 +141,6 @@ export class PostService {
     const hasRelated = scored.some((item) => item.score > 0);
 
     if (!hasRelated) {
-      // fallback: 같은 서브카테고리 최신 글 순서 (findAll은 이미 날짜 내림차순)
       return candidates.slice(0, maxCount);
     }
 
@@ -99,7 +149,9 @@ export class PostService {
         if (b.score !== a.score) {
           return b.score - a.score;
         }
-        return new Date(b.post.date).getTime() - new Date(a.post.date).getTime();
+        return (
+          new Date(b.post.date).getTime() - new Date(a.post.date).getTime()
+        );
       })
       .slice(0, maxCount)
       .map((item) => item.post);
