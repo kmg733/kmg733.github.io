@@ -298,6 +298,79 @@ thumbnail: "/images/thumbnails/springboot"
       expect(posts[0].tags).toEqual([]);
     });
 
+    it("should parse valid relatedSlugs from frontmatter", () => {
+      const mockFileContent = `---
+title: Post With Related
+date: 2025-01-15
+description: Test
+category: 개발
+tags: []
+relatedSlugs:
+  - valid-post-slug
+  - another-valid-123
+---
+# Content
+`;
+
+      mockedFs.existsSync.mockReturnValue(true);
+      mockedFs.readdirSync.mockReturnValue(["related-post.md"] as unknown as fs.Dirent[]);
+      mockedFs.readFileSync.mockReturnValue(mockFileContent);
+
+      const posts = repository.findAll();
+
+      expect(posts[0].relatedSlugs).toEqual(["valid-post-slug", "another-valid-123"]);
+    });
+
+    it("should filter out invalid slugs from relatedSlugs", () => {
+      const mockFileContent = `---
+title: Post With Bad Slugs
+date: 2025-01-15
+description: Test
+category: 개발
+tags: []
+relatedSlugs:
+  - valid-slug
+  - "../../traversal"
+  - "post<script>"
+  - ""
+  - "UPPER-CASE"
+  - "has spaces"
+---
+# Content
+`;
+
+      mockedFs.existsSync.mockReturnValue(true);
+      mockedFs.readdirSync.mockReturnValue(["bad-slugs.md"] as unknown as fs.Dirent[]);
+      mockedFs.readFileSync.mockReturnValue(mockFileContent);
+
+      const posts = repository.findAll();
+
+      expect(posts[0].relatedSlugs).toEqual(["valid-slug"]);
+    });
+
+    it("should not include relatedSlugs when all slugs are invalid", () => {
+      const mockFileContent = `---
+title: All Invalid
+date: 2025-01-15
+description: Test
+category: 개발
+tags: []
+relatedSlugs:
+  - "../../bad"
+  - "<script>alert</script>"
+---
+# Content
+`;
+
+      mockedFs.existsSync.mockReturnValue(true);
+      mockedFs.readdirSync.mockReturnValue(["all-invalid.md"] as unknown as fs.Dirent[]);
+      mockedFs.readFileSync.mockReturnValue(mockFileContent);
+
+      const posts = repository.findAll();
+
+      expect(posts[0].relatedSlugs).toBeUndefined();
+    });
+
     it("should filter only markdown files", () => {
       mockedFs.existsSync.mockReturnValue(true);
       mockedFs.readdirSync.mockReturnValue([
