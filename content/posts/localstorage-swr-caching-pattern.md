@@ -33,7 +33,7 @@ glossary:
   <div className="figure-content">
     <div className="image-frame">
       <img className="theme-light" src="/images/posts/localstorage-swr-caching-pattern/hero-light.png" alt="localStorage SWR 캐싱 패턴" />
-      <img className="theme-dark" src="/images/posts/localstorage-swr-caching-pattern/hero-dark.png" alt="localStorage SWR 캐싱 패턴" />
+      <img className="theme-dark" src="/images/posts/localstorage-swr-caching-pattern/hero-dark.png" alt="" />
     </div>
   </div>
 </figure>
@@ -45,6 +45,12 @@ glossary:
 <Term id="hash">해시</Term> 비교 기반 <Term id="swr">SWR(Stale-While-Revalidate)</Term> 전략으로
 네트워크 요청을 최소화하는 캐싱 패턴을 소개합니다.
 비개발자도 이해할 수 있도록, 일상 비유부터 시작하여 단계적으로 설명합니다.
+
+<div className="info-box">
+  <strong>이 패턴의 실제 적용 사례가 궁금하다면</strong><br/>
+  <a href="/blog/spring-boot-i18next-architecture">Spring Boot에서 i18next로 다국어 구현하기</a>에서
+  이 캐싱 패턴을 Spring Boot + Thymeleaf 환경의 다국어 아키텍처에 적용한 전체 구현을 다룹니다.
+</div>
 
 ---
 
@@ -72,7 +78,7 @@ SWR의 핵심은 **"기다리지 않는다"**는 것입니다.
   <div className="figure-content">
     <div className="image-frame">
       <img className="theme-light" src="/images/posts/localstorage-swr-caching-pattern/cache-strategies-light.png" alt="3가지 캐시 전략 비교 - 캐시 없음, 캐시 우선, SWR 전략의 흐름도" />
-      <img className="theme-dark" src="/images/posts/localstorage-swr-caching-pattern/cache-strategies-dark.png" alt="3가지 캐시 전략 비교 - 캐시 없음, 캐시 우선, SWR 전략의 흐름도" />
+      <img className="theme-dark" src="/images/posts/localstorage-swr-caching-pattern/cache-strategies-dark.png" alt="" />
     </div>
     <figcaption>그림 1. 캐시 없음 / 캐시 우선 / SWR 전략의 동작 차이</figcaption>
   </div>
@@ -141,7 +147,7 @@ SWR 패턴은 사용자의 요청을 3가지 상태로 분류하여 처리합니
   <div className="figure-content">
     <div className="image-frame">
       <img className="theme-light" src="/images/posts/localstorage-swr-caching-pattern/swr-flow-light.png" alt="SWR 전체 흐름도 - Cache Hit, Stale, Cold Start 3가지 분기" />
-      <img className="theme-dark" src="/images/posts/localstorage-swr-caching-pattern/swr-flow-dark.png" alt="SWR 전체 흐름도 - Cache Hit, Stale, Cold Start 3가지 분기" />
+      <img className="theme-dark" src="/images/posts/localstorage-swr-caching-pattern/swr-flow-dark.png" alt="" />
     </div>
     <figcaption>그림 2. SWR 캐싱의 3가지 분기 - Cache Hit, Stale, Cold Start</figcaption>
   </div>
@@ -194,7 +200,7 @@ SWR 패턴에서 "캐시 데이터가 최신인지"를 어떻게 판단할까요
   <div className="figure-content">
     <div className="image-frame">
       <img className="theme-light" src="/images/posts/localstorage-swr-caching-pattern/hash-invalidation-light.png" alt="해시 비교 기반 캐시 무효화 시퀀스 - 첫 방문, 재방문, 데이터 변경 후 방문" />
-      <img className="theme-dark" src="/images/posts/localstorage-swr-caching-pattern/hash-invalidation-dark.png" alt="해시 비교 기반 캐시 무효화 시퀀스 - 첫 방문, 재방문, 데이터 변경 후 방문" />
+      <img className="theme-dark" src="/images/posts/localstorage-swr-caching-pattern/hash-invalidation-dark.png" alt="" />
     </div>
     <figcaption>그림 3. 해시 비교 기반 SWR 캐싱의 전체 시퀀스</figcaption>
   </div>
@@ -271,7 +277,7 @@ function loadWithSWR(locale, serverHash) {
  */
 async function fetchAndCache(locale, cacheKey) {
   try {
-    const response = await fetch('/api/i18n/messages?lang=' + locale);
+    const response = await fetch(`/api/i18n/messages?lang=${locale}`);
     const result = await response.json();
 
     localStorage.setItem(cacheKey, JSON.stringify({
@@ -367,18 +373,10 @@ i18next.init({
 localStorage는 JavaScript로 누구나 접근할 수 있습니다.
 따라서 **민감한 데이터는 절대 저장하면 안 됩니다.**
 
-```
-✅ 저장해도 안전한 데이터:
-  - 다국어 번역 메시지
-  - UI 설정 (테마, 언어)
-  - 공개된 참조 데이터
-
-❌ 절대 저장하면 안 되는 데이터:
-  - 인증 토큰 (JWT)
-  - 비밀번호
-  - 개인정보 (이름, 연락처)
-  - API 키
-```
+| 구분 | 데이터 예시 |
+|------|-----------|
+| **저장 가능** | 다국어 번역 메시지, UI 설정(테마, 언어), 공개된 참조 데이터 |
+| **저장 금지** | 인증 토큰(JWT), 비밀번호, 개인정보(이름, 연락처), API 키 |
 
 서버에서 클라이언트로 전송하는 데이터에서도 내부용 정보를 걸러내야 합니다.
 예를 들어, `_server.` 접두사를 가진 서버 내부 메시지는 블랙리스트 필터링으로 클라이언트에 노출하지 않습니다.
@@ -407,3 +405,9 @@ localStorage는 JavaScript로 누구나 접근할 수 있습니다.
 캐시 히트 시 네트워크 요청이 0회이므로 사용자 경험과 서버 부하 모두에서 이점이 있습니다.
 단, 항상 최신이어야 하는 데이터(결제 금액, 실시간 정보 등)에는 적합하지 않습니다.
 **"잠깐 이전 데이터가 보여도 괜찮은가?"**가 이 패턴 적용 여부의 핵심 판단 기준입니다.
+
+---
+
+## 관련 글
+
+- [Spring Boot에서 i18next로 다국어 구현하기](/blog/spring-boot-i18next-architecture) — 이 캐싱 패턴을 Spring Boot + Thymeleaf 환경의 다국어 아키텍처에 실제 적용한 전체 구현을 다룹니다. 서버 사이드 설계부터 클라이언트 초기화 스크립트까지 포함합니다.
