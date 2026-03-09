@@ -9,6 +9,8 @@ interface TableOfContentsProps {
 }
 
 const TOC_STORAGE_KEY = "toc-is-open";
+const HEADER_HEIGHT = 80;
+const CLICK_DEBOUNCE_MS = 2000;
 
 export default function TableOfContents({ headings }: TableOfContentsProps) {
   const [activeId, setActiveId] = useState<string>("");
@@ -42,16 +44,44 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
   }, [isOpen, mounted]);
 
   useEffect(() => {
+    if (headings.length === 0) return;
+
+    /**
+     * getBoundingClientRect 기반으로 현재 active heading을 계산한다.
+     *
+     * 알고리즘:
+     * 1. 모든 heading의 top 값을 수집한다.
+     * 2. top <= HEADER_HEIGHT 인 heading들 중 가장 큰 top 값을 가진 것이 active.
+     *    (viewport 상단에 가장 가까운, 즉 마지막으로 통과한 heading)
+     * 3. 해당 없으면 (모든 heading이 아직 viewport 아래) 첫 번째 heading이 active.
+     */
+    function computeActiveId(): string {
+      let bestId = headings[0]?.slug ?? "";
+      let bestTop = -Infinity;
+
+      for (const { slug } of headings) {
+        const el = document.getElementById(slug);
+        if (!el) continue;
+
+        const top = el.getBoundingClientRect().top;
+
+        if (top <= HEADER_HEIGHT && top > bestTop) {
+          bestTop = top;
+          bestId = slug;
+        }
+      }
+
+      return bestId;
+    }
+
     const observer = new IntersectionObserver(
-      (entries) => {
+      () => {
         // 클릭 후 일정 시간 동안은 IntersectionObserver 무시
         if (clickedRef.current) return;
 
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveId(entry.target.id);
-          }
-        });
+        // Observer는 "트리거" 역할만 수행하고,
+        // 실제 active는 getBoundingClientRect 기반으로 결정한다.
+        setActiveId(computeActiveId());
       },
       { rootMargin: "-80px 0px -80% 0px" }
     );
@@ -132,7 +162,7 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
                   }
                   clickTimeoutRef.current = setTimeout(() => {
                     clickedRef.current = false;
-                  }, 2000);
+                  }, CLICK_DEBOUNCE_MS);
 
                   // 스크롤 + 헤딩 강조 애니메이션
                   scrollAndHighlight(element, "heading-highlight");
