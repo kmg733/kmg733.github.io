@@ -13,6 +13,8 @@ import { parseGlossary } from "@/lib/glossary";
  * Single Responsibility: 파일 시스템에서 포스트 데이터를 읽는 것만 담당
  * Open/Closed: IPostRepository 인터페이스를 구현하여 확장 가능
  */
+const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
 export class FilePostRepository implements IPostRepository {
   private readonly postsDirectory: string;
 
@@ -129,7 +131,17 @@ export class FilePostRepository implements IPostRepository {
       ...(frontmatter.seriesOrder != null && {
         seriesOrder: frontmatter.seriesOrder,
       }),
+      ...(frontmatter.relatedSlugs &&
+        frontmatter.relatedSlugs.length > 0 &&
+        this.buildRelatedSlugs(frontmatter.relatedSlugs)),
     };
+  }
+
+  private buildRelatedSlugs(
+    slugs: string[]
+  ): { relatedSlugs: string[] } | Record<string, never> {
+    const valid = slugs.filter((s) => SLUG_PATTERN.test(s));
+    return valid.length > 0 ? { relatedSlugs: valid } : {};
   }
 
   private sortByDateDescending(posts: PostMeta[]): PostMeta[] {

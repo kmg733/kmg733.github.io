@@ -380,4 +380,144 @@ describe("PostService.getRelatedPosts", () => {
 
     expect(result).toEqual([]);
   });
+
+  it("relatedSlugs가 있으면 수동 지정 글을 우선 반환한다", () => {
+    const currentPost = createPost({
+      slug: "current",
+      category: "dev",
+      subcategory: "웹",
+      tags: ["guide"],
+      relatedSlugs: ["spring-boot-post"],
+    });
+
+    const springBootPost = createPostMeta({
+      slug: "spring-boot-post",
+      category: "dev",
+      subcategory: "Spring Boot",
+      tags: ["tutorial"],
+      date: "2025-01-01",
+    });
+
+    const allPosts: PostMeta[] = [
+      createPostMeta({ slug: "current", category: "dev", subcategory: "웹", tags: ["guide"] }),
+      springBootPost,
+      createPostMeta({ slug: "web-other", category: "dev", subcategory: "웹", tags: ["guide"], date: "2025-06-01" }),
+    ];
+
+    mockRepository.findBySlug.mockImplementation((slug) => {
+      if (slug === "current") return currentPost;
+      return null;
+    });
+    mockRepository.findAll.mockReturnValue(allPosts);
+
+    const result = service.getRelatedPosts("current", 3);
+
+    expect(result[0].slug).toBe("spring-boot-post");
+    expect(result).toHaveLength(2);
+  });
+
+  it("relatedSlugs의 수동 지정 글은 자동 추천에서 제외된다", () => {
+    const currentPost = createPost({
+      slug: "current",
+      category: "dev",
+      subcategory: "frontend",
+      tags: ["react"],
+      relatedSlugs: ["same-sub-post"],
+    });
+
+    const allPosts: PostMeta[] = [
+      createPostMeta({ slug: "current", category: "dev", subcategory: "frontend", tags: ["react"] }),
+      createPostMeta({ slug: "same-sub-post", category: "dev", subcategory: "frontend", tags: ["react"], date: "2025-06-01" }),
+      createPostMeta({ slug: "auto-post", category: "dev", subcategory: "frontend", tags: ["react"], date: "2025-01-01" }),
+    ];
+
+    mockRepository.findBySlug.mockImplementation((slug) => {
+      if (slug === "current") return currentPost;
+      return null;
+    });
+    mockRepository.findAll.mockReturnValue(allPosts);
+
+    const result = service.getRelatedPosts("current", 3);
+
+    expect(result[0].slug).toBe("same-sub-post");
+    expect(result[1].slug).toBe("auto-post");
+    expect(result).toHaveLength(2);
+  });
+
+  it("relatedSlugs에 존재하지 않는 slug가 있으면 무시한다", () => {
+    const currentPost = createPost({
+      slug: "current",
+      category: "dev",
+      subcategory: "frontend",
+      tags: ["react"],
+      relatedSlugs: ["nonexistent-slug", "real-post"],
+    });
+
+    const allPosts: PostMeta[] = [
+      createPostMeta({ slug: "current", category: "dev", subcategory: "frontend", tags: ["react"] }),
+      createPostMeta({ slug: "real-post", category: "dev", subcategory: "backend", tags: ["java"], date: "2025-01-01" }),
+    ];
+
+    mockRepository.findBySlug.mockImplementation((slug) => {
+      if (slug === "current") return currentPost;
+      return null;
+    });
+    mockRepository.findAll.mockReturnValue(allPosts);
+
+    const result = service.getRelatedPosts("current", 3);
+
+    expect(result[0].slug).toBe("real-post");
+    expect(result).toHaveLength(1);
+  });
+
+  it("relatedSlugs로 maxCount를 채우면 자동 추천은 추가되지 않는다", () => {
+    const currentPost = createPost({
+      slug: "current",
+      category: "dev",
+      subcategory: "frontend",
+      tags: ["react"],
+      relatedSlugs: ["manual-1", "manual-2"],
+    });
+
+    const allPosts: PostMeta[] = [
+      createPostMeta({ slug: "current", category: "dev", subcategory: "frontend", tags: ["react"] }),
+      createPostMeta({ slug: "manual-1", category: "dev", subcategory: "backend", tags: ["java"], date: "2025-01-01" }),
+      createPostMeta({ slug: "manual-2", category: "dev", subcategory: "backend", tags: ["spring"], date: "2025-02-01" }),
+      createPostMeta({ slug: "auto-candidate", category: "dev", subcategory: "frontend", tags: ["react"], date: "2025-06-01" }),
+    ];
+
+    mockRepository.findBySlug.mockImplementation((slug) => {
+      if (slug === "current") return currentPost;
+      return null;
+    });
+    mockRepository.findAll.mockReturnValue(allPosts);
+
+    const result = service.getRelatedPosts("current", 2);
+
+    expect(result).toHaveLength(2);
+    expect(result[0].slug).toBe("manual-1");
+    expect(result[1].slug).toBe("manual-2");
+  });
+
+  it("relatedSlugs가 없으면 기존 자동 추천 로직대로 동작한다", () => {
+    const currentPost = createPost({
+      slug: "current",
+      category: "dev",
+      subcategory: "frontend",
+      tags: ["react"],
+    });
+
+    const allPosts: PostMeta[] = [
+      createPostMeta({ slug: "current", category: "dev", subcategory: "frontend", tags: ["react"] }),
+      createPostMeta({ slug: "auto", category: "dev", subcategory: "frontend", tags: ["react"], date: "2025-06-01" }),
+    ];
+
+    mockRepository.findBySlug.mockReturnValue(currentPost);
+    mockRepository.findAll.mockReturnValue(allPosts);
+
+    const result = service.getRelatedPosts("current", 3);
+
+    expect(result).toHaveLength(1);
+    expect(result[0].slug).toBe("auto");
+  });
 });

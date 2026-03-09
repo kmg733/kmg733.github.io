@@ -4,7 +4,7 @@
 
 https://kmg733.github.io
 
-A personal technical blog built with Next.js 16, TypeScript, and Tailwind CSS.
+A personal technical blog built with Next.js 16, TypeScript, and Tailwind CSS. Clean Architecture based, with 30 test files covering 344+ tests.
 
 ## Tech Stack
 
@@ -44,8 +44,9 @@ Infrastructure (Repositories)
 
 - **Repository pattern** - Data access abstraction via `IPostRepository`, `IProjectRepository`
 - **DI Container** - Dependency assembly in `lib/container.ts`
-- **Custom Hooks** - `useSearch` (search), `useKeyboardShortcut` (shortcuts), `useFocusTrap` (modal focus)
+- **Custom Hooks** - `useSearch` (search), `useKeyboardShortcut` (shortcuts), `useFocusTrap` (modal focus), `useCategoryFilter` (category filter), `useScrollPosition` (scroll position), `useInView` (viewport detection)
 - **Context API** - `GlossaryProvider` for glossary state management
+- **Related Posts** - Hybrid system: manual specification (`relatedSlugs`) + tag-based auto-recommendation
 
 ## Project Structure
 
@@ -60,6 +61,11 @@ Infrastructure (Repositories)
 │   │   ├── SearchModal     #   Full-text search (Cmd+K)
 │   │   ├── TableOfContents #   TOC with scroll tracking
 │   │   ├── BlogFilter      #   Category/search filter
+│   │   ├── RelatedPosts    #   Related posts (manual+auto hybrid)
+│   │   ├── PostThumbnail   #   Category thumbnails (dark/light)
+│   │   ├── PostNavigation  #   Series prev/next navigation
+│   │   ├── CategoryTree    #   Category tree (sidebar)
+│   │   ├── ScrollReveal    #   Scroll-based reveal animations
 │   │   ├── ImageLightbox   #   Image zoom viewer
 │   │   └── ThemeToggle     #   Dark/Light toggle
 │   ├── services/           # Business logic
@@ -69,7 +75,7 @@ Infrastructure (Repositories)
 │   ├── hooks/              # Custom hooks
 │   ├── lib/                # Utilities (TOC, glossary, DI container)
 │   └── utils/              # Helpers (search)
-├── __tests__/              # Tests (19 files)
+├── __tests__/              # Tests (30 files, 344+ tests)
 └── .github/workflows/      # CI/CD (develop push → auto deploy)
 ```
 
@@ -85,6 +91,10 @@ description: "Post description"
 category: "개발"
 subcategory: "JavaScript"
 tags: ["guide", "intermediate"]
+thumbnail: "/images/posts/my-post/thumbnail-dark.png"
+series: "Series Name"
+seriesOrder: 1
+relatedSlugs: ["other-post-slug"]
 glossary:
   - term: "Closure"
     brief: "A combination of a function and its lexical environment"
@@ -93,6 +103,30 @@ glossary:
 
 Content (<Term id="Closure" /> to reference glossary)
 ```
+
+### Frontmatter Fields
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `title` | Yes | Post title |
+| `date` | Yes | Publish date (YYYY-MM-DD) |
+| `description` | Yes | Post description |
+| `category` | Yes | Category (e.g., "개발", "일상") |
+| `subcategory` | No | Subcategory (e.g., "JavaScript", "React") |
+| `tags` | Yes | Tag array |
+| `thumbnail` | No | Custom thumbnail image path |
+| `series` | No | Series name (enables prev/next navigation) |
+| `seriesOrder` | No | Order within series |
+| `relatedSlugs` | No | Manually specified related post slugs |
+| `glossary` | No | Glossary entry array |
+
+### Related Posts
+
+Hybrid recommendation system:
+
+1. Posts manually specified via `relatedSlugs` are shown first (no subcategory restriction)
+2. Remaining slots are filled with tag-based auto-recommendations from the same `subcategory`
+3. Manually specified posts are excluded from auto-recommendations to prevent duplicates
 
 Full taxonomy: [`content/TAXONOMY.md`](./content/TAXONOMY.md)
 
