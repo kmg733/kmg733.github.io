@@ -7,6 +7,7 @@ import SearchModal from "@/components/SearchModal";
 import SearchButton from "@/components/SearchButton";
 import ScrollToTop from "@/components/ScrollToTop";
 import MouseRipple from "@/components/MouseRipple";
+
 import NavLink from "@/components/NavLink";
 import { postService } from "@/lib/container";
 import "./globals.css";

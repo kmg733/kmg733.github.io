@@ -80,6 +80,12 @@ body::before {
   .btn-shimmer {
     animation: none;
   }
+  .gradient-orb {
+    animation: none !important;
+  }
+  .btn-shine::before {
+    transition: none !important;
+  }
 }
 
 /* 다크 모드 - 달빛 효과 */
@@ -191,6 +197,10 @@ body::before {
   animation-delay: 0.3s;
 }
 
+.animate-delay-400 {
+  animation-delay: 0.4s;
+}
+
 /* ========================================
    Dynamic Animation Keyframes
    ======================================== */
@@ -248,6 +258,163 @@ body::before {
 @keyframes shimmer {
   0% { background-position: -200% center; }
   100% { background-position: 200% center; }
+}
+
+/* ========================================
+   Gradient Orb Drift Animations
+   ======================================== */
+
+/* ========================================
+   Blink Cursor Animation
+   ======================================== */
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.animate-blink {
+  animation: blink 1s step-end infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-blink {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+@keyframes orb-drift-1 {
+  0%,  100% { transform: translate(0px,   0px)   scale(1);    }
+  25%        { transform: translate(40px, -55px)  scale(1.08); }
+  50%        { transform: translate(15px, -30px)  scale(1.03); }
+  75%        { transform: translate(-25px, 35px)  scale(0.96); }
+}
+
+@keyframes orb-drift-2 {
+  0%,  100% { transform: translate(0px,   0px)   scale(1);    }
+  30%        { transform: translate(-50px, 40px)  scale(1.1);  }
+  60%        { transform: translate(30px,  60px)  scale(0.93); }
+  80%        { transform: translate(20px, -20px)  scale(1.05); }
+}
+
+@keyframes orb-drift-3 {
+  0%,  100% { transform: translate(0px,  0px)   scale(1);    }
+  20%        { transform: translate(35px, 45px)  scale(1.06); }
+  55%        { transform: translate(-40px, -30px) scale(0.97); }
+  80%        { transform: translate(10px,  25px)  scale(1.04); }
+}
+
+/* --- Orb base --- */
+.gradient-orb {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* Orb 1: top-left, 320px, amber-300/orange-200 light | slate-700/blue-950 dark */
+.gradient-orb-1 {
+  top: -80px;
+  left: -60px;
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(
+    circle at center,
+    rgba(252, 211, 77, 0.40) 0%,   /* amber-300 */
+    rgba(253, 186, 116, 0.30) 50%, /* orange-200-ish */
+    transparent 70%
+  );
+  filter: blur(90px);
+  animation: orb-drift-1 28s ease-in-out infinite;
+}
+
+.dark .gradient-orb-1 {
+  background: radial-gradient(
+    circle at center,
+    rgba(51, 65, 85, 0.30) 0%,     /* slate-700 */
+    rgba(15, 23, 42, 0.22) 55%,    /* blue-950 */
+    transparent 72%
+  );
+}
+
+/* Orb 2: top-right, 280px, orange-300/amber-100 light | slate-600/blue-900 dark */
+.gradient-orb-2 {
+  top: -40px;
+  right: -80px;
+  width: 280px;
+  height: 280px;
+  background: radial-gradient(
+    circle at center,
+    rgba(253, 186, 116, 0.35) 0%,  /* orange-200 */
+    rgba(254, 243, 199, 0.25) 55%, /* amber-100 */
+    transparent 72%
+  );
+  filter: blur(80px);
+  animation: orb-drift-2 24s ease-in-out infinite;
+}
+
+.dark .gradient-orb-2 {
+  background: radial-gradient(
+    circle at center,
+    rgba(71, 85, 105, 0.28) 0%,    /* slate-600 */
+    rgba(23, 37, 84, 0.20) 55%,    /* blue-900 */
+    transparent 72%
+  );
+}
+
+/* Orb 3: bottom-center, 220px, amber-200/rose-100 light | blue-950/slate-800 dark */
+.gradient-orb-3 {
+  bottom: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 220px;
+  height: 220px;
+  background: radial-gradient(
+    circle at center,
+    rgba(252, 211, 77, 0.32) 0%,   /* amber-300 */
+    rgba(254, 205, 211, 0.20) 55%, /* rose-200 */
+    transparent 70%
+  );
+  filter: blur(100px);
+  animation: orb-drift-3 22s ease-in-out infinite;
+}
+
+.dark .gradient-orb-3 {
+  background: radial-gradient(
+    circle at center,
+    rgba(15, 23, 42, 0.28) 0%,     /* blue-950 */
+    rgba(30, 41, 59, 0.20) 55%,    /* slate-800 */
+    transparent 70%
+  );
+}
+
+/* ========================================
+   Button Shine Effect
+   ======================================== */
+
+.btn-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-shine::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.40) 50%,
+    transparent 60%
+  );
+  transform: translateX(-200%);
+  transition: transform 0.6s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.btn-shine:hover::before {
+  transform: translateX(200%);
 }
 
 /* Navigation link underline animation */
