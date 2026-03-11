@@ -6,6 +6,7 @@ import PostThumbnail from "@/components/PostThumbnail";
 import TypeWriter from "@/components/TypeWriter";
 import FloatingParticles from "@/components/FloatingParticles";
 import BlogStats from "@/components/BlogStats";
+import GradientOrbs from "@/components/GradientOrbs";
 
 export default function Home() {
   const recentPosts = postService.getRecentPosts(HOME_DEFAULTS.RECENT_POSTS_COUNT);
@@ -23,47 +24,51 @@ export default function Home() {
   }, 0);
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-16">
-      {/* Hero Section */}
-      <section className="relative mb-16 min-h-[320px] text-center sm:min-h-[360px]">
-        <FloatingParticles />
-        <ScrollReveal direction="fade" duration={800}>
-          <h1 className="mb-4 text-4xl font-bold tracking-tight sm:text-5xl">
-            안녕하세요,{" "}
-            <span className="font-[family-name:var(--font-sacramento)]">
-              <TypeWriter
-                words={["Manuel", "풀스택 개발자", "기술 블로거"]}
-                typingSpeed={100}
-                deletingSpeed={50}
-                pauseDuration={2500}
-              />
-            </span>{" "}
-            입니다
-          </h1>
-        </ScrollReveal>
-        <ScrollReveal direction="up" delay={100}>
-          <p className="mx-auto max-w-2xl text-lg text-zinc-600 dark:text-zinc-400">
-            소프트웨어 개발에 대한 경험과 지식을 공유하는 공간입니다.
-          </p>
-        </ScrollReveal>
-        <ScrollReveal direction="up" delay={200}>
-          <div className="mt-8 flex justify-center gap-4">
-            <Link
-              href="/blog"
-              className="btn-shimmer rounded-full bg-gradient-to-r from-amber-500 to-orange-500 px-6 py-3 text-sm font-medium text-white shadow-md transition-all hover:from-amber-600 hover:to-orange-600 hover:shadow-lg dark:from-slate-600 dark:to-slate-700 dark:hover:from-slate-500 dark:hover:to-slate-600"
-            >
-              블로그 보기
-            </Link>
-            <Link
-              href="/about"
-              className="rounded-full border border-amber-300 px-6 py-3 text-sm font-medium text-amber-700 transition-all hover:bg-amber-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800"
-            >
-              About Me
-            </Link>
-          </div>
-        </ScrollReveal>
+    <>
+      {/* Hero Section — full-width, full-height */}
+      <section className="relative flex min-h-[calc(100vh-4rem)] items-center justify-center overflow-hidden">
+        <GradientOrbs />
+        <FloatingParticles className="!absolute !inset-0" />
+        <div className="relative z-10 mx-auto max-w-4xl px-4 text-center">
+          <ScrollReveal direction="fade" duration={800}>
+            <h1 className="mb-4 text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
+              안녕하세요,{" "}
+              <span className="font-[family-name:var(--font-sacramento)]">
+                <TypeWriter
+                  words={["Manuel", "풀스택 개발자", "기술 블로거"]}
+                  typingSpeed={100}
+                  deletingSpeed={50}
+                  pauseDuration={2500}
+                />
+              </span>{" "}
+              입니다
+            </h1>
+          </ScrollReveal>
+          <ScrollReveal direction="up" delay={100}>
+            <p className="mx-auto max-w-2xl text-lg text-zinc-600 dark:text-zinc-400 md:text-xl">
+              소프트웨어 개발에 대한 경험과 지식을 공유하는 공간입니다.
+            </p>
+          </ScrollReveal>
+          <ScrollReveal direction="up" delay={200}>
+            <div className="mt-8 flex justify-center gap-4">
+              <Link
+                href="/blog"
+                className="btn-shimmer btn-shine rounded-full bg-gradient-to-r from-amber-500 to-orange-500 px-6 py-3 text-sm font-medium text-white shadow-md transition-all hover:from-amber-600 hover:to-orange-600 hover:shadow-lg dark:from-slate-600 dark:to-slate-700 dark:hover:from-slate-500 dark:hover:to-slate-600"
+              >
+                블로그 보기
+              </Link>
+              <Link
+                href="/about"
+                className="rounded-full border border-amber-300 px-6 py-3 text-sm font-medium text-amber-700 transition-all hover:bg-amber-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800"
+              >
+                About Me
+              </Link>
+            </div>
+          </ScrollReveal>
+        </div>
       </section>
 
+    <div className="mx-auto max-w-4xl px-4 py-16">
       {/* Blog Stats */}
       <ScrollReveal direction="up" delay={100} className="mb-16">
         <BlogStats
@@ -74,6 +79,9 @@ export default function Home() {
           ]}
         />
       </ScrollReveal>
+
+      {/* Divider: BlogStats ↔ Recent Posts */}
+      <hr className="my-12 h-px border-none bg-gradient-to-r from-transparent via-amber-300/50 to-transparent dark:via-slate-600/50" />
 
       {/* Recent Posts */}
       <section>
@@ -143,5 +151,6 @@ export default function Home() {
         )}
       </section>
     </div>
+    </>
   );
 }
