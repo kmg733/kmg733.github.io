@@ -42,7 +42,6 @@ async function generateBlurDataUrl(inputPath: string): Promise<string> {
 }
 
 async function optimizeThumbnail(inputPath: string): Promise<void> {
-  const ext = path.extname(inputPath);
   const outputPath = inputPath.replace(/\.png$/i, ".webp");
 
   await sharp(inputPath)
@@ -52,6 +51,11 @@ async function optimizeThumbnail(inputPath: string): Promise<void> {
 }
 
 async function main() {
+  if (process.env.SKIP_OPTIMIZE === "1") {
+    console.log("SKIP_OPTIMIZE=1 감지, 썸네일 최적화를 건너뜁니다.");
+    return;
+  }
+
   if (!fs.existsSync(THUMBNAILS_DIR)) {
     console.error(`썸네일 디렉토리가 없습니다: ${THUMBNAILS_DIR}`);
     process.exit(1);
@@ -78,13 +82,17 @@ async function main() {
     try {
       const existing = JSON.parse(fs.readFileSync(OUTPUT_JSON, "utf-8"));
       Object.assign(blurDataMap, existing);
-    } catch {
-      // 파싱 실패 시 새로 생성
+    } catch (err) {
+      console.warn("기존 blur JSON 파싱 실패, 새로 생성합니다:", err);
     }
   }
 
   for (const file of pngFiles) {
     const inputPath = path.join(THUMBNAILS_DIR, file);
+    if (!inputPath.startsWith(THUMBNAILS_DIR + path.sep)) {
+      console.warn(`  경로 범위 초과, 건너뜀: ${file}`);
+      continue;
+    }
     const webpPath = inputPath.replace(/\.png$/i, ".webp");
 
     // WebP가 이미 최신 상태인지 확인 (PNG 수정 시각 비교)

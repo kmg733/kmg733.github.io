@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { THUMBNAIL_DEFAULTS } from "@/lib/constants";
 import blurDataMap from "@/lib/thumbnail-blur-data.json";
 
@@ -11,7 +11,22 @@ interface PostThumbnailProps {
 }
 
 function getBlurData(pngSrc: string): string | undefined {
-  return (blurDataMap as Record<string, string>)[pngSrc];
+  const value = (blurDataMap as Record<string, string>)[pngSrc];
+  return value?.startsWith("data:image/") ? value : undefined;
+}
+
+const PNG_TO_WEBP = /\.png$/i;
+
+function blurStyle(
+  loaded: boolean,
+  blurUrl?: string
+): React.CSSProperties | undefined {
+  if (!blurUrl) return undefined;
+  return {
+    backgroundImage: loaded ? "none" : `url(${blurUrl})`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+  };
 }
 
 export default function PostThumbnail({
@@ -41,20 +56,11 @@ export default function PostThumbnail({
     ? `${thumbnail}-dark.png`
     : THUMBNAIL_DEFAULTS.DEFAULT_DARK;
 
-  const lightWebp = lightPng.replace(/\.png$/i, ".webp");
-  const darkWebp = darkPng.replace(/\.png$/i, ".webp");
+  const lightWebp = lightPng.replace(PNG_TO_WEBP, ".webp");
+  const darkWebp = darkPng.replace(PNG_TO_WEBP, ".webp");
 
   const lightBlur = getBlurData(lightPng);
   const darkBlur = getBlurData(darkPng);
-
-  const blurStyle = (loaded: boolean, blurUrl?: string) =>
-    blurUrl
-      ? ({
-          backgroundImage: loaded ? "none" : `url(${blurUrl})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        } as React.CSSProperties)
-      : undefined;
 
   return (
     <>
@@ -86,7 +92,7 @@ export default function PostThumbnail({
           <img
             ref={darkRef}
             src={darkPng}
-            alt=""
+            alt="" /* 라이트 이미지와 동일 콘텐츠 - 스크린 리더 중복 읽기 방지 */
             width={640}
             height={427}
             className={`${className} transition-opacity duration-300 ${darkLoaded ? "opacity-100" : "opacity-0"}`}
