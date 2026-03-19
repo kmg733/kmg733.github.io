@@ -34,16 +34,24 @@ glossary:
     detail: "Promise.then, queueMicrotask 등이 마이크로태스크 큐에 등록된다. 콜 스택이 비면 매크로태스크(setTimeout 등)보다 먼저 실행되며, 큐가 비워질 때까지 모두 처리된다."
 ---
 
+<figure>
+  <div className="figure-content">
+    <div className="image-frame">
+      <img className="theme-light" src="/images/posts/javascript-async/javascript-async-light.png" alt="JavaScript 비동기 처리" />
+      <img className="theme-dark" src="/images/posts/javascript-async/javascript-async-dark.png" alt="JavaScript 비동기 처리" />
+    </div>
+  </div>
+</figure>
+
 ## 비동기란 무엇인가
 
 커피숍에서 주문하는 두 가지 상황을 떠올려 봅시다.
 
-**동기(Synchronous) 방식** — 카운터에서 주문하면 커피가 나올 때까지 그 자리에서 기다립니다.
-뒷사람은 앞사람이 커피를 받을 때까지 주문조차 할 수 없습니다.
+**동기(Synchronous) 방식** — 카운터에서 커피를 주문하고, 완성될 때까지 카운터 앞에 서서 기다립니다.
+커피를 받기 전까지 그 자리를 떠날 수 없습니다.
 
-**비동기(Asynchronous) 방식** — 주문하면 진동벨을 받고 자리에 앉습니다.
-커피가 완성되면 진동벨이 울리고, 그때 가서 커피를 받으면 됩니다.
-기다리는 동안 다른 일을 할 수 있습니다.
+**비동기(Asynchronous) 방식** — 카운터에서 커피를 주문하면 진동벨을 받습니다.
+자리에 돌아가 노트북을 펴거나 친구와 대화하다가, 진동벨이 울리면 그때 커피를 받으러 갑니다.
 
 | 구분 | 동기 (Synchronous) | 비동기 (Asynchronous) |
 |------|-------------------|----------------------|
