@@ -388,7 +388,7 @@ async function fetchData() {
 }
 ```
 
-여러 `await`가 있어도 `catch` 블록 하나로 모든 에러를 처리할 수 있습니다.
+여러 `await`이 있어도 `catch` 블록 하나로 모든 에러를 처리할 수 있습니다.
 
 ```javascript
 async function processData() {
@@ -661,5 +661,5 @@ async/await도 내부적으로 Promise를 사용하고, Promise도 내부적으�
 - **에러 처리**: try/catch를 빠뜨리지 않습니다
 - **반복문**: `forEach` 대신 `for...of` 또는 `map + Promise.all`을 사용합니다
 
-[이전 글](/blog/javascript-closure)에서 클로저가 함수의 "기억"이고, [this 바인딩](/blog/javascript-this-binding)이 함수의 "맥락"이었다면, 비동기 처리는 함수의 **"시간"**을 다루는 방법입니다.
+[이전 글](/blog/javascript-closure)에서 클로저가 함수의 "**기억**"이고, [this 바인딩](/blog/javascript-this-binding)이 함수의 "**맥락**"이었다면, 비동기 처리는 함수의 "**시간**"을 다루는 방법입니다.
 세 가지를 함께 이해하면 JavaScript 함수의 동작 방식이 훨씬 명확해집니다.
