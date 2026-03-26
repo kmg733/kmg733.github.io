@@ -1,4 +1,4 @@
-import { addLazyLoading } from "../rehype-lazy-loading";
+import { addLazyLoading } from "../mdx-lazy-loading";
 
 describe("addLazyLoading", () => {
   it("img 요소에 loading='lazy'를 추가한다", () => {
@@ -58,5 +58,26 @@ describe("addLazyLoading", () => {
     expect(output).toContain('<img loading="lazy" src="/c.png"');
     const lazyMatches = output.match(/loading="lazy"/g);
     expect(lazyMatches).toHaveLength(2);
+  });
+
+  it("멀티라인 img 태그도 처리한다", () => {
+    const input = `<img
+  className="theme-light"
+  src="/images/posts/test-light.png"
+  alt="test"
+/>`;
+    const output = addLazyLoading(input);
+    expect(output).toContain('loading="lazy"');
+  });
+
+  it("멀티라인 img 태그에 이미 loading이 있으면 스킵한다", () => {
+    const input = `<img
+  loading="eager"
+  className="theme-light"
+  src="/test.png"
+/>`;
+    const output = addLazyLoading(input);
+    expect(output).toContain('loading="eager"');
+    expect(output).not.toContain('loading="lazy"');
   });
 });

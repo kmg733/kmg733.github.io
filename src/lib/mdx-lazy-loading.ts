@@ -6,10 +6,11 @@
  *
  * - 이미 loading 속성이 있는 <img>는 스킵한다.
  * - <img 이외의 태그는 영향받지 않는다.
+ * - 멀티라인 <img> 태그도 지원한다.
  */
 export function addLazyLoading(source: string): string {
   return source.replace(
-    /<img(?![^>]*\bloading\b)([^>]*?)(\/?>)/g,
+    /<img(?![^>]*\bloading\b)([^>]*)(\/?>)/g,
     '<img loading="lazy"$1$2'
   );
 }
