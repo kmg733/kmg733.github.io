@@ -1,10 +1,13 @@
 "use client";
 
+import { useMemo } from "react";
 import Link from "next/link";
 import type { PostMeta } from "@/types";
 import { useSearch } from "@/hooks/useSearch";
+import { useTagFilter } from "@/hooks/useTagFilter";
 import PostThumbnail from "./PostThumbnail";
 import SearchInput from "./SearchInput";
+import TagChips from "./TagChips";
 import HighlightedText from "./HighlightedText";
 import ScrollReveal from "./ScrollReveal";
 
@@ -19,7 +22,11 @@ export default function BlogFilter({
   selectedCategory,
   selectedSubcategory,
 }: BlogFilterProps) {
-  // 검색 훅 (필터링된 포스트에서 검색)
+  // 태그 필터 훅 (카테고리 필터링된 포스트에서 태그 추출)
+  const { availableTags, selectedTag, filteredPosts: tagFilteredPosts, selectTag } =
+    useTagFilter(posts);
+
+  // 검색 훅 (태그 필터링된 포스트에서 검색)
   const {
     query,
     setQuery,
@@ -27,33 +34,47 @@ export default function BlogFilter({
     resultCount,
     isSearching,
     clearSearch,
-  } = useSearch(posts);
+  } = useSearch(tagFilteredPosts);
 
   // 검색어가 최소 길이 이상인지 확인
   const isSearchActive = query.trim().length >= 2;
 
   // 최종 표시할 포스트
-  const displayPosts = isSearchActive ? results.map((r) => r.post) : posts;
+  const displayPosts = isSearchActive
+    ? results.map((r) => r.post)
+    : tagFilteredPosts;
 
   // 검색 시 사용할 쿼리 (검색 비활성 시 빈 문자열)
   const highlightQuery = isSearchActive ? query : "";
 
-  // 빈 결과 메시지 생성
+  // 빈 결과 메시지 (의존 값 변경 시에만 재계산)
   // React JSX 텍스트 노드로 렌더링되므로 자동 이스케이프됨 (XSS 안전)
-  const getEmptyMessage = () => {
+  const emptyMessage = useMemo(() => {
     if (isSearchActive) {
       const truncatedQuery =
         query.length > 50 ? `${query.slice(0, 50)}...` : query;
       return `'${truncatedQuery}'에 대한 검색 결과가 없습니다.`;
     }
+    if (selectedTag) {
+      return `'${selectedTag}' 태그에 해당하는 포스트가 없습니다.`;
+    }
     if (selectedCategory) {
       return `'${selectedCategory}${selectedSubcategory ? ` > ${selectedSubcategory}` : ""}' 카테고리에 포스트가 없습니다.`;
     }
     return "아직 작성된 포스트가 없습니다.";
-  };
+  }, [isSearchActive, query, selectedTag, selectedCategory, selectedSubcategory]);
 
   return (
     <>
+      {/* 태그 칩 필터 */}
+      <div className="mb-4">
+        <TagChips
+          tags={availableTags}
+          selectedTag={selectedTag}
+          onSelectTag={selectTag}
+        />
+      </div>
+
       {/* 검색 입력 */}
       <div className="mb-6">
         <SearchInput
@@ -138,7 +159,7 @@ export default function BlogFilter({
           ))}
         </div>
       ) : (
-        <p className="text-zinc-600 dark:text-zinc-400">{getEmptyMessage()}</p>
+        <p className="text-zinc-600 dark:text-zinc-400">{emptyMessage}</p>
       )}
     </>
   );

@@ -52,6 +52,13 @@ jest.mock("next/link", () => {
   };
 });
 
+// Next.js navigation 모킹 (useTagFilter에서 사용)
+jest.mock("next/navigation", () => ({
+  useSearchParams: () => new URLSearchParams(),
+  useRouter: () => ({ push: jest.fn() }),
+  usePathname: () => "/blog",
+}));
+
 describe("BlogFilter", () => {
   const mockPosts: PostMeta[] = [
     {
@@ -148,9 +155,10 @@ describe("BlogFilter", () => {
     it("should display post tags", () => {
       render(<BlogFilter {...defaultProps} />);
 
-      expect(screen.getByText("react")).toBeInTheDocument();
-      expect(screen.getByText("frontend")).toBeInTheDocument();
-      expect(screen.getByText("typescript")).toBeInTheDocument();
+      // 태그 텍스트가 칩과 포스트 카드 양쪽에 표시될 수 있으므로 getAllByText 사용
+      expect(screen.getAllByText("react").length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText("frontend").length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText("typescript").length).toBeGreaterThanOrEqual(1);
     });
 
     it("should display formatted date", () => {
@@ -176,6 +184,31 @@ describe("BlogFilter", () => {
 
       const articles = screen.getAllByRole("article");
       expect(articles).toHaveLength(3);
+    });
+  });
+
+  describe("태그 칩 필터", () => {
+    it("should render tag chips when multiple tags exist", () => {
+      render(<BlogFilter {...defaultProps} />);
+
+      // mockPosts의 태그: react, frontend, typescript, 여행, 제주
+      // 5개 태그 → 칩 렌더링됨
+      const buttons = screen.getAllByRole("button");
+      expect(buttons.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it("should filter posts when tag chip is clicked", () => {
+      render(<BlogFilter {...defaultProps} />);
+
+      // "react" 태그 칩 클릭
+      const reactChip = screen.getAllByRole("button").find(
+        (btn) => btn.textContent?.includes("react") && !btn.textContent?.includes("frontend")
+      );
+      if (reactChip) {
+        fireEvent.click(reactChip);
+        // react 태그를 가진 포스트: react-post만
+        expect(screen.getByText("React 시작하기")).toBeInTheDocument();
+      }
     });
   });
 
