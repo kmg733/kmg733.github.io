@@ -5,17 +5,11 @@ import CodeWindow from "@/components/CodeWindow";
 import GradientOrbs from "@/components/GradientOrbs";
 import PhilosophySection from "@/components/PhilosophySection";
 import ScrollReveal from "@/components/ScrollReveal";
+import { techStack } from "@/data/techStack";
 
 export const metadata: Metadata = {
   title: "About",
   description: "풀스택 개발자를 꿈꾸는 MinGyu입니다.",
-};
-
-const techStack = {
-  languages: ["Java", "JavaScript", "TypeScript"],
-  frameworks: ["Spring Boot", "Spring Security", "React", "Bootstrap", "Tailwind CSS"],
-  databases: ["PostgreSQL", "MariaDB"],
-  tools: ["Git", "GitHub", "GitLab"],
 };
 
 // 섹션 구분선 (Option D)

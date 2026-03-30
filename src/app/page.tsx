@@ -7,6 +7,7 @@ import TypeWriter from "@/components/TypeWriter";
 import FloatingParticles from "@/components/FloatingParticles";
 import BlogStats from "@/components/BlogStats";
 import GradientOrbs from "@/components/GradientOrbs";
+import TechStackSection from "@/components/TechStackSection";
 
 export default function Home() {
   const recentPosts = postService.getRecentPosts(HOME_DEFAULTS.RECENT_POSTS_COUNT);
@@ -69,6 +70,12 @@ export default function Home() {
       </section>
 
     <div className="mx-auto max-w-4xl px-4 py-16">
+      {/* Tech Stack */}
+      <TechStackSection />
+
+      {/* Divider: Tech Stack ↔ Blog Stats */}
+      <hr className="my-12 h-px border-none bg-gradient-to-r from-transparent via-amber-300/50 to-transparent dark:via-slate-600/50" />
+
       {/* Blog Stats */}
       <ScrollReveal direction="up" delay={100} className="mb-16">
         <BlogStats
