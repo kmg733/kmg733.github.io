@@ -14,6 +14,7 @@ export interface PostMeta {
   series?: string;
   seriesOrder?: number;
   relatedSlugs?: string[];
+  comments?: boolean;
 }
 
 /**
@@ -46,4 +47,5 @@ export interface PostFrontmatter {
   series?: string;
   seriesOrder?: number;
   relatedSlugs?: string[];
+  comments?: boolean;
 }
