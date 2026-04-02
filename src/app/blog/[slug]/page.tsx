@@ -15,6 +15,7 @@ import PostNavigation from "@/components/PostNavigation";
 import CodeBlock from "@/components/CodeBlock";
 import BackButton from "@/components/BackButton";
 import { GlossaryProvider, GlossarySection, Term } from "@/components/glossary";
+import GiscusComments from "@/components/GiscusComments";
 import type { Metadata } from "next";
 
 const prettyCodeOptions: PrettyCodeOptions = {
@@ -147,6 +148,7 @@ export default async function BlogPostPage({ params }: Props) {
             next={adjacentPosts.next}
           />
           <RelatedPosts posts={relatedPosts} />
+          {post.comments !== false && <GiscusComments />}
         </article>
 
         {/* 우측 목차 영역 */}

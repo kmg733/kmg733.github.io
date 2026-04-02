@@ -134,6 +134,7 @@ export class FilePostRepository implements IPostRepository {
       ...(frontmatter.relatedSlugs &&
         frontmatter.relatedSlugs.length > 0 &&
         this.buildRelatedSlugs(frontmatter.relatedSlugs)),
+      ...(frontmatter.comments === false && { comments: false }),
     };
   }
 
