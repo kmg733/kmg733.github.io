@@ -14,3 +14,19 @@ export function addLazyLoading(source: string): string {
     '<img loading="lazy"$1$2'
   );
 }
+
+/**
+ * MDX 소스에서 ```mermaid 코드블록을 MermaidDiagram 컴포넌트로 변환한다.
+ *
+ * rehype-pretty-code가 mermaid 코드블록을 Shiki 토큰으로 분해하면
+ * 원본 텍스트 복원이 어렵기 때문에, MDX 컴파일 전에 전처리한다.
+ */
+export function replaceMermaidBlocks(source: string): string {
+  return source.replace(
+    /```mermaid\n([\s\S]*?)```/g,
+    (_, chart: string) => {
+      const escaped = chart.trim().replace(/`/g, "\\`").replace(/\$/g, "\\$");
+      return `<MermaidDiagram chart={\`${escaped}\`} />`;
+    }
+  );
+}

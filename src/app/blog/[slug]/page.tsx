@@ -4,7 +4,8 @@ import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
 import rehypePrettyCode from "rehype-pretty-code";
 import type { Options as PrettyCodeOptions } from "rehype-pretty-code";
-import { addLazyLoading } from "@/lib/mdx-lazy-loading";
+import { addLazyLoading, replaceMermaidBlocks } from "@/lib/mdx-lazy-loading";
+import MermaidDiagram from "@/components/MermaidDiagram";
 import { postService } from "@/lib/container";
 import { extractHeadings } from "@/lib/toc";
 import { DATE_FORMAT } from "@/lib/constants";
@@ -72,8 +73,8 @@ export default async function BlogPostPage({ params }: Props) {
 
   const mdxContent = (
     <MDXRemote
-      source={addLazyLoading(post.content)}
-      components={{ Term, pre: CodeBlock }}
+      source={replaceMermaidBlocks(addLazyLoading(post.content))}
+      components={{ Term, pre: CodeBlock, MermaidDiagram }}
       options={{
         mdxOptions: {
           remarkPlugins: [remarkGfm],
