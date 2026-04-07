@@ -14,3 +14,23 @@ export function addLazyLoading(source: string): string {
     '<img loading="lazy"$1$2'
   );
 }
+
+/**
+ * **bold** 닫힘 마커 바로 뒤에 한글이 올 때 bold가 적용되지 않는 문제를 수정한다.
+ *
+ * micromark(CommonMark) 파서는 닫는 ** 뒤에 단어 문자(한글 포함)가 바로 오면
+ * 단어 경계로 인식하지 않아 strong emphasis를 파싱하지 못한다.
+ * 예: **세대(Generation)**로 → bold 안 됨
+ *
+ * 이 함수는 해당 패턴을 <strong> HTML 태그로 변환하여 우회한다.
+ * fenced 코드블록(```)과 인라인 코드(`)는 변환하지 않는다.
+ */
+export function fixBoldBeforeKorean(source: string): string {
+  return source.replace(
+    /(```[\s\S]*?```|`[^`\n]+`)|(?<=^|[\s\p{P}])\*\*(\S[^*\n]*?)\*\*(?=[가-힣ㄱ-ㅎㅏ-ㅣ])/gmu,
+    (match, codeBlock, boldContent) => {
+      if (codeBlock) return codeBlock;
+      return `<strong>${boldContent}</strong>`;
+    }
+  );
+}
