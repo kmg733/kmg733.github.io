@@ -920,14 +920,26 @@ body::before {
   box-shadow:
     0 4px 6px -1px rgb(251 191 36 / 0.1),
     0 2px 4px -2px rgb(251 146 60 / 0.08);
-  transition: all 0.3s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  cursor: zoom-in;
 }
 
 .prose figure .image-frame:hover {
-  transform: translateY(-2px);
+  transform: scale(1.4);
+  z-index: 10;
   box-shadow:
-    0 10px 15px -3px rgb(251 191 36 / 0.15),
-    0 4px 6px -4px rgb(251 146 60 / 0.12);
+    0 20px 40px -8px rgb(0 0 0 / 0.2),
+    0 8px 16px -4px rgb(0 0 0 / 0.1);
+}
+
+@media (hover: none) {
+  .prose figure .image-frame:hover {
+    transform: none;
+    z-index: auto;
+    box-shadow:
+      0 4px 6px -1px rgb(251 191 36 / 0.1),
+      0 2px 4px -2px rgb(251 146 60 / 0.08);
+  }
 }
 
 .prose figure .image-frame img {
@@ -1638,4 +1650,5 @@ body::before {
       transform: rotate(360deg);
     }
   }
+
 }
