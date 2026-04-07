@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Sacramento } from "next/font/google";
 import Link from "next/link";
 import ThemeToggle from "@/components/ThemeToggle";
 import ImageLightbox from "@/components/ImageLightbox";
+import ImageHoverPreview from "@/components/ImageHoverPreview";
 import SearchModal from "@/components/SearchModal";
 import SearchButton from "@/components/SearchButton";
 import ScrollToTop from "@/components/ScrollToTop";
@@ -74,6 +75,7 @@ export default function RootLayout({
 
         <main className="flex-1">{children}</main>
 
+        <ImageHoverPreview />
         <ImageLightbox />
         <ScrollToTop />
         <SearchModal posts={allPosts} />
