@@ -94,22 +94,15 @@ Java는 이 메모리를 크게 **두 가지 영역**으로 나눠서 사용합�
 
 운영체제(OS)가 JVM 프로세스에 메모리를 할당하면, JVM은 그 메모리를 용도에 따라 나눠서 관리합니다.
 
-```mermaid
-graph TB
-    OS["운영체제(OS)가 JVM에게 할당한 메모리"]
-    OS --> JVM["JVM 프로세스"]
-    JVM --> HEAP["힙 메모리\n(Heap Memory)\nJVM이 관리"]
-    JVM --> NATIVE["네이티브 메모리\n(Native/Off-Heap)\nOS가 관리"]
-    HEAP --> YOUNG["Young Generation"]
-    HEAP --> OLD["Old Generation"]
-    YOUNG --> EDEN["Eden 영역"]
-    YOUNG --> S0["Survivor 0"]
-    YOUNG --> S1["Survivor 1"]
-    NATIVE --> META["Metaspace\n(클래스 정보)"]
-    NATIVE --> DIRECT["Direct Buffer\n(네트워크 I/O)"]
-    NATIVE --> STACK["스레드 스택\n(지역 변수)"]
-    NATIVE --> JNI["JNI/네이티브 라이브러리\n(SSL, OpenCV 등)"]
-```
+<figure>
+  <div className="figure-content">
+    <div className="image-frame">
+      <img className="theme-light" src="/images/posts/jvm-memory-structure/jvm-structure-light.png" alt="JVM 메모리 구조 전체 그림" />
+      <img className="theme-dark" src="/images/posts/jvm-memory-structure/jvm-structure-dark.png" alt="JVM 메모리 구조 전체 그림" />
+    </div>
+  </div>
+  <figcaption>JVM 메모리 구조 전체 그림</figcaption>
+</figure>
 
 크게 두 영역으로 나뉩니다. <Term id="heap-memory">힙 메모리</Term>와 <Term id="native-memory">네이티브 메모리</Term>입니다.
 
@@ -203,13 +196,15 @@ Minor GC가 반복될 때마다, 살아남은 객체는 Survivor 0 → Survivor 
 Old 영역이 가득 차면 **Major GC**가 발생합니다.
 전체 힙을 스캔하는 **Full GC**는 가장 오래 걸리며, 이때 <Term id="stop-the-world">Stop-The-World</Term>가 발생합니다.
 
-```mermaid
-graph LR
-    A["new Object()\nEden에 생성"] -->|"Minor GC\n생존"| B["Survivor\n(age=1)"]
-    B -->|"다시 생존\n(age 증가)"| C["Survivor\n(age=2,3...)"]
-    C -->|"임계값 도달\n(기본 15)"| D["Old Generation\n(장기 보관)"]
-    D -->|"Old 가득 참"| E["Major/Full GC\n(전체 스캔)"]
-```
+<figure>
+  <div className="figure-content">
+    <div className="image-frame">
+      <img className="theme-light" src="/images/posts/jvm-memory-structure/gc-lifecycle-light.png" alt="객체의 생애주기: Eden → Survivor → Old → GC" />
+      <img className="theme-dark" src="/images/posts/jvm-memory-structure/gc-lifecycle-dark.png" alt="객체의 생애주기: Eden → Survivor → Old → GC" />
+    </div>
+  </div>
+  <figcaption>객체의 생애주기: Eden → Survivor → Old → GC</figcaption>
+</figure>
 
 ### GC 종류 비교
 
