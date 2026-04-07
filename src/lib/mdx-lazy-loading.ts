@@ -8,6 +8,13 @@
  * - <img 이외의 태그는 영향받지 않는다.
  * - 멀티라인 <img> 태그도 지원한다.
  */
+export function addLazyLoading(source: string): string {
+  return source.replace(
+    /<img(?![^>]*\bloading\b)([^>]*)(\/?>)/g,
+    '<img loading="lazy"$1$2'
+  );
+}
+
 /**
  * **bold** 닫힘 마커 바로 뒤에 한글이 올 때 bold가 적용되지 않는 문제를 수정한다.
  *
@@ -16,17 +23,14 @@
  * 예: **세대(Generation)**로 → bold 안 됨
  *
  * 이 함수는 해당 패턴을 <strong> HTML 태그로 변환하여 우회한다.
+ * fenced 코드블록(```)과 인라인 코드(`)는 변환하지 않는다.
  */
 export function fixBoldBeforeKorean(source: string): string {
   return source.replace(
-    /(?<=^|[\s\p{P}])\*\*(\S[^*\n]*?)\*\*(?=[가-힣ㄱ-ㅎㅏ-ㅣ])/gmu,
-    "<strong>$1</strong>"
-  );
-}
-
-export function addLazyLoading(source: string): string {
-  return source.replace(
-    /<img(?![^>]*\bloading\b)([^>]*)(\/?>)/g,
-    '<img loading="lazy"$1$2'
+    /(```[\s\S]*?```|`[^`\n]+`)|(?<=^|[\s\p{P}])\*\*(\S[^*\n]*?)\*\*(?=[가-힣ㄱ-ㅎㅏ-ㅣ])/gmu,
+    (match, codeBlock, boldContent) => {
+      if (codeBlock) return codeBlock;
+      return `<strong>${boldContent}</strong>`;
+    }
   );
 }
