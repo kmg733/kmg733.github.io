@@ -920,14 +920,26 @@ body::before {
   box-shadow:
     0 4px 6px -1px rgb(251 191 36 / 0.1),
     0 2px 4px -2px rgb(251 146 60 / 0.08);
-  transition: all 0.3s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  cursor: zoom-in;
 }
 
 .prose figure .image-frame:hover {
-  transform: translateY(-2px);
+  transform: scale(1.4);
+  z-index: 10;
   box-shadow:
-    0 10px 15px -3px rgb(251 191 36 / 0.15),
-    0 4px 6px -4px rgb(251 146 60 / 0.12);
+    0 20px 40px -8px rgb(0 0 0 / 0.2),
+    0 8px 16px -4px rgb(0 0 0 / 0.1);
+}
+
+@media (hover: none) {
+  .prose figure .image-frame:hover {
+    transform: none;
+    z-index: auto;
+    box-shadow:
+      0 4px 6px -1px rgb(251 191 36 / 0.1),
+      0 2px 4px -2px rgb(251 146 60 / 0.08);
+  }
 }
 
 .prose figure .image-frame img {
@@ -1639,52 +1651,4 @@ body::before {
     }
   }
 
-  /* ========================================
-     Image Hover Preview Styles
-     ======================================== */
-
-  /* 뷰포트 중앙에 확대 프리뷰 표시 */
-  .image-hover-preview {
-    max-width: min(90vw, 1100px);
-    max-height: 88vh;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 25px 80px -10px rgb(0 0 0 / 0.4),
-                0 0 0 1px rgb(0 0 0 / 0.08);
-    animation: image-preview-fade-in 0.2s ease-out;
-    background: rgb(255 255 255 / 0.95);
-    padding: 4px;
-  }
-
-  .dark .image-hover-preview {
-    box-shadow: 0 25px 80px -10px rgb(0 0 0 / 0.7),
-                0 0 0 1px rgb(255 255 255 / 0.12);
-    background: rgb(24 24 27 / 0.95);
-  }
-
-  .image-hover-preview img {
-    display: block;
-    max-width: 100%;
-    max-height: 86vh;
-    object-fit: contain;
-    border-radius: 8px;
-  }
-
-  @keyframes image-preview-fade-in {
-    from {
-      opacity: 0;
-      transform: translate(-50%, -50%) scale(0.92);
-    }
-    to {
-      opacity: 1;
-      transform: translate(-50%, -50%) scale(1);
-    }
-  }
-
-  /* hover 미지원 환경(터치 디바이스)에서 프리뷰 숨김 */
-  @media (hover: none) {
-    .image-hover-preview {
-      display: none;
-    }
-  }
 }
