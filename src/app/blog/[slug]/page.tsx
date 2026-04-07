@@ -4,7 +4,7 @@ import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
 import rehypePrettyCode from "rehype-pretty-code";
 import type { Options as PrettyCodeOptions } from "rehype-pretty-code";
-import { addLazyLoading } from "@/lib/mdx-lazy-loading";
+import { addLazyLoading, fixBoldBeforeKorean } from "@/lib/mdx-lazy-loading";
 import { postService } from "@/lib/container";
 import { extractHeadings } from "@/lib/toc";
 import { DATE_FORMAT } from "@/lib/constants";
@@ -72,7 +72,7 @@ export default async function BlogPostPage({ params }: Props) {
 
   const mdxContent = (
     <MDXRemote
-      source={addLazyLoading(post.content)}
+      source={fixBoldBeforeKorean(addLazyLoading(post.content))}
       components={{ Term, pre: CodeBlock }}
       options={{
         mdxOptions: {
