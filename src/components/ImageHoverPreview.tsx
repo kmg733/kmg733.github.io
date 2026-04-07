@@ -7,12 +7,14 @@ import { useImageHoverPreview } from "@/hooks/useImageHoverPreview";
 /** Lightbox(9999)보다 낮게, 일반 UI보다 높게 */
 const HOVER_PREVIEW_Z_INDEX = 9998;
 
+/** URL 객체 기반 프로토콜 정규화로 대소문자 우회 방지 */
 function isAllowedSrc(src: string): boolean {
-  return (
-    src.startsWith("http://") ||
-    src.startsWith("https://") ||
-    src.startsWith("/")
-  );
+  try {
+    const url = new URL(src, window.location.origin);
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return src.startsWith("/");
+  }
 }
 
 export default function ImageHoverPreview() {
@@ -34,11 +36,9 @@ export default function ImageHoverPreview() {
     return !!document.querySelector(".lightbox-overlay");
   }, []);
 
-  // mouseover 이벤트 위임 (버블링 지원)
+  // mouseover/mouseout 이벤트 위임
   useEffect(() => {
-    if (!mounted || !supportsHover) {
-      return () => {};
-    }
+    if (!mounted || !supportsHover) return;
 
     const handleMouseOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
@@ -59,21 +59,31 @@ export default function ImageHoverPreview() {
       }
     };
 
+    // 프리뷰 해제: scroll, Escape, 탭 전환
+    const handleScroll = () => hidePreview();
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") hidePreview();
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) hidePreview();
+    };
+
     document.addEventListener("mouseover", handleMouseOver);
     document.addEventListener("mouseout", handleMouseOut);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
       document.removeEventListener("mouseover", handleMouseOver);
       document.removeEventListener("mouseout", handleMouseOut);
+      window.removeEventListener("scroll", handleScroll);
+      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [
-    mounted,
-    supportsHover,
-    isProseImage,
-    isLightboxOpen,
-    showPreview,
-    hidePreview,
-  ]);
+  }, [mounted, supportsHover, isProseImage, isLightboxOpen, showPreview, hidePreview]);
 
   if (!mounted || !isVisible || !imageSrc) {
     return null;
@@ -82,6 +92,7 @@ export default function ImageHoverPreview() {
   return createPortal(
     <div
       className="image-hover-preview"
+      aria-hidden="true"
       style={{
         position: "fixed",
         top: "50%",

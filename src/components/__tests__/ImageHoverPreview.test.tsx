@@ -189,7 +189,88 @@ describe("ImageHoverPreview 통합 테스트", () => {
   });
 
   // ─────────────────────────────────────────────────────
-  // 4. 모바일 환경 비활성화
+  // 4. 프리뷰 해제 - scroll, Escape, visibilitychange
+  // ─────────────────────────────────────────────────────
+  describe("프리뷰 해제", () => {
+    test("스크롤 시 프리뷰가 사라진다", () => {
+      renderWithProseImage();
+
+      const image = screen.getByTestId("prose-image");
+
+      act(() => {
+        fireEvent.mouseOver(image, { clientX: 200, clientY: 300 });
+      });
+
+      expect(
+        document.querySelector(".image-hover-preview")
+      ).toBeInTheDocument();
+
+      act(() => {
+        fireEvent.scroll(window);
+      });
+
+      expect(
+        document.querySelector(".image-hover-preview")
+      ).not.toBeInTheDocument();
+    });
+
+    test("Escape 키 입력 시 프리뷰가 사라진다", () => {
+      renderWithProseImage();
+
+      const image = screen.getByTestId("prose-image");
+
+      act(() => {
+        fireEvent.mouseOver(image, { clientX: 200, clientY: 300 });
+      });
+
+      expect(
+        document.querySelector(".image-hover-preview")
+      ).toBeInTheDocument();
+
+      act(() => {
+        fireEvent.keyDown(document, { key: "Escape" });
+      });
+
+      expect(
+        document.querySelector(".image-hover-preview")
+      ).not.toBeInTheDocument();
+    });
+
+    test("탭 전환(visibilitychange) 시 프리뷰가 사라진다", () => {
+      renderWithProseImage();
+
+      const image = screen.getByTestId("prose-image");
+
+      act(() => {
+        fireEvent.mouseOver(image, { clientX: 200, clientY: 300 });
+      });
+
+      expect(
+        document.querySelector(".image-hover-preview")
+      ).toBeInTheDocument();
+
+      act(() => {
+        Object.defineProperty(document, "hidden", {
+          writable: true,
+          value: true,
+        });
+        document.dispatchEvent(new Event("visibilitychange"));
+      });
+
+      expect(
+        document.querySelector(".image-hover-preview")
+      ).not.toBeInTheDocument();
+
+      // cleanup
+      Object.defineProperty(document, "hidden", {
+        writable: true,
+        value: false,
+      });
+    });
+  });
+
+  // ─────────────────────────────────────────────────────
+  // 5. 모바일 환경 비활성화
   // ─────────────────────────────────────────────────────
   describe("모바일 환경", () => {
     test("hover 미지원 환경에서는 프리뷰가 표시되지 않는다", () => {
