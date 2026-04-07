@@ -2,20 +2,21 @@
 
 import { useEffect, useCallback, useState } from "react";
 import { createPortal } from "react-dom";
-import {
-  useImageHoverPreview,
-  PREVIEW_VIEWPORT_RATIO,
-} from "@/hooks/useImageHoverPreview";
+import { useImageHoverPreview } from "@/hooks/useImageHoverPreview";
 
 /** Lightbox(9999)보다 낮게, 일반 UI보다 높게 */
 const HOVER_PREVIEW_Z_INDEX = 9998;
 
 function isAllowedSrc(src: string): boolean {
-  return src.startsWith("http://") || src.startsWith("https://") || src.startsWith("/");
+  return (
+    src.startsWith("http://") ||
+    src.startsWith("https://") ||
+    src.startsWith("/")
+  );
 }
 
 export default function ImageHoverPreview() {
-  const { isVisible, imageSrc, imageAlt, position, showPreview, hidePreview } =
+  const { isVisible, imageSrc, imageAlt, showPreview, hidePreview } =
     useImageHoverPreview();
   const [mounted, setMounted] = useState(false);
   const [supportsHover, setSupportsHover] = useState(true);
@@ -36,7 +37,7 @@ export default function ImageHoverPreview() {
   // mouseover 이벤트 위임 (버블링 지원)
   useEffect(() => {
     if (!mounted || !supportsHover) {
-      return () => {}; // 명시적 빈 클린업 (이슈 #4)
+      return () => {};
     }
 
     const handleMouseOver = (e: MouseEvent) => {
@@ -45,9 +46,9 @@ export default function ImageHoverPreview() {
       if (!isProseImage(target) || isLightboxOpen()) return;
 
       const img = target as HTMLImageElement;
-      if (!img.src || !isAllowedSrc(img.src)) return; // 이슈 #1: 프로토콜 검증
+      if (!img.src || !isAllowedSrc(img.src)) return;
 
-      showPreview(img.src, img.alt || "", e.clientX, e.clientY);
+      showPreview(img.src, img.alt || "");
     };
 
     const handleMouseOut = (e: MouseEvent) => {
@@ -65,7 +66,14 @@ export default function ImageHoverPreview() {
       document.removeEventListener("mouseover", handleMouseOver);
       document.removeEventListener("mouseout", handleMouseOut);
     };
-  }, [mounted, supportsHover, isProseImage, isLightboxOpen, showPreview, hidePreview]);
+  }, [
+    mounted,
+    supportsHover,
+    isProseImage,
+    isLightboxOpen,
+    showPreview,
+    hidePreview,
+  ]);
 
   if (!mounted || !isVisible || !imageSrc) {
     return null;
@@ -76,11 +84,10 @@ export default function ImageHoverPreview() {
       className="image-hover-preview"
       style={{
         position: "fixed",
-        left: `${position.x}px`,
-        top: `${position.y}px`,
-        maxWidth: `${PREVIEW_VIEWPORT_RATIO * 100}vw`,
-        maxHeight: `${PREVIEW_VIEWPORT_RATIO * 100}vh`,
-        zIndex: HOVER_PREVIEW_Z_INDEX,    // 이슈 #3: 상수화
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        zIndex: HOVER_PREVIEW_Z_INDEX,
         pointerEvents: "none",
       }}
     >
