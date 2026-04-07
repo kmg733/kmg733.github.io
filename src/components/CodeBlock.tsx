@@ -1,25 +1,6 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import MermaidDiagram from "./MermaidDiagram";
-
-function extractText(node: React.ReactNode): string {
-  if (typeof node === "string") return node;
-  if (typeof node === "number") return String(node);
-  if (!node) return "";
-  if (Array.isArray(node)) return node.map(extractText).join("");
-  if (typeof node === "object" && "props" in node) {
-    const el = node as React.ReactElement<Record<string, unknown>>;
-    const text = extractText(el.props.children as React.ReactNode);
-    // Shiki는 각 라인을 data-line 속성이 있는 span으로 감싼다.
-    // 라인 끝에 개행을 추가해야 mermaid 등 코드 파서가 정상 동작한다.
-    if (el.props["data-line"] !== undefined) {
-      return text + "\n";
-    }
-    return text;
-  }
-  return "";
-}
 
 function CopyIcon() {
   return (
@@ -78,12 +59,6 @@ export default function CodeBlock({
       if (timerRef.current) clearTimeout(timerRef.current);
     };
   }, []);
-
-  // Mermaid 코드블록 감지 및 렌더링
-  if (language === "mermaid") {
-    const code = extractText(children);
-    return <MermaidDiagram chart={code.trim()} />;
-  }
 
   const handleCopy = async () => {
     const code = preRef.current?.querySelector("code")?.textContent ?? "";
