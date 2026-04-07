@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 
-export const PREVIEW_WIDTH = 400;
-export const PREVIEW_HEIGHT = 300;
+/** 뷰포트 대비 프리뷰 최대 비율 (70%) */
+export const PREVIEW_VIEWPORT_RATIO = 0.7;
 export const PREVIEW_OFFSET = 20;
 
 interface PreviewState {
@@ -22,18 +22,20 @@ export function useImageHoverPreview() {
   const calculatePosition = useCallback((mouseX: number, mouseY: number) => {
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
+    const previewMaxWidth = viewportWidth * PREVIEW_VIEWPORT_RATIO;
+    const previewMaxHeight = viewportHeight * PREVIEW_VIEWPORT_RATIO;
 
     let x = mouseX + PREVIEW_OFFSET;
     let y = mouseY + PREVIEW_OFFSET;
 
     // 오른쪽 경계 초과 시 마우스 왼쪽에 표시
-    if (x + PREVIEW_WIDTH > viewportWidth) {
-      x = mouseX - PREVIEW_WIDTH - PREVIEW_OFFSET;
+    if (x + previewMaxWidth > viewportWidth) {
+      x = mouseX - previewMaxWidth - PREVIEW_OFFSET;
     }
 
     // 하단 경계 초과 시 마우스 위쪽에 표시
-    if (y + PREVIEW_HEIGHT > viewportHeight) {
-      y = mouseY - PREVIEW_HEIGHT - PREVIEW_OFFSET;
+    if (y + previewMaxHeight > viewportHeight) {
+      y = mouseY - previewMaxHeight - PREVIEW_OFFSET;
     }
 
     // 최소 경계 보정

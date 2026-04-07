@@ -4,8 +4,7 @@ import { useEffect, useCallback, useState } from "react";
 import { createPortal } from "react-dom";
 import {
   useImageHoverPreview,
-  PREVIEW_WIDTH,
-  PREVIEW_HEIGHT,
+  PREVIEW_VIEWPORT_RATIO,
 } from "@/hooks/useImageHoverPreview";
 
 /** Lightbox(9999)보다 낮게, 일반 UI보다 높게 */
@@ -79,8 +78,8 @@ export default function ImageHoverPreview() {
         position: "fixed",
         left: `${position.x}px`,
         top: `${position.y}px`,
-        maxWidth: `${PREVIEW_WIDTH}px`,   // 이슈 #2: 상수 일원화
-        maxHeight: `${PREVIEW_HEIGHT}px`,
+        maxWidth: `${PREVIEW_VIEWPORT_RATIO * 100}vw`,
+        maxHeight: `${PREVIEW_VIEWPORT_RATIO * 100}vh`,
         zIndex: HOVER_PREVIEW_Z_INDEX,    // 이슈 #3: 상수화
         pointerEvents: "none",
       }}
