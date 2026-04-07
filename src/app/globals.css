@@ -1645,8 +1645,8 @@ body::before {
 
   /* 뷰포트 중앙에 확대 프리뷰 표시 */
   .image-hover-preview {
-    max-width: min(80vw, 900px);
-    max-height: 80vh;
+    max-width: min(90vw, 1100px);
+    max-height: 88vh;
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 25px 80px -10px rgb(0 0 0 / 0.4),
@@ -1665,7 +1665,7 @@ body::before {
   .image-hover-preview img {
     display: block;
     max-width: 100%;
-    max-height: 78vh;
+    max-height: 86vh;
     object-fit: contain;
     border-radius: 8px;
   }
