@@ -51,7 +51,7 @@ glossary:
 |----|------|--------|
 | [1편](/blog/jvm-memory-structure) | JVM 메모리 구조 — 힙과 네이티브 메모리 | 입문 |
 | **2편 (현재)** | 메모리 누수 패턴과 해결법 | 중급 |
-| 3편 | 메모리 누수 진단과 JVM 튜닝 | 고급 |
+| [3편](/blog/jvm-memory-diagnosis-tuning) | 메모리 누수 진단과 JVM 튜닝 | 고급 |
 
 ---
 
@@ -441,5 +441,5 @@ public void handleRequest() {
 1. **힙 메모리**: 사용이 끝난 객체의 참조를 끊을 것
 2. **네이티브 메모리**: 무거운 자원은 한 번 생성해서 재사용할 것
 
-다음 편에서는 **메모리 누수가 발생했을 때 진단하는 방법**과 JVM 튜닝 옵션을 다룹니다.
+[3편](/blog/jvm-memory-diagnosis-tuning)에서는 **메모리 누수가 발생했을 때 진단하는 방법**과 JVM 튜닝 옵션을 다룹니다.
 `jstat`, `jmap`, 힙 덤프 분석, NMT(Native Memory Tracking) 등 실무 도구를 직접 사용해봅니다.
