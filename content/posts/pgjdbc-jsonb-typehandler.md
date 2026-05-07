@@ -65,8 +65,8 @@ TypeHandler의 내부 동작 원리까지 함께 다루므로, 유사한 JDBC �
 
 ## 배경
 
-pgjdbc는 PostgreSQL의 각 데이터 타입을 어떤 Java 클래스로 변환할지 <Term id="pgobject">TypeInfoCache</Term>라는 내부 매핑 테이블에서 관리합니다.
-`json` 타입은 이 테이블에 `PGobject`로 등록되어 있었지만, `jsonb`는 누락되어 있었습니다.
+pgjdbc는 PostgreSQL의 각 데이터 타입을 어떤 Java 클래스로 변환할지 <Term id="typeinfocache">TypeInfoCache</Term>라는 내부 매핑 테이블에서 관리합니다.
+`json` 타입은 이 테이블에 <Term id="pgobject">PGobject</Term>로 등록되어 있었지만, `jsonb`는 누락되어 있었습니다.
 
 등록되지 않은 타입은 기본적으로 `String`으로 반환되므로, `jsonb` 컬럼을 조회하면 JSON 문자열이 그대로 `String`으로 돌아왔습니다.
 42.7.11에서 아래 한 줄이 추가되면서, `jsonb`도 `json`과 동일하게 `PGobject`로 반환되도록 변경되었습니다.
