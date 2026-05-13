@@ -4,7 +4,7 @@ date: "2026-05-13"
 description: "PostgreSQL의 WITH RECURSIVE를 사용하여 트리·계층 구조 데이터를 단일 쿼리로 탐색하는 방법을 정리합니다. Working Table 동작 원리, UNION vs UNION ALL 선택 기준, 실제 쿼리 개선 사례를 다룹니다."
 category: "개발"
 subcategory: "Database"
-tags: ["guide", "intermediate"]
+tags: ["guide", "intermediate", "PostgreSQL"]
 thumbnail: "/images/thumbnails/postgresql"
 glossary:
   - id: "recursive-cte"
@@ -41,62 +41,29 @@ glossary:
 파일 시스템의 폴더 구조처럼 **부모-자식 관계로 이루어진 트리 데이터**를 데이터베이스에서 조회해야 할 때가 있습니다.
 특정 폴더에서 루트까지의 경로를 구하거나, 조직도에서 상위 부서를 역추적하는 경우가 대표적입니다.
 
-회사에서 파일 보유현황 시스템의 트리 조회 쿼리를 개선하면서 <Term id="recursive-cte">재귀 CTE</Term>를 도입했습니다.
-기존 쿼리에는 `UNION ALL`로 인한 중복 행 발생, `SELECT DISTINCT` 후처리, 불필요한 파일 레코드 재귀 등 구조적인 비효율이 있었습니다.
-이 글에서는 재귀 CTE의 동작 원리를 먼저 정리한 뒤, 실제 쿼리를 어떻게 개선했는지 다룹니다.
+파일 시스템 트리 조회 쿼리에서 <Term id="recursive-cte">재귀 CTE</Term>의 구조를 개선한 적이 있습니다.
+기존 쿼리도 `WITH RECURSIVE`를 사용하고 있었지만, Anchor에 파일 레코드가 혼입되고 `UNION ALL`로 중복이 누적된 뒤 외부에서 `SELECT DISTINCT`로 걸러내는 구조여서 API 응답에 1.6분이 걸리고 있었습니다.
+재귀 CTE는 Anchor와 Recursive 각 단계에서 조건을 사전 필터링할 수 있고, `UNION`으로 매 단계 중복을 제거할 수 있어 후처리 없이 정제된 결과를 반환할 수 있습니다.
+개선 과정에서 Working Table이 정확히 어떻게 동작하는지, `UNION`과 `UNION ALL`의 차이가 재귀에서 어떤 영향을 주는지 등 구조적으로 헷갈렸던 부분이 있었습니다.
+이 글에서는 그때 정리한 내용을 바탕으로 재귀 CTE의 동작 원리를 먼저 다룬 뒤, 실제 쿼리를 어떻게 개선했는지 다룹니다.
 
 ---
 
-## 기존 쿼리의 문제
+## CTE와 재귀 CTE
 
-기존 쿼리는 미조치 파일이 있는 폴더에서 루트까지 역추적하는 재귀 쿼리였습니다.
-동작은 했지만 세 가지 구조적 비효율이 있었습니다.
-
-### 1. Anchor에 파일 레코드가 포함됨
+<Term id="cte">CTE(Common Table Expression)</Term>는 `WITH` 절로 정의하는 이름 있는 임시 결과 집합입니다.
+서브쿼리에 이름을 붙여 분리할 수 있어 가독성이 높아지고, 같은 쿼리 안에서 여러 번 참조할 수 있습니다.
 
 ```sql
--- Anchor: file_full_path로 매칭 → 파일(COM_FLE) 레코드까지 포함
-WHERE EXISTS (
-    SELECT 1 FROM file_paths f
-    WHERE f.file_path = s.file_full_path
+-- 일반 CTE 예시
+WITH active_users AS (
+    SELECT * FROM users WHERE status = 'ACTIVE'
 )
+SELECT * FROM active_users WHERE created_at > '2026-01-01';
 ```
 
-미조치 파일의 경로(`file_path`)와 파일 구조 테이블의 전체 경로(`file_full_path`)를 직접 매칭하므로, **파일 레코드 자체가 Anchor에 포함**됩니다.
-파일 레코드는 디렉토리가 아니므로 트리 구성에 불필요하지만, 일단 재귀 대상에 들어간 뒤 외부 WHERE에서 걸러지는 구조입니다.
-
-### 2. UNION ALL + DISTINCT
-
-```sql
--- 재귀 내부: 중복 허용
-UNION ALL
-
--- 외부: 전체 결과에서 중복 제거
-SELECT DISTINCT(a.*) FROM ( ... ) a
-WHERE folder_type = 'COM_DIR'
-```
-
-`UNION ALL`은 중복을 허용하므로, 여러 미조치 파일이 같은 조상 폴더를 공유하면 해당 폴더가 **여러 번 재귀**됩니다.
-이 중복을 제거하기 위해 외부에서 `SELECT DISTINCT`를 사용하는데, 이는 전체 결과를 한꺼번에 비교하므로 행 수가 많을수록 비용이 큽니다.
-
-### 3. 중첩 서브쿼리 구조
-
-```sql
-SELECT DISTINCT(a.*) FROM (
-    WITH RECURSIVE treeA AS ( ... )
-    SELECT * FROM treeA
-) a
-WHERE folder_type = 'COM_DIR'
-```
-
-재귀 CTE가 서브쿼리 안에 중첩되어 있고, 결과 필터링이 외부 WHERE에서 이루어집니다.
-쿼리 자체가 복잡해질 뿐 아니라, `folder_type = 'COM_DIR'` 조건이 재귀 내부가 아닌 외부에 있어 불필요한 행까지 재귀 대상에 포함됩니다.
-
----
-
-## 재귀 CTE란
-
-<Term id="recursive-cte">재귀 CTE</Term>는 SQL에서 트리·계층 구조 데이터를 단일 쿼리로 탐색하는 패턴입니다.
+<Term id="recursive-cte">재귀 CTE</Term>는 여기에 `RECURSIVE` 키워드를 추가하여, CTE가 **자기 자신을 참조**할 수 있게 한 것입니다.
+SQL에서 트리·계층 구조 데이터를 단일 쿼리로 탐색하는 패턴입니다.
 **반복문의 SQL 버전**으로, <Term id="anchor">Anchor</Term>(시작점)에서 출발하여 종료 조건을 만족할 때까지 자기 자신을 반복 참조하며 결과를 누적합니다.
 
 | 항목 | 설명 |
@@ -132,17 +99,31 @@ SELECT * FROM cte_name;
 | Recursive 부분 | 반복 본문 (`i++`) |
 | 빈 결과 반환 | break 조건 |
 | UNION으로 누적 | `results.append()` |
-| 매 단계의 CTE 참조 (<Term id="working-table">Working Table</Term>) | 이전 반복의 리턴값 |
+| <Term id="working-table">Working Table</Term> (직전 단계의 새 행) | 이전 루프에서 가장 마지막에 추가한 항목 (`results[-1]`) |
 
 ```python
-# 의사코드로 표현하면
-results = [시작_폴더]                    # Anchor
-while True:
-    current = results[-1]              # Working Table (마지막 추가된 행)
-    parent = find(item_seq == current.parent_no)
-    if parent is None:                 # 빈 결과 → 종료
-        break
-    results.append(parent)             # UNION 누적
+# 폴더 C(item_seq=4)에서 루트까지 역추적하는 예시
+# 테이블 데이터: item_seq → {file_name, parent_no}
+table = {
+    1: {"file_name": "/", "parent_no": None},
+    2: {"file_name": "A", "parent_no": 1},
+    3: {"file_name": "B", "parent_no": 2},
+    4: {"file_name": "C", "parent_no": 3},
+}
+
+working_table = [4]                          # Anchor: 시작 item_seq
+result_table  = []
+
+while working_table:                         # 빈 리스트가 되면 종료
+    result_table.extend(working_table)       # UNION: 결과에 누적
+    next_rows = []
+    for seq in working_table:                # 직전 단계의 새 행만 처리
+        parent_no = table[seq]["parent_no"]
+        if parent_no is not None:
+            next_rows.append(parent_no)
+    working_table = next_rows                # 새로 찾은 행으로 교체
+
+# result_table = [4, 3, 2, 1] → C, B, A, /
 ```
 
 ### 종료 조건
@@ -179,21 +160,21 @@ file_structure_t
 │    1     │ /         │   NULL    │  ← 루트
 │    2     │ A         │     1     │
 │    3     │ B         │     2     │
-│    4     │ C         │     3     │  ← 미조치 파일이 여기 있음
+│    4     │ C         │     3     │  ← 대상 파일이 여기 있음
 └──────────┴───────────┴───────────┘
 
 트리 구조:
 /           (1)
 └── A       (2)
     └── B   (3)
-        └── C (4)  ← 미조치 파일 존재 폴더
+        └── C (4)  ← 대상 파일 존재 폴더
 ```
 
 ### 쿼리
 
 ```sql
 WITH RECURSIVE tree AS (
-    -- Anchor: 미조치 파일이 있는 폴더부터 시작
+    -- Anchor: 대상 파일이 있는 폴더부터 시작
     SELECT item_seq, file_name, parent_no
     FROM file_structure_t
     WHERE item_seq = 4
@@ -302,7 +283,7 @@ SELECT * FROM tree:
 여러 시작점이 같은 조상을 공유하는 경우를 생각해 봅니다.
 
 ```
-미조치 폴더: C (parent=B), D (parent=B)
+대상 폴더: C (parent=B), D (parent=B)
 → B가 두 번 Anchor에 잡힘
 → B의 부모 A도 두 번 재귀됨
 
@@ -377,6 +358,64 @@ SELECT ...
 
 ---
 
+## 기존 쿼리의 문제
+
+재귀 CTE의 동작 원리를 이해했으니, 실제로 어떤 구조가 문제였는지 살펴봅니다.
+
+기존 쿼리는 조회하려는 파일이 있는 폴더에서부터 루트 디렉토리까지 역추적하는 재귀 쿼리였습니다.
+동작은 했지만 세 가지 구조적 비효율이 있었고, 실제로 트리 조회 API의 서버 응답 시간이 **1.6분**에 달했습니다.
+
+<figure>
+  <div className="figure-content">
+    <div className="image-frame">
+      <img src="/images/posts/postgresql-recursive-cte/before.png" alt="기존 쿼리 성능 — tree.do API 서버 응답 시간 1.6분" />
+    </div>
+  </div>
+  <figcaption>기존 쿼리의 tree.do API 응답 시간 — 서버 응답 대기 1.6분</figcaption>
+</figure>
+
+### 1. Anchor에 파일 레코드가 포함됨
+
+```sql
+-- Anchor: file_full_path로 매칭 → 파일(COM_FLE) 레코드까지 포함
+WHERE EXISTS (
+    SELECT 1 FROM file_paths f
+    WHERE f.file_path = s.file_full_path
+)
+```
+
+대상 파일의 경로(`file_path`)와 파일 구조 테이블의 전체 경로(`file_full_path`)를 직접 매칭하므로, **파일 레코드 자체가 <Term id="anchor">Anchor</Term>에 포함**됩니다.
+파일 레코드는 디렉토리가 아니므로 트리 구성에 불필요하지만, 일단 재귀 대상에 들어간 뒤 외부 WHERE에서 걸러지는 구조입니다.
+
+### 2. UNION ALL + DISTINCT
+
+```sql
+-- 재귀 내부: 중복 허용
+UNION ALL
+
+-- 외부: 전체 결과에서 중복 제거
+SELECT DISTINCT(a.*) FROM ( ... ) a
+WHERE folder_type = 'COM_DIR'
+```
+
+`UNION ALL`은 중복을 허용하므로, 여러 대상 파일이 같은 조상 폴더를 공유하면 해당 폴더가 **여러 번 재귀**됩니다.
+이 중복을 제거하기 위해 외부에서 `SELECT DISTINCT`를 사용하는데, 이는 전체 결과를 한꺼번에 비교하므로 행 수가 많을수록 비용이 큽니다.
+
+### 3. 중첩 서브쿼리 구조
+
+```sql
+SELECT DISTINCT(a.*) FROM (
+    WITH RECURSIVE treeA AS ( ... )
+    SELECT * FROM treeA
+) a
+WHERE folder_type = 'COM_DIR'
+```
+
+재귀 CTE가 서브쿼리 안에 중첩되어 있고, 결과 필터링이 외부 WHERE에서 이루어집니다.
+쿼리 자체가 복잡해질 뿐 아니라, `folder_type = 'COM_DIR'` 조건이 재귀 내부가 아닌 외부에 있어 불필요한 행까지 재귀 대상에 포함됩니다.
+
+---
+
 ## 개선된 쿼리
 
 <figure>
@@ -396,7 +435,7 @@ SELECT ...
 **1. Anchor를 디렉토리로 한정**
 
 ```sql
--- 일반 CTE: 미조치 파일의 부모 디렉토리 ID만 추출
+-- 일반 CTE: 대상 파일의 부모 디렉토리 ID만 추출
 dir_with_files AS (
     SELECT DISTINCT s.parent_no AS item_seq
     FROM ... WHERE s.folder_type = 'COM_FLE'
@@ -417,7 +456,7 @@ UNION  -- UNION ALL 대신 UNION 사용
 ```
 
 `UNION`은 매 재귀 단계마다 중복을 제거합니다.
-여러 미조치 폴더가 같은 조상을 공유하더라도 **한 번만 재귀**되므로, 외부 `DISTINCT`가 필요 없습니다.
+여러 대상 폴더가 같은 조상을 공유하더라도 **한 번만 재귀**되므로, 외부 `DISTINCT`가 필요 없습니다.
 
 **3. 플랫한 CTE 체인**
 
@@ -440,6 +479,26 @@ SELECT * FROM tree ORDER BY file_full_path
 | `folder_type` 필터 | 외부 WHERE 후처리 | Anchor/Recursive 양쪽 사전 필터 |
 | 쿼리 구조 | 중첩 서브쿼리 | 플랫 CTE 체인 |
 | 불필요한 재귀 | 파일 레코드도 재귀 대상 | 디렉토리만 재귀 대상 |
+
+### 성능 결과
+
+구조 개선 후 동일한 tree.do API의 서버 응답 시간이 **1.6분(96초)에서 740ms로 약 130배** 단축되었습니다.
+
+<figure>
+  <div className="figure-content">
+    <div className="image-frame">
+      <img src="/images/posts/postgresql-recursive-cte/after.png" alt="개선 쿼리 성능 — tree.do API 서버 응답 시간 740ms" />
+    </div>
+  </div>
+  <figcaption>개선 쿼리의 tree.do API 응답 시간 — 서버 응답 대기 740ms</figcaption>
+</figure>
+
+| 항목 | 기존 | 개선 |
+|------|------|------|
+| 서버 응답 시간 | 1.6분 | 740ms |
+
+Anchor에서 불필요한 파일 레코드를 제외하고, `UNION`으로 매 단계 중복을 제거한 것만으로 쿼리 실행 시간이 대폭 줄었습니다.
+`SELECT DISTINCT` 후처리가 사라진 것도 큰 요인입니다. 전체 결과를 모아서 한꺼번에 비교하는 것보다, 매 단계 소량의 행만 비교하는 `UNION`이 훨씬 효율적입니다.
 
 ---
 
@@ -492,3 +551,9 @@ SELECT * FROM tree;
 
 `UNION`은 매 단계 중복 검사 비용이 있으므로, **중복이 발생하지 않는 구조에서는 `UNION ALL`이 더 효율적**입니다.
 시작점이 하나이거나 경로가 겹치지 않는 경우에는 `UNION ALL`을 선택하는 것이 좋습니다.
+
+---
+
+## 참고
+
+- [PostgreSQL 공식 문서 — WITH Queries (Common Table Expressions) - Recursive Queries](https://www.postgresql.org/docs/current/queries-with.html#QUERIES-WITH-RECURSIVE)
