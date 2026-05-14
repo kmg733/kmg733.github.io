@@ -23,10 +23,6 @@ glossary:
     term: "Anchor"
     brief: "재귀 CTE에서 재귀의 시작 데이터를 정의하는 첫 번째 SELECT"
     detail: "재귀 CTE의 UNION 위쪽에 위치하는 SELECT 문으로, 재귀의 출발점이 되는 초기 행 집합을 정의한다. 프로그래밍의 반복문에서 초기값 설정(i = 0)에 해당하며, 딱 한 번만 실행된다."
-  - id: "anti-join"
-    term: "Anti-Join"
-    brief: "한쪽 테이블에만 존재하고 다른 쪽에는 매칭되지 않는 행을 찾는 조인 패턴"
-    detail: "LEFT JOIN + IS NULL 조합으로 구현하는 조인 패턴이다. A LEFT JOIN B ON 조건 WHERE B.컬럼 IS NULL 형태로 작성하면, A에는 존재하지만 B에는 매칭되는 행이 없는 레코드만 반환된다. NOT EXISTS 서브쿼리와 동일한 결과를 내며, 옵티마이저가 동일한 실행 계획을 생성하는 경우가 많다."
 ---
 
 <figure>
