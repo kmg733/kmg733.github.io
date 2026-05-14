@@ -58,6 +58,33 @@ export class PostService {
   }
 
   /**
+   * 서브카테고리별 대표 포스트를 선별하여 반환합니다.
+   * 각 서브카테고리에서 최신 1개씩, 포스트 수가 많은 카테고리 우선.
+   */
+  getFeaturedPosts(count: number): PostMeta[] {
+    const allPosts = this.postRepository.findAll();
+
+    const grouped = new Map<string, PostMeta[]>();
+    for (const post of allPosts) {
+      if (!post.subcategory) continue;
+      const existing = grouped.get(post.subcategory) ?? [];
+      existing.push(post);
+      grouped.set(post.subcategory, existing);
+    }
+
+    return Array.from(grouped.entries())
+      .map(([, posts]) => {
+        const sorted = [...posts].sort(
+          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+        );
+        return { latest: sorted[0], totalCount: posts.length };
+      })
+      .sort((a, b) => b.totalCount - a.totalCount)
+      .slice(0, count)
+      .map((g) => g.latest);
+  }
+
+  /**
    * 관련 포스트를 조회합니다.
    * frontmatter의 relatedSlugs로 수동 지정된 글을 우선 반환하고,
    * 남은 슬롯을 같은 subcategory 내 tags 기반 자동 추천으로 채웁니다.

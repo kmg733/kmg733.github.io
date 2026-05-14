@@ -19,6 +19,7 @@ export const THUMBNAIL_DEFAULTS = {
 // 홈페이지 관련 상수
 export const HOME_DEFAULTS = {
   RECENT_POSTS_COUNT: 3,
+  FEATURED_POSTS_COUNT: 5,
 } as const;
 
 // 날짜 포맷 관련 상수

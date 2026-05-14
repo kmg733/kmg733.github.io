@@ -8,10 +8,12 @@ import FloatingParticles from "@/components/FloatingParticles";
 import BlogStats from "@/components/BlogStats";
 import GradientOrbs from "@/components/GradientOrbs";
 import TechStackSection from "@/components/TechStackSection";
+import FeaturedPostsSection from "@/components/FeaturedPostsSection";
 
 export default function Home() {
   const recentPosts = postService.getRecentPosts(HOME_DEFAULTS.RECENT_POSTS_COUNT);
   const allPosts = postService.getAllPosts();
+  const featuredPosts = postService.getFeaturedPosts(HOME_DEFAULTS.FEATURED_POSTS_COUNT);
 
   // 블로그 통계 계산
   const totalPosts = allPosts.length;
@@ -87,7 +89,13 @@ export default function Home() {
         />
       </ScrollReveal>
 
-      {/* Divider: BlogStats ↔ Recent Posts */}
+      {/* Divider: BlogStats ↔ Featured Posts */}
+      <hr className="my-12 h-px border-none bg-gradient-to-r from-transparent via-amber-300/50 to-transparent dark:via-slate-600/50" />
+
+      {/* Featured Posts by Subcategory */}
+      <FeaturedPostsSection posts={featuredPosts} />
+
+      {/* Divider: Featured Posts ↔ Recent Posts */}
       <hr className="my-12 h-px border-none bg-gradient-to-r from-transparent via-amber-300/50 to-transparent dark:via-slate-600/50" />
 
       {/* Recent Posts */}
