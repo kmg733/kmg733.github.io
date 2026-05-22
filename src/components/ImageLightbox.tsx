@@ -1,16 +1,29 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useFocusTrap } from "@/hooks/useFocusTrap";
+import { useTheme } from "@/hooks/useTheme";
+import { useSwipe } from "@/hooks/useSwipe";
+import { collectGalleryAt, type GalleryImage } from "@/utils/galleryImages";
 
 export default function ImageLightbox() {
   const [isOpen, setIsOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [imageSrc, setImageSrc] = useState<string | null>(null);
-  const [imageAlt, setImageAlt] = useState("");
+  const [images, setImages] = useState<GalleryImage[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [mounted, setMounted] = useState(false);
+
+  // 클릭 시점의 현재 테마를 읽기 위한 ref (이벤트 핸들러는 1회 등록되어 stale 클로저 방지)
+  // useFocusTrap / useKeyboardShortcut 와 동일한 렌더 중 ref 동기화 관용구를 따른다.
+  const theme = useTheme();
+  const themeRef = useRef(theme);
+  themeRef.current = theme;
+
+  const currentImage = images[currentIndex] ?? null;
+  const total = images.length;
+  const hasMultiple = total > 1;
 
   // Hydration 완료 후 마운트
   useEffect(() => {
@@ -22,6 +35,26 @@ export default function ImageLightbox() {
     if (isClosing) return; // 이미 닫기 중이면 무시
     setIsClosing(true);
   }, [isClosing]);
+
+  // 이전/다음 이미지로 이동 (clamp: 경계에서 정지)
+  // 실제 이동이 발생할 때만 로딩 상태를 리셋해 경계에서 스피너가 멈추지 않게 한다.
+  const goPrev = useCallback(() => {
+    if (currentIndex <= 0) return;
+    setIsLoading(true);
+    setCurrentIndex(currentIndex - 1);
+  }, [currentIndex]);
+
+  const goNext = useCallback(() => {
+    if (currentIndex >= total - 1) return;
+    setIsLoading(true);
+    setCurrentIndex(currentIndex + 1);
+  }, [currentIndex, total]);
+
+  // 모바일 터치 스와이프 (왼쪽 → 다음, 오른쪽 → 이전)
+  const swipeHandlers = useSwipe({
+    onSwipeLeft: goNext,
+    onSwipeRight: goPrev,
+  });
 
   // 포커스 트랩 훅 연결
   const { containerRef } = useFocusTrap({
@@ -35,8 +68,8 @@ export default function ImageLightbox() {
       // 닫기 애니메이션(lightbox-fade-out)일 때만 처리
       if (e.animationName === "lightbox-fade-out") {
         setIsOpen(false);
-        setImageSrc(null);
-        setImageAlt("");
+        setImages([]);
+        setCurrentIndex(0);
         setIsClosing(false);
         setIsLoading(true); // 다음 열기를 위해 로딩 상태 리셋
       }
@@ -47,6 +80,15 @@ export default function ImageLightbox() {
   // 이미지 로딩 완료 핸들러
   const handleImageLoad = useCallback(() => {
     setIsLoading(false);
+  }, []);
+
+  // 캐시된 이미지는 마운트 시점에 이미 complete=true 이고 onLoad가
+  // 발화하지 않을 수 있어, 스피너가 멈추지 않는 문제를 방지한다.
+  // key={src}로 이미지 전환 시 재마운트되어 매 이미지마다 1회 실행된다.
+  const imageRef = useCallback((node: HTMLImageElement | null) => {
+    if (node?.complete) {
+      setIsLoading(false);
+    }
   }, []);
 
   // 이미지 로딩 실패 핸들러
@@ -65,6 +107,24 @@ export default function ImageLightbox() {
     };
   }, [isOpen]);
 
+  // 좌우 화살표 키 네비게이션 (ESC/Tab은 useFocusTrap이 담당)
+  useEffect(() => {
+    if (!isOpen || isClosing) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        goPrev();
+      } else if (e.key === "ArrowRight") {
+        e.preventDefault();
+        goNext();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, isClosing, goPrev, goNext]);
+
   // 이미지 클릭 이벤트 위임
   useEffect(() => {
     const handleImageClick = (e: MouseEvent) => {
@@ -77,6 +137,8 @@ export default function ImageLightbox() {
         !target.closest(".lightbox-overlay")
       ) {
         const img = target as HTMLImageElement;
+        const prose = img.closest(".prose") as HTMLElement;
+        const currentTheme = themeRef.current;
 
         // 포커스 복원을 위해 클릭된 이미지를 포커스 가능하게 만들고 포커스
         if (img.tabIndex < 0) {
@@ -84,8 +146,14 @@ export default function ImageLightbox() {
         }
         img.focus();
 
-        setImageSrc(img.src);
-        setImageAlt(img.alt || "");
+        const { images: collected, startIndex } = collectGalleryAt(
+          prose,
+          currentTheme,
+          img
+        );
+
+        setImages(collected);
+        setCurrentIndex(startIndex >= 0 ? startIndex : 0);
         setIsLoading(true); // 라이트박스 열 때 로딩 상태 초기화
         setIsOpen(true);
       }
@@ -96,7 +164,7 @@ export default function ImageLightbox() {
   }, []);
 
   // 서버 렌더링 시 또는 닫혀있을 때 렌더링하지 않음
-  if (!mounted || !isOpen || !imageSrc) {
+  if (!mounted || !isOpen || !currentImage) {
     return null;
   }
 
@@ -108,7 +176,7 @@ export default function ImageLightbox() {
       onAnimationEnd={handleAnimationEnd}
       role="dialog"
       aria-modal="true"
-      aria-label={imageAlt || "확대된 이미지"}
+      aria-label={currentImage.alt || "확대된 이미지"}
     >
       {/* 닫기 버튼 */}
       <button
@@ -133,10 +201,41 @@ export default function ImageLightbox() {
         </svg>
       </button>
 
+      {/* 이전 버튼 (이미지 2개 이상일 때만) */}
+      {hasMultiple && (
+        <button
+          className="lightbox-prev"
+          onClick={(e) => {
+            e.stopPropagation();
+            goPrev();
+          }}
+          disabled={currentIndex === 0}
+          aria-label="이전 이미지"
+          type="button"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+        </button>
+      )}
+
       {/* 확대된 이미지 */}
       <div
         className={`lightbox-content${isClosing ? " closing" : ""}`}
         onClick={(e) => e.stopPropagation()}
+        onTouchStart={swipeHandlers.onTouchStart}
+        onTouchEnd={swipeHandlers.onTouchEnd}
+        onTouchCancel={swipeHandlers.onTouchCancel}
       >
         {/* 로딩 스피너 */}
         {isLoading && (
@@ -147,14 +246,52 @@ export default function ImageLightbox() {
           />
         )}
         <img
-          src={imageSrc}
-          alt={imageAlt}
+          key={currentImage.src}
+          ref={imageRef}
+          src={currentImage.src}
+          alt={currentImage.alt}
           className={`lightbox-image${isLoading ? " loading" : " loaded"}`}
           onClick={closeLightbox}
           onLoad={handleImageLoad}
           onError={handleImageError}
         />
       </div>
+
+      {/* 다음 버튼 (이미지 2개 이상일 때만) */}
+      {hasMultiple && (
+        <button
+          className="lightbox-next"
+          onClick={(e) => {
+            e.stopPropagation();
+            goNext();
+          }}
+          disabled={currentIndex === total - 1}
+          aria-label="다음 이미지"
+          type="button"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </button>
+      )}
+
+      {/* 위치 인디케이터 (이미지 2개 이상일 때만) */}
+      {/* role="status"가 aria-live="polite"와 aria-atomic을 암묵 포함하므로 중복 선언하지 않는다 */}
+      {hasMultiple && (
+        <div className="lightbox-counter" role="status">
+          {currentIndex + 1} / {total}
+        </div>
+      )}
     </div>,
     document.body
   );

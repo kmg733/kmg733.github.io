@@ -1592,6 +1592,99 @@ body::before {
     border-top-color: #94a3b8;
   }
 
+  /* 갤러리 좌우 네비게이션 버튼 */
+  .lightbox-prev,
+  .lightbox-next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    padding: 0;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 50%;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease,
+      opacity 0.2s ease;
+  }
+
+  .lightbox-prev {
+    left: 1rem;
+  }
+
+  .lightbox-next {
+    right: 1rem;
+  }
+
+  .lightbox-prev:hover:not(:disabled),
+  .lightbox-next:hover:not(:disabled) {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-50%) scale(1.1);
+  }
+
+  .lightbox-prev:focus,
+  .lightbox-next:focus {
+    outline: none;
+  }
+
+  .lightbox-prev:focus-visible,
+  .lightbox-next:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.8);
+    outline-offset: 2px;
+    background-color: rgba(255, 255, 255, 0.25);
+  }
+
+  .lightbox-prev:disabled,
+  .lightbox-next:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+
+  /* 위치 인디케이터 (3 / 7) */
+  .lightbox-counter {
+    position: absolute;
+    bottom: 1.25rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    padding: 0.35rem 0.85rem;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 9999px;
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 0.875rem;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.03em;
+    user-select: none;
+  }
+
+  /* 모바일 반응형 */
+  @media (max-width: 640px) {
+    .lightbox-prev,
+    .lightbox-next {
+      width: 2.5rem;
+      height: 2.5rem;
+    }
+
+    .lightbox-prev {
+      left: 0.5rem;
+    }
+
+    .lightbox-next {
+      right: 0.5rem;
+    }
+
+    .lightbox-counter {
+      bottom: 0.75rem;
+      font-size: 0.8rem;
+    }
+  }
+
   /* 닫기 애니메이션 */
   .lightbox-overlay.closing {
     animation: lightbox-fade-out 0.25s ease-out forwards;
