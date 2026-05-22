@@ -36,19 +36,21 @@ export default function ImageLightbox() {
     setIsClosing(true);
   }, [isClosing]);
 
-  // 이전/다음 이미지로 이동 (clamp: 경계에서 정지)
-  // 실제 이동이 발생할 때만 로딩 상태를 리셋해 경계에서 스피너가 멈추지 않게 한다.
-  const goPrev = useCallback(() => {
-    if (currentIndex <= 0) return;
-    setIsLoading(true);
-    setCurrentIndex(currentIndex - 1);
-  }, [currentIndex]);
+  // 특정 인덱스로 이동 (clamp: 범위 밖/동일 인덱스는 no-op)
+  // 실제 이동이 발생할 때만 로딩 상태를 리셋해 경계/동일 이미지에서 스피너가 멈추지 않게 한다.
+  const goTo = useCallback(
+    (index: number) => {
+      if (index < 0 || index >= total) return;
+      if (index === currentIndex) return;
+      setIsLoading(true);
+      setCurrentIndex(index);
+    },
+    [currentIndex, total]
+  );
 
-  const goNext = useCallback(() => {
-    if (currentIndex >= total - 1) return;
-    setIsLoading(true);
-    setCurrentIndex(currentIndex + 1);
-  }, [currentIndex, total]);
+  // 이전/다음 이미지로 이동
+  const goPrev = useCallback(() => goTo(currentIndex - 1), [goTo, currentIndex]);
+  const goNext = useCallback(() => goTo(currentIndex + 1), [goTo, currentIndex]);
 
   // 모바일 터치 스와이프 (왼쪽 → 다음, 오른쪽 → 이전)
   const swipeHandlers = useSwipe({
@@ -91,6 +93,9 @@ export default function ImageLightbox() {
     }
   }, []);
 
+  // 현재 활성 썸네일 (currentIndex 변경 시 화면 안으로 스크롤)
+  const activeThumbRef = useRef<HTMLButtonElement | null>(null);
+
   // 이미지 로딩 실패 핸들러
   const handleImageError = useCallback(() => {
     setIsLoading(false);
@@ -124,6 +129,16 @@ export default function ImageLightbox() {
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, isClosing, goPrev, goNext]);
+
+  // 활성 썸네일을 필름스트립 안에서 보이도록 스크롤 (세로/가로 모두 대응)
+  // scrollIntoView 미지원 환경(SSR/구형/jsdom)에서는 옵셔널 체이닝으로 안전하게 생략
+  useEffect(() => {
+    if (!isOpen) return;
+    activeThumbRef.current?.scrollIntoView?.({
+      block: "nearest",
+      inline: "nearest",
+    });
+  }, [currentIndex, isOpen]);
 
   // 이미지 클릭 이벤트 위임
   useEffect(() => {
@@ -290,6 +305,37 @@ export default function ImageLightbox() {
       {hasMultiple && (
         <div className="lightbox-counter" role="status">
           {currentIndex + 1} / {total}
+        </div>
+      )}
+
+      {/* 썸네일 필름스트립 (이미지 2개 이상일 때만) */}
+      {/* 닫기 버튼 뒤(DOM 마지막)에 배치해 자동 첫 포커스 대상이 닫기 버튼으로 유지된다 */}
+      {hasMultiple && (
+        <div
+          className="lightbox-filmstrip"
+          role="group"
+          aria-label="이미지 목록"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {images.map((img, i) => {
+            const isActive = i === currentIndex;
+            return (
+              <button
+                key={`${i}-${img.src}`}
+                ref={isActive ? activeThumbRef : null}
+                className={`lightbox-thumb${isActive ? " active" : ""}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  goTo(i);
+                }}
+                aria-label={`${i + 1}번째 이미지 보기`}
+                aria-current={isActive ? "true" : undefined}
+                type="button"
+              >
+                <img src={img.src} alt="" loading="lazy" />
+              </button>
+            );
+          })}
         </div>
       )}
     </div>,
