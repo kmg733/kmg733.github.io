@@ -5,7 +5,7 @@ description: "성능 최적화를 키워드 나열이 아닌 계층(Layer)별 �
 category: "개발"
 subcategory: "아키텍처"
 tags: ["guide", "intermediate"]
-thumbnail: "/images/thumbnails/web"
+thumbnail: "/images/thumbnails/read-write-performance"
 glossary:
   - id: "cdn"
     term: "CDN"
