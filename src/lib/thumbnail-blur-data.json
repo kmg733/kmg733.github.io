@@ -10,5 +10,7 @@
   "/images/thumbnails/java-dark.png": "data:image/webp;base64,UklGRkQAAABXRUJQVlA4IDgAAACwAgCdASoUAA0APzmGulQvKSWjMAgB4CcJYwAAeyAA/uv6DGDfuLUJQfvvNzrRZ7o2uA6NQgAAAA==",
   "/images/thumbnails/java-light.png": "data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAADwAgCdASoUAA0APzmIuVQ0qSWosAgCkCcJZwDLLC5+gAD+7XpU7Mg74fpOAAAA",
   "/images/thumbnails/postgresql-dark.png": "data:image/webp;base64,UklGRmAAAABXRUJQVlA4IFQAAABwAwCdASoUAA0APzmGuVOvKSWisAgB4CcJagCdMoADQL3egwgA/ujdQ7pWRCiRW8xlOhtGLDHM81G1W7ZdiJjbqDd9DHEnBy8Wg9Ml8gllr9WAAAA=",
-  "/images/thumbnails/postgresql-light.png": "data:image/webp;base64,UklGRl4AAABXRUJQVlA4IFIAAACQAwCdASoUAA0APzmGuVOvKSWisAgB4CcJQBOgA8TB3sLrjT2AAP7e7H3lrSwtTXZake07oFyL3xNuef5iXqs+7DJr4k374jOrJLRJ01UPOAAA"
+  "/images/thumbnails/postgresql-light.png": "data:image/webp;base64,UklGRl4AAABXRUJQVlA4IFIAAACQAwCdASoUAA0APzmGuVOvKSWisAgB4CcJQBOgA8TB3sLrjT2AAP7e7H3lrSwtTXZake07oFyL3xNuef5iXqs+7DJr4k374jOrJLRJ01UPOAAA",
+  "/images/thumbnails/read-write-performance-dark.png": "data:image/webp;base64,UklGRjwAAABXRUJQVlA4IDAAAADwAgCdASoUAA0APzmGulOvKKWkMAgB4CcJYwCdAC0kAAD+7hsDmmA2xv+eHAzgAAA=",
+  "/images/thumbnails/read-write-performance-light.png": "data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAADwAgCdASoUAA0APzmGuVQvKSWssAgB4CcJZQDCgC5JAAD+7T7KWvLaG9LAMAAA"
 }
