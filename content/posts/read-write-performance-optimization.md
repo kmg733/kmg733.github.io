@@ -33,9 +33,19 @@ glossary:
     detail: "Command Query Responsibility Segregation의 약자입니다. 쓰기(Command)와 읽기(Query)의 책임·모델·시스템을 완전히 분리합니다. 읽기 모델과 쓰기 모델을 각각 독립적으로 최적화할 수 있으나, 두 모델 간 동기화(주로 이벤트 기반)와 최종 일관성을 감수해야 합니다."
 ---
 
+<figure>
+  <div className="figure-content">
+    <div className="image-frame">
+      <img className="theme-light" src="/images/thumbnails/read-write-performance-light.png" alt="읽기 성능과 쓰기 성능 최적화" />
+      <img className="theme-dark" src="/images/thumbnails/read-write-performance-dark.png" alt="읽기 성능과 쓰기 성능 최적화" />
+    </div>
+  </div>
+  <figcaption>그림 1. 읽기와 쓰기는 비용 구조가 정반대다</figcaption>
+</figure>
+
 ## 들어가며
 
-"성능을 어떻게 높일 수 있나요?"라는 질문을 받았을 때, 캐시·인덱스·샤딩 같은 키워드를 두서없이 나열하는 것은 좋은 답이 아닙니다. 핵심은 **계층(Layer)별로 분류해 구조적으로 접근**하고, 각 선택이 동반하는 **트레이드오프(Trade-off)**를 함께 설명하는 것입니다.
+면접에서 "성능을 어떻게 높일 수 있나요?"라는 질문을 받았을 때, 캐시·인덱스·샤딩 같은 키워드를 두서없이 나열하는 것은 좋은 답이 아닙니다. 핵심은 **계층(Layer)별로 분류해 구조적으로 접근**하고, 각 선택이 동반하는 **트레이드오프(Trade-off)**를 함께 설명하는 것입니다.
 
 특히 읽기(Read)와 쓰기(Write)는 비용 구조가 정반대입니다. 읽기는 *조회 경로를 단축*하는 방향으로, 쓰기는 *부하를 분산하고 비동기로 미루는* 방향으로 최적화합니다. 한쪽을 빠르게 만들면 다른 쪽이 느려지는 경우가 많아, 둘을 분리해서 사고하는 것이 출발점입니다.
 
@@ -51,6 +61,20 @@ glossary:
 ## 읽기 성능 최적화
 
 읽기 최적화의 본질은 **요청이 더 깊은 계층까지 내려가지 않도록 막는 것**입니다. 사용자에게 가까운 계층에서 응답할수록 비용이 줄어듭니다. 그래서 전략을 네트워크·웹 → 애플리케이션 → 데이터베이스 순서로 살펴봅니다.
+
+그런데 "가까운 계층일수록 싸다"는 말이 추상적으로 들린다면, 아래 그림이 그 이유를 한눈에 보여 줍니다. 각 계층의 비용은 결국 메모리 계층 간 레이턴시의 **차수(Order of Magnitude) 격차**에서 나옵니다. 로컬 캐시(RAM, 100ns)와 디스크 조회(HDD, 5ms)는 같은 '조회'라도 단위 자체가 다릅니다.
+
+<figure>
+  <div className="figure-content">
+    <div className="image-frame">
+      <img className="theme-light" src="/images/posts/read-write-performance-optimization/layer-cost-light.png" alt="레이턴시 차수와 아키텍처 계층의 매핑" />
+      <img className="theme-dark" src="/images/posts/read-write-performance-optimization/layer-cost-dark.png" alt="레이턴시 차수와 아키텍처 계층의 매핑" />
+    </div>
+  </div>
+  <figcaption>그림 2. 계층마다 비용이 다른 이유 — 위로 갈수록 빠르고 가깝고 저렴하다</figcaption>
+</figure>
+
+> 계층별 비용 차이의 근거가 되는 레이턴시 숫자(ns·μs·ms)의 감각은 [바이브 코딩 시대, 개발자와 아키텍트를 가르는 숫자 감각](/blog/latency-numbers)에서 따로 정리했습니다.
 
 ### 네트워크 및 웹 레이어
 

@@ -12,5 +12,7 @@
   "/images/thumbnails/postgresql-dark.png": "data:image/webp;base64,UklGRmAAAABXRUJQVlA4IFQAAABwAwCdASoUAA0APzmGuVOvKSWisAgB4CcJagCdMoADQL3egwgA/ujdQ7pWRCiRW8xlOhtGLDHM81G1W7ZdiJjbqDd9DHEnBy8Wg9Ml8gllr9WAAAA=",
   "/images/thumbnails/postgresql-light.png": "data:image/webp;base64,UklGRl4AAABXRUJQVlA4IFIAAACQAwCdASoUAA0APzmGuVOvKSWisAgB4CcJQBOgA8TB3sLrjT2AAP7e7H3lrSwtTXZake07oFyL3xNuef5iXqs+7DJr4k374jOrJLRJ01UPOAAA",
   "/images/thumbnails/read-write-performance-dark.png": "data:image/webp;base64,UklGRjwAAABXRUJQVlA4IDAAAADwAgCdASoUAA0APzmGulOvKKWkMAgB4CcJYwCdAC0kAAD+7hsDmmA2xv+eHAzgAAA=",
-  "/images/thumbnails/read-write-performance-light.png": "data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAADwAgCdASoUAA0APzmGuVQvKSWssAgB4CcJZQDCgC5JAAD+7T7KWvLaG9LAMAAA"
+  "/images/thumbnails/read-write-performance-light.png": "data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAADwAgCdASoUAA0APzmGuVQvKSWssAgB4CcJZQDCgC5JAAD+7T7KWvLaG9LAMAAA",
+  "/images/thumbnails/latency-dark.png": "data:image/webp;base64,UklGRjgAAABXRUJQVlA4ICwAAACwAgCdASoUAA0APzmGuVOvKSWisAgB4CcJZQAAeyAA/u56+zJ3cUnhAxIQAA==",
+  "/images/thumbnails/latency-light.png": "data:image/webp;base64,UklGRjYAAABXRUJQVlA4ICoAAADQAgCdASoUAA0APzmGulQvKSWjMAgB4CcJZwAAe/QAAP7uJvd6mrAAAAA="
 }
