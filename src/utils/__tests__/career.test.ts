@@ -2,6 +2,7 @@ import {
   sortByDateDesc,
   filterByCategory,
   extractCategoriesWithCount,
+  groupByYear,
   type CategoryCount,
 } from "../career";
 import type { CareerItem } from "@/types";
@@ -113,5 +114,62 @@ describe("extractCategoriesWithCount", () => {
 
   it("빈 배열 입력 시 빈 배열을 반환한다", () => {
     expect(extractCategoriesWithCount([])).toEqual([]);
+  });
+});
+
+describe("groupByYear", () => {
+  it("date의 연도별로 묶고 연도 내림차순으로 반환한다", () => {
+    const items = [
+      createItem({ id: "a", date: "2024.03" }),
+      createItem({ id: "b", date: "2026.05" }),
+      createItem({ id: "c", date: "2025.07" }),
+    ];
+
+    const result = groupByYear(items);
+
+    expect(result.map((g) => g.year)).toEqual(["2026", "2025", "2024"]);
+  });
+
+  it("같은 연도 내에서는 date 내림차순(최신순)으로 정렬한다", () => {
+    const items = [
+      createItem({ id: "a", date: "2025.03" }),
+      createItem({ id: "b", date: "2025.11" }),
+      createItem({ id: "c", date: "2025.07" }),
+    ];
+
+    const result = groupByYear(items);
+
+    expect(result).toHaveLength(1);
+    expect(result[0].year).toBe("2025");
+    expect(result[0].items.map((i) => i.id)).toEqual(["b", "c", "a"]);
+  });
+
+  it("여러 연도의 항목을 각 연도 그룹으로 분리한다", () => {
+    const items = [
+      createItem({ id: "a", date: "2026.01" }),
+      createItem({ id: "b", date: "2026.09" }),
+      createItem({ id: "c", date: "2024.05" }),
+    ];
+
+    const result = groupByYear(items);
+
+    expect(result.map((g) => g.year)).toEqual(["2026", "2024"]);
+    expect(result[0].items.map((i) => i.id)).toEqual(["b", "a"]);
+    expect(result[1].items.map((i) => i.id)).toEqual(["c"]);
+  });
+
+  it("원본 배열을 변경하지 않는다 (불변)", () => {
+    const items = [
+      createItem({ id: "a", date: "2024.03" }),
+      createItem({ id: "b", date: "2026.05" }),
+    ];
+
+    groupByYear(items);
+
+    expect(items.map((i) => i.id)).toEqual(["a", "b"]);
+  });
+
+  it("빈 배열 입력 시 빈 배열을 반환한다", () => {
+    expect(groupByYear([])).toEqual([]);
   });
 });

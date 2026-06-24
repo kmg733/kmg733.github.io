@@ -1,12 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import TiltCard from "@/components/TiltCard";
 import type { CareerCategory, CareerCategoryFilter, CareerItem } from "@/types";
 import {
-  sortByDateDesc,
   filterByCategory,
   extractCategoriesWithCount,
+  groupByYear,
 } from "@/utils/career";
 
 interface CareerTimelineProps {
@@ -39,8 +39,8 @@ export default function CareerTimeline({ items }: CareerTimelineProps) {
     [items]
   );
 
-  const visibleItems = useMemo(
-    () => sortByDateDesc(filterByCategory(items, filter)),
+  const yearGroups = useMemo(
+    () => groupByYear(filterByCategory(items, filter)),
     [items, filter]
   );
 
@@ -48,6 +48,8 @@ export default function CareerTimeline({ items }: CareerTimelineProps) {
     { label: "전체", count: items.length },
     ...categoryCounts.map((c) => ({ label: c.category, count: c.count })),
   ];
+
+  const hasHighlight = items.some((item) => item.highlight);
 
   return (
     <div>
@@ -80,48 +82,72 @@ export default function CareerTimeline({ items }: CareerTimelineProps) {
         })}
       </div>
 
-      {/* 세로 타임라인 */}
+      {/* ⭐ 범례 */}
+      {hasHighlight && (
+        <p className="mb-6 flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400">
+          <span aria-hidden="true">⭐</span>
+          <span>대표 성과</span>
+        </p>
+      )}
+
+      {/* 연도별 세로 타임라인 */}
       <ol className="relative ml-2 border-l border-zinc-200 dark:border-zinc-700">
-        {visibleItems.map((item) => (
-          <li key={item.id} className="relative ml-6 pb-8 last:pb-0">
-            {/* 노드 점 */}
-            <span
-              className={`absolute -left-[1.6rem] top-1.5 h-3 w-3 rounded-full ring-4 ring-white dark:ring-zinc-900 ${nodeColor[item.category]}`}
-              aria-hidden="true"
-            />
+        {yearGroups.map((group) => (
+          <Fragment key={group.year}>
+            {/* 연도 마커 */}
+            <li className="relative ml-6 mb-5">
+              <span
+                className="absolute -left-[2.05rem] top-0.5 h-4 w-4 rounded-full bg-zinc-300 ring-4 ring-white dark:bg-zinc-600 dark:ring-zinc-900"
+                aria-hidden="true"
+              />
+              <span className="text-sm font-bold tracking-wide text-zinc-700 dark:text-zinc-300">
+                {group.year}
+              </span>
+            </li>
 
-            {/* 카드 */}
-            <TiltCard className="rounded-xl" maxTilt={6} scale={1.01}>
-              <div className="rounded-xl border border-white/20 bg-gradient-to-br from-white/30 to-white/20 p-4 shadow-sm backdrop-blur-md transition-all duration-300 hover:shadow-md dark:border-white/10 dark:from-slate-800/40 dark:to-slate-900/40">
-              <div className="mb-1.5 flex flex-wrap items-center gap-2">
+            {/* 해당 연도 항목 */}
+            {group.items.map((item) => (
+              <li key={item.id} className="relative ml-6 pb-8">
+                {/* 노드 점 */}
                 <span
-                  className={`rounded-full px-2 py-0.5 text-xs font-medium ${categoryColor[item.category]}`}
-                >
-                  {item.category}
-                </span>
-                <time className="text-xs text-zinc-500 dark:text-zinc-400">
-                  {item.period ?? item.date}
-                </time>
-                {item.highlight && (
-                  <span
-                    className="text-xs text-amber-500 dark:text-amber-400"
-                    role="img"
-                    aria-label="대표 성과"
-                  >
-                    ⭐
-                  </span>
-                )}
-              </div>
+                  className={`absolute -left-[1.6rem] top-1.5 h-3 w-3 rounded-full ring-4 ring-white dark:ring-zinc-900 ${nodeColor[item.category]}`}
+                  aria-hidden="true"
+                />
 
-              <h3 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
-                {item.title}
-              </h3>
-              <p className="mt-1 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
-                {item.summary}
-              </p>
-              </div>
-            </TiltCard>
-          </li>
+                {/* 카드 */}
+                <TiltCard className="rounded-xl" maxTilt={6} scale={1.01}>
+                  <div className="rounded-xl border border-white/20 bg-gradient-to-br from-white/30 to-white/20 p-4 shadow-sm backdrop-blur-md transition-all duration-300 hover:shadow-md dark:border-white/10 dark:from-slate-800/40 dark:to-slate-900/40">
+                    <div className="mb-1.5 flex flex-wrap items-center gap-2">
+                      <span
+                        className={`rounded-full px-2 py-0.5 text-xs font-medium ${categoryColor[item.category]}`}
+                      >
+                        {item.category}
+                      </span>
+                      <time className="text-xs text-zinc-500 dark:text-zinc-400">
+                        {item.period ?? item.date}
+                      </time>
+                      {item.highlight && (
+                        <span
+                          className="text-xs text-amber-500 dark:text-amber-400"
+                          role="img"
+                          aria-label="대표 성과"
+                        >
+                          ⭐
+                        </span>
+                      )}
+                    </div>
+
+                    <h3 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
+                      {item.title}
+                    </h3>
+                    <p className="mt-1 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+                      {item.summary}
+                    </p>
+                  </div>
+                </TiltCard>
+              </li>
+            ))}
+          </Fragment>
         ))}
       </ol>
     </div>

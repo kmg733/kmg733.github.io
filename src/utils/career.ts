@@ -10,6 +10,13 @@ export interface CategoryCount {
   count: number;
 }
 
+/** 연도별 묶음 (타임라인 연도 마커용) */
+export interface CareerYearGroup {
+  /** 연도 문자열 (예: "2026") */
+  year: string;
+  items: CareerItem[];
+}
+
 /** 유형 칩의 고정 표시 우선순위 */
 const CATEGORY_ORDER: readonly CareerCategory[] = [
   "성능",
@@ -55,4 +62,27 @@ export function extractCategoriesWithCount(
   return CATEGORY_ORDER.filter((category) => countMap.has(category)).map(
     (category) => ({ category, count: countMap.get(category)! })
   );
+}
+
+/**
+ * 항목을 date의 연도별로 묶는다.
+ * 연도는 내림차순, 각 연도 내 항목은 date 내림차순(최신순)으로 정렬한다.
+ * 원본 배열을 변경하지 않는다.
+ */
+export function groupByYear(items: CareerItem[]): CareerYearGroup[] {
+  const groupMap = new Map<string, CareerItem[]>();
+
+  for (const item of sortByDateDesc(items)) {
+    const year = item.date.slice(0, 4);
+    const group = groupMap.get(year);
+    if (group) {
+      group.push(item);
+    } else {
+      groupMap.set(year, [item]);
+    }
+  }
+
+  return Array.from(groupMap.keys())
+    .sort((a, b) => b.localeCompare(a))
+    .map((year) => ({ year, items: groupMap.get(year)! }));
 }
