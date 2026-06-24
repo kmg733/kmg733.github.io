@@ -1,14 +1,16 @@
 import type { Company } from "@/types";
 
 /**
- * 경력 데이터
+ * 경력 데이터 (최신 소속이 먼저 오도록 정렬)
  *
- * 항목을 추가하려면 `items` 배열에 새 CareerItem을 추가하세요.
+ * 소속을 추가하려면 `careers` 배열에 새 Company를 추가하세요.
+ * 항목을 추가하려면 각 소속의 `items` 배열에 CareerItem을 추가하세요.
  * - date 형식: "YYYY.MM" (정렬·표기 기준)
  * - highlight: 대표 성과 강조(⭐)
+ * - repoUrl: GitHub 등 외부 링크
  * - postSlug: 향후 블로그 글 연결용
  */
-export const company: Company = {
+const jirandata: Company = {
   name: "지란지교데이터",
   role: "백엔드 ~ 프론트엔드 풀스택 개발",
   period: "2022.06 ~ 재직 중",
@@ -154,3 +156,43 @@ export const company: Company = {
     },
   ],
 };
+
+const nsl: Company = {
+  name: "공주대학교 네트워크보안연구실 (Network Security Lab)",
+  role: "학부 연구생",
+  period: "2019.06 ~ 2022.02",
+  description:
+    "학부 연구생으로 IoT·블록체인·임베디드 기반의 보안 프로젝트를 수행했습니다.",
+  items: [
+    {
+      id: "nsl-bot",
+      title: "블록체인을 이용한 IoT 보안 기능 고도화",
+      summary: "블록체인을 활용해 IoT 환경의 보안 기능을 고도화한 프로젝트",
+      category: "프로젝트",
+      date: "2021.05",
+      period: "2021.05 ~ 2021.10",
+      repoUrl: "https://github.com/kmg733/BoT",
+    },
+    {
+      id: "nsl-imcp",
+      title: "지능형 미아방지 시스템",
+      summary: "IoT 기반으로 미아 발생을 예방·탐지하는 지능형 시스템",
+      category: "프로젝트",
+      date: "2020.05",
+      period: "2020.05 ~ 2020.10",
+      repoUrl: "https://github.com/kmg733/IMCP",
+    },
+    {
+      id: "nsl-lab-iot",
+      title: "IoT를 이용한 연구실 자동화 시스템",
+      summary: "IoT 디바이스로 연구실 환경을 모니터링·제어하는 자동화 시스템",
+      category: "프로젝트",
+      date: "2019.11",
+      period: "2019.11 ~ 2020.03",
+      repoUrl: "https://github.com/kmg733/lab_iot",
+    },
+  ],
+};
+
+/** 최신 소속이 먼저 (페이지 렌더 순서) */
+export const careers: Company[] = [jirandata, nsl];

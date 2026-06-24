@@ -23,6 +23,7 @@ const CATEGORY_ORDER: readonly CareerCategory[] = [
   "보안",
   "아키텍처",
   "인프라",
+  "프로젝트",
 ];
 
 /**

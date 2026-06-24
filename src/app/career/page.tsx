@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import GradientOrbs from "@/components/GradientOrbs";
 import ScrollReveal from "@/components/ScrollReveal";
 import CareerSection from "@/components/CareerSection";
-import { company } from "@/data/career";
+import { careers } from "@/data/career";
 
 export const metadata: Metadata = {
   title: "Career",
-  description: `${company.name}에서의 풀스택 개발 경력과 주요 작업 타임라인.`,
+  description: `${careers[0].name}에서의 풀스택 개발 경력과 주요 작업 타임라인.`,
 };
 
 export default function CareerPage() {
@@ -27,10 +27,12 @@ export default function CareerPage() {
           </header>
         </ScrollReveal>
 
-        {/* 회사 섹션 (카드 클릭으로 타임라인 접기/펼치기) */}
-        <ScrollReveal direction="up" delay={100}>
-          <CareerSection company={company} />
-        </ScrollReveal>
+        {/* 소속별 섹션 (헤더 클릭으로 타임라인 접기/펼치기) */}
+        {careers.map((company, index) => (
+          <ScrollReveal key={company.name} direction="up" delay={100 + index * 50}>
+            <CareerSection company={company} defaultExpanded={index === 0} />
+          </ScrollReveal>
+        ))}
       </div>
     </div>
   );

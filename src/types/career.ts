@@ -3,7 +3,12 @@
  */
 
 /** 작업 유형 분류 (엔지니어링 시그널 기준) */
-export type CareerCategory = "성능" | "보안" | "아키텍처" | "인프라";
+export type CareerCategory =
+  | "성능"
+  | "보안"
+  | "아키텍처"
+  | "인프라"
+  | "프로젝트";
 
 /** 유형 필터 옵션 (전체 + 각 유형) */
 export type CareerCategoryFilter = "전체" | CareerCategory;
@@ -25,6 +30,8 @@ export interface CareerItem {
   highlight?: boolean;
   /** 향후 블로그 글 연결용 slug */
   postSlug?: string;
+  /** GitHub 저장소 등 외부 링크 */
+  repoUrl?: string;
 }
 
 /** 회사 경력 (회사 정보 + 작업 항목 목록) */
