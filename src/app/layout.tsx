@@ -65,6 +65,7 @@ export default function RootLayout({
               <NavLink href="/">Home</NavLink>
               <NavLink href="/blog">Blog</NavLink>
               <NavLink href="/projects">Projects</NavLink>
+              <NavLink href="/career">Career</NavLink>
               <NavLink href="/about">About</NavLink>
               <SearchButton />
               <ThemeToggle />
