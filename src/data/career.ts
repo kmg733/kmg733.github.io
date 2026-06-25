@@ -45,7 +45,6 @@ const jirandata: Company = {
       category: "성능",
       date: "2025.10",
       period: "2025.10 ~ 2025.12",
-      highlight: true,
     },
     {
       id: "perf-n1-async",
@@ -54,7 +53,6 @@ const jirandata: Company = {
         "재귀적 N+1 동기 호출을 백·프론트 양쪽에서 단일 비동기 호출로 통합, UI 블로킹 해소",
       category: "성능",
       date: "2026.03",
-      highlight: true,
     },
     {
       id: "perf-detail-33",
@@ -80,7 +78,6 @@ const jirandata: Company = {
         "필터 체인·커스텀 AuthenticationProvider·핸들러를 직접 구성해 통합 시스템의 인증·인가 골격 구축",
       category: "보안",
       date: "2024.03",
-      highlight: true,
     },
     {
       id: "sec-web-vuln",
@@ -90,7 +87,6 @@ const jirandata: Company = {
       category: "보안",
       date: "2025.08",
       period: "2025.08 ~ 2026.06",
-      highlight: true,
     },
     {
       id: "sec-otp-2fa",
@@ -116,7 +112,6 @@ const jirandata: Company = {
         "부가 작업 실패가 주 트랜잭션을 조용히 롤백시키던 문제를 REQUIRES_NEW로 격리, 책임 분리",
       category: "아키텍처",
       date: "2026.04",
-      highlight: true,
     },
     {
       id: "arch-race-condition",
@@ -124,7 +119,6 @@ const jirandata: Company = {
       summary: "두 번 조회로 발생하던 race drift를 단일 쿼리 통합으로 구조에서 제거",
       category: "아키텍처",
       date: "2026.04",
-      highlight: true,
     },
 
     // ── 인프라 ────────────────────────────────────────────
