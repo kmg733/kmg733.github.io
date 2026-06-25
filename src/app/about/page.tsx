@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import TechCard from "@/components/TechCard";
 import TiltCard from "@/components/TiltCard";
 import CodeWindow from "@/components/CodeWindow";
@@ -88,6 +89,15 @@ export default function AboutPage() {
                 </ul>
               </div>
             </TiltCard>
+
+            {/* CTA는 TiltCard 밖에 둬 기울임 없이 안정적으로 클릭되도록 함 */}
+            <Link
+              href="/career"
+              className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-amber-700 transition-colors hover:text-amber-900 dark:text-blue-400 dark:hover:text-blue-300"
+            >
+              <span role="img" aria-label="가방">💼</span> 경력 자세히 보기
+              <span aria-hidden="true">→</span>
+            </Link>
           </section>
         </ScrollReveal>
 
