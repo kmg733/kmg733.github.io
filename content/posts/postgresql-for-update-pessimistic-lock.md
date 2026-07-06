@@ -115,7 +115,7 @@ PostgreSQL 문서도 "행 잠금은 조회를 막지 않으며, 같은 행에 �
 
 그래서 경합을 막으려면, 변경할 UPDATE가 아니라 그 앞의 **검증용 SELECT부터** 잠가야 합니다.
 `SELECT ... FOR UPDATE`가 바로 그 역할입니다.
-PostgreSQL 공식 문서는 이를 "SELECT로 조회한 행을, 현재 트랜잭션이 끝날 때까지 다른 트랜잭션이 잠그거나 수정·삭제하지 못하도록 잠근다"고 정의합니다([Row-Level Locks](https://www.postgresql.org/docs/current/explicit-locking.html#LOCKING-ROWS)).
+PostgreSQL 공식 문서는 이를 "SELECT로 조회한 행을, 현재 트랜잭션이 끝날 때까지 다른 트랜잭션이 잠그거나 수정·삭제하지 못하도록 잠근다"고 정의합니다([Row‑Level Locks](https://www.postgresql.org/docs/current/explicit-locking.html#LOCKING-ROWS)).
 조회 시점에 `FOR UPDATE`로 행을 잠그면, 뒤따른 트랜잭션은 앞선 트랜잭션이 끝날 때까지 조회 자체가 대기하고, 풀린 뒤에는 최신값을 읽게 되어 "조회 → 검증 → 변경" 전체가 직렬화됩니다.
 
 ---
