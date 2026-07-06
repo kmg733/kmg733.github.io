@@ -4,6 +4,9 @@ import fs from "fs";
 
 const nextConfig: NextConfig = {
   output: "export",
+  // github-slugger는 ESM 전용 패키지. next/jest가 이를 SWC로 변환하도록 허용해
+  // 목차 slug를 rehype-slug와 동일한 규칙으로 생성한다.
+  transpilePackages: ["github-slugger"],
   images: {
     unoptimized: true,
   },
