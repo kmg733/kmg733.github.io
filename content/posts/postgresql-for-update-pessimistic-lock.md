@@ -167,8 +167,10 @@ B: 물리 삭제 실행 → 이미 없는 행을 다시 삭제 / 복구와 충�
       <img className="theme-dark" src="/images/posts/postgresql-for-update-pessimistic-lock/for-update-serialize-dark.png" alt="FOR UPDATE로 서버 B가 대기 후 최신값을 읽어 중복 처리를 스킵하는 흐름" />
     </div>
   </div>
-  <figcaption>서버 B는 A가 커밋할 때까지 대기했다가 최신값('RUNNING')을 읽으므로, 중복 처리가 원천 차단된다</figcaption>
+  <figcaption>서버 B는 A가 커밋할 때까지 대기하다가, 잠금을 넘겨받아 최신값('RUNNING')을 읽으므로 중복 처리가 원천 차단된다</figcaption>
 </figure>
+
+> 여기서 대기하는 것은 **잠금을 거는 `SELECT ... FOR UPDATE`**입니다. 잠금 없는 일반 `SELECT`는 대기하지 않고 MVCC 스냅샷을 즉시 읽습니다.
 
 `FOR UPDATE`는 조회하는 순간 해당 행에 쓰기 잠금을 걸어, 트랜잭션이 끝날 때까지 다른 트랜잭션이 그 행을 수정하거나 함께 잠그지 못하게 막습니다.
 동작에는 세 가지 핵심 원칙이 있습니다.
