@@ -10,6 +10,7 @@ import MouseRipple from "@/components/MouseRipple";
 
 import NavLink from "@/components/NavLink";
 import { postService } from "@/lib/container";
+import { SITE } from "@/lib/site";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -50,6 +51,18 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var s=localStorage.getItem('theme');var t=s==='dark'||s==='light'?s:null;if(!t){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}if(t==='dark'){document.documentElement.classList.add('dark')}document.documentElement.classList.add('no-transition')}catch(e){}})()`,
           }}
+        />
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          title={`${SITE.title} RSS Feed`}
+          href="/feed.xml"
+        />
+        <link
+          rel="alternate"
+          type="application/atom+xml"
+          title={`${SITE.title} Atom Feed`}
+          href="/atom.xml"
         />
       </head>
       <body
