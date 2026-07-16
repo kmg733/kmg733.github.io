@@ -12,12 +12,16 @@ describe("robots", () => {
 
   it("sitemap.xml 위치를 명시한다", () => {
     const result = robots();
-    expect(result.sitemap).toBe(`${SITE_URL}/sitemap.xml`);
+
+    // SITE_URL을 그대로 보간하지 않고 리터럴로 검증해 실제 회귀를 잡는다.
+    expect(result.sitemap).toBe("https://kmg733.github.io/sitemap.xml");
+    // 스킴 뒤(//)를 제외한 중복 슬래시가 없어야 한다 (SITE_URL 후행 슬래시 회귀 방지).
+    expect(result.sitemap).not.toMatch(/[^:]\/\//);
   });
 
   it("host를 사이트 URL로 설정한다", () => {
     const result = robots();
-    expect(result.host).toBe(SITE_URL);
+    expect(result.host).toBe("https://kmg733.github.io");
   });
 });
 
