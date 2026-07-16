@@ -10,6 +10,7 @@ import MouseRipple from "@/components/MouseRipple";
 
 import NavLink from "@/components/NavLink";
 import { postService } from "@/lib/container";
+import { SITE_URL } from "@/lib/constants";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -29,6 +30,7 @@ const sacramento = Sacramento({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "Manuel",
     template: "%s | Manuel",

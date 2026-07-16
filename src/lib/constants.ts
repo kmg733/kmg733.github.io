@@ -2,6 +2,11 @@
  * 애플리케이션 전역 상수
  */
 
+// 사이트 기본 정보
+// export 시점에 후행 슬래시를 제거해, 값이 어떻게 바뀌든(예: 환경변수 전환)
+// sitemap/robots의 URL 조합이 의존하는 "후행 슬래시 없음" 불변식을 단일 소스에서 강제한다.
+export const SITE_URL = "https://kmg733.github.io".replace(/\/+$/, "");
+
 // 포스트 관련 상수
 export const POST_DEFAULTS = {
   DIRECTORY: "content/posts",
