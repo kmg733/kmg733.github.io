@@ -9,6 +9,7 @@ import ScrollToTop from "@/components/ScrollToTop";
 import MouseRipple from "@/components/MouseRipple";
 
 import NavLink from "@/components/NavLink";
+import RssMenu from "@/components/RssMenu";
 import { postService } from "@/lib/container";
 import { SITE } from "@/lib/site";
 import "./globals.css";
@@ -82,6 +83,7 @@ export default function RootLayout({
               <NavLink href="/about">About</NavLink>
               <SearchButton />
               <ThemeToggle />
+              <RssMenu />
             </div>
           </nav>
         </header>

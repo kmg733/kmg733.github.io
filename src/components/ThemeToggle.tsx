@@ -93,12 +93,12 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={toggleTheme}
-      className="group relative h-8 w-8 rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 transition-all duration-200"
+      className="group relative h-8 w-8 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all duration-200"
       aria-label={`${theme === "dark" ? "라이트" : "다크"} 모드로 전환`}
     >
       {/* Sun Icon (Light Mode) */}
       <svg
-        className={`absolute inset-0 m-auto h-4 w-4 text-zinc-600 transition-all duration-300 ${
+        className={`absolute inset-0 m-auto h-4 w-4 text-amber-700 group-hover:text-amber-900 transition-all duration-300 ${
           theme === "dark"
             ? "scale-0 rotate-90 opacity-0"
             : "scale-100 rotate-0 opacity-100"
@@ -114,7 +114,7 @@ export default function ThemeToggle() {
 
       {/* Moon Icon (Dark Mode) */}
       <svg
-        className={`absolute inset-0 m-auto h-4 w-4 text-zinc-100 transition-all duration-300 ${
+        className={`absolute inset-0 m-auto h-4 w-4 text-zinc-400 group-hover:text-zinc-100 transition-all duration-300 ${
           theme === "dark"
             ? "scale-100 rotate-0 opacity-100"
             : "scale-0 -rotate-90 opacity-0"
