@@ -12,6 +12,7 @@ import NavLink from "@/components/NavLink";
 import RssMenu from "@/components/RssMenu";
 import { postService } from "@/lib/container";
 import { SITE } from "@/lib/site";
+import { SITE_URL } from "@/lib/constants";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -31,6 +32,7 @@ const sacramento = Sacramento({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "Manuel",
     template: "%s | Manuel",
