@@ -9,7 +9,9 @@ import ScrollToTop from "@/components/ScrollToTop";
 import MouseRipple from "@/components/MouseRipple";
 
 import NavLink from "@/components/NavLink";
+import RssMenu from "@/components/RssMenu";
 import { postService } from "@/lib/container";
+import { SITE } from "@/lib/site";
 import { SITE_URL } from "@/lib/constants";
 import "./globals.css";
 
@@ -53,6 +55,18 @@ export default function RootLayout({
             __html: `(function(){try{var s=localStorage.getItem('theme');var t=s==='dark'||s==='light'?s:null;if(!t){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}if(t==='dark'){document.documentElement.classList.add('dark')}document.documentElement.classList.add('no-transition')}catch(e){}})()`,
           }}
         />
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          title={`${SITE.title} RSS Feed`}
+          href="/feed.xml"
+        />
+        <link
+          rel="alternate"
+          type="application/atom+xml"
+          title={`${SITE.title} Atom Feed`}
+          href="/atom.xml"
+        />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${sacramento.variable} antialiased min-h-screen flex flex-col`}
@@ -71,6 +85,7 @@ export default function RootLayout({
               <NavLink href="/about">About</NavLink>
               <SearchButton />
               <ThemeToggle />
+              <RssMenu />
             </div>
           </nav>
         </header>
