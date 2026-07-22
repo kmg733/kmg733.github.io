@@ -293,7 +293,7 @@ jmap -dump:live,format=b,file=/tmp/heap.hprof <PID>
 MAT이 휴리스틱으로 "이 객체가 의심됩니다"를 1차 제안하는 리포트로, 대부분의 명백한 누수는 여기서 바로 드러납니다.
 다만 자동 리포트가 늘 정확한 것은 아니므로, **Dominator Tree**와 **Path to GC Roots**를 직접 읽을 줄 알아야 합니다.
 
-#### Shallow Size vs Retained Size
+### Shallow Size vs Retained Size
 
 MAT을 제대로 읽으려면 두 가지 크기 개념을 먼저 이해해야 합니다.
 
@@ -316,7 +316,7 @@ MAT을 제대로 읽으려면 두 가지 크기 개념을 먼저 이해해야 �
 `HashMap` 인스턴스 자체는 수십 바이트에 불과하지만, 그 안에 1GB짜리 `byte[]`를 담고 있다면 진짜 범인은 이 `HashMap`입니다.
 항상 **Retained Size 내림차순으로 정렬**해야 진짜 메모리를 붙잡고 있는 객체를 찾을 수 있습니다.
 
-#### Dominator Tree — 진짜 범인 찾기
+### Dominator Tree — 진짜 범인 찾기
 
 <Term id="dominator-tree">Dominator Tree</Term>는 MAT의 가장 중요한 뷰입니다.
 일반 참조 그래프는 한 객체가 여러 부모를 가질 수 있어 복잡하지만, Dominator Tree는 **객체마다 단일 부모(dominator)로 단순화**되어 "누가 단독으로 이 메모리를 붙잡고 있는가"를 한눈에 보여줍니다.
@@ -343,7 +343,7 @@ MAT을 제대로 읽으려면 두 가지 크기 개념을 먼저 이해해야 �
   4. 비정상적으로 큰 Retained Size를 가진 노드가 누수의 중심지
 </div>
 
-#### Path to GC Roots — 누수 경로 역추적
+### Path to GC Roots — 누수 경로 역추적
 
 Dominator Tree로 **"무엇이 많이 붙잡고 있는가"** 를 찾았다면, 다음은 **"왜 GC되지 않는가"** 를 확인할 차례입니다.
 의심 객체에서 시작해 거꾸로 <Term id="gc-roots">GC Root</Term>까지 거슬러 올라가는 경로를 찾는 기능이 **Path to GC Roots**입니다.
