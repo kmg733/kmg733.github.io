@@ -3,7 +3,7 @@ title: "Spring Boot에서 i18next로 다국어 구현하기 - localStorage SWR �
 date: "2026-02-27"
 description: "Spring Boot + Thymeleaf 환경에서 i18next와 localStorage SWR 캐싱을 결합한 서버-클라이언트 하이브리드 다국어 아키텍처를 설계합니다. 기존 jquery.i18n.properties.js의 한계를 극복하고, 캐시 히트 시 네트워크 요청 0회를 달성하는 구조를 다룹니다."
 category: "개발"
-subcategory: "Spring Boot"
+subcategory: "Spring"
 tags: ["guide", "intermediate"]
 relatedSlugs:
   - localstorage-swr-caching-pattern

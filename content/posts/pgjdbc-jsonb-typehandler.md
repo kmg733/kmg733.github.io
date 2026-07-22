@@ -3,9 +3,9 @@ title: "pgjdbc 42.7.11 JSONB 반환 타입 변경과 TypeHandler 대응"
 date: "2026-05-06"
 description: "pgjdbc 42.7.11에서 JSONB 컬럼의 반환 타입이 String에서 PGobject로 변경되었습니다. MyBatis 커스텀 TypeHandler를 글로벌 등록하여 기존 코드 변경 없이 호환성을 유지하는 방법을 정리합니다."
 category: "개발"
-subcategory: "Java"
+subcategory: "Spring"
 tags: ["guide", "intermediate"]
-thumbnail: "/images/thumbnails/java"
+thumbnail: "/images/thumbnails/springboot"
 glossary:
   - id: "pgobject"
     term: "PGobject"
