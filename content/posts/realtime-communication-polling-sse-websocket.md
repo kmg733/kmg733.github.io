@@ -405,9 +405,11 @@ SSE와 달리 재연결을 직접 구현해야 합니다. `onclose`에서 지수
   <figcaption>그림 5. 통신 방향과 실시간성으로 좁히고, SSE를 못 쓰는 환경만 롱 폴링으로 폴백한다</figcaption>
 </figure>
 
-기술을 먼저 고르고 요구사항을 맞추면 과설계가 됩니다. 구현 기술을 고를때는 통신 방향과 실시간성 요구 필요 여부를 확인하며 사용할 기술에 대해 좁혀 가면 됩니다.
+기술을 먼저 고르고 요구사항을 맞추면 과설계가 됩니다. 구현 기술을 고를때는, 개발 요구사항의 통신 방향과 실시간성 필요 여부를 확인하며 사용할 기술을 선택하면 됩니다.
 
-그림에서 방식을 실제로 가르는 축은 실시간 갱신이 필요한지입니다. 몇 초쯤 늦어도 되면 폴링, 이벤트를 즉시 받아야 하면 SSE로 갑니다. 서버가 클라이언트로 밀어 보내는 단방향 실시간 갱신에는 SSE가 기본값입니다. 앞서 짚은 HTTP/1.1 연결 수 제한이나 프록시 버퍼링은 SSE의 전제조건이 아니라 특정 환경에서만 걸리는 예외라, 대부분의 현대 인프라에서는 그대로 동작합니다. 롱 폴링은 그 SSE를 쓸 수 없는 환경, 예를 들어 `EventSource`가 없는 구형 브라우저나 스트리밍 응답을 버퍼링하는 프록시에서 같은 효과를 대신 내는 폴백입니다. 앞서 본 한계를 그대로 안고 가므로, SSE를 쓸 수 있으면 SSE가 낫습니다.
+이 선택 순서는 널리 공유되는 가이드에 뿌리를 둡니다. 구글 [web.dev](https://web.dev/articles/eventsource-basics)는 주식 시세나 뉴스 피드처럼 서버에서 한 방향으로 흐르는 데이터를 SSE의 자리로, 게임이나 메신저처럼 양방향이 필요한 경우를 WebSocket의 자리로 정리합니다. 실시간 인프라를 만드는 [Ably](https://ably.com/blog/websockets-vs-sse)의 비교도 같은 선을 긋고, 롱 폴링은 새 프로토콜을 못 쓰는 레거시 환경의 대안으로 둡니다. 아래 표는 그 합의를 이 글의 맥락에 맞춰 옮긴 것입니다.
+
+위 그림에서 중점으로 보는 구현 기술의 실마리는 실시간 갱신이 필요한지입니다. 몇 초쯤 늦어도 되면 폴링, 이벤트를 즉시 받아야 하면 SSE로 갑니다. 서버가 클라이언트로 밀어 보내는 단방향 실시간 갱신에는 SSE가 기본값입니다. 앞서 짚은 HTTP/1.1 연결 수 제한이나 프록시 버퍼링은 SSE의 전제조건이 아니라 특정 환경에서만 걸리는 예외라, 대부분의 현대 인프라에서는 그대로 동작합니다. web.dev와 Ably도 SSE가 별도 프로토콜 없이 HTTP로 오가고 대부분의 방화벽·프록시를 특별한 설정 없이 통과하며 자동으로 재연결된다는 점을 장점으로 꼽습니다. 롱 폴링은 그 SSE를 쓸 수 없는 환경, 예를 들어 `EventSource`가 없는 구형 브라우저나 스트리밍 응답을 버퍼링하는 프록시에서 같은 효과를 대신 내는 폴백입니다. 앞서 본 한계를 그대로 안고 가므로, SSE를 쓸 수 있으면 SSE가 낫습니다.
 
 | 기능 | 적합한 방식 | 이유 |
 |------|-----------|------|
@@ -458,4 +460,4 @@ SSE와 달리 재연결을 직접 구현해야 합니다. `onclose`에서 지수
 
 다음 글에서는 서두에 말한 두 화면이 왜 SSE와 폴링으로 갈렸는지를 자세히 짚고, SSE를 실제로 운영하면서 부딪힌 문제들까지 다룹니다. 중복 전송을 걸러 내는 방법, 여러 스레드에서 밀어 보낼 때 생기는 전송 순서 역전, 느린 클라이언트가 전체를 막지 않게 격리하는 방법 같은 것들입니다.
 
-> 참고: [실시간 통신 기술 정리 (jay-ya.tistory.com)](https://jay-ya.tistory.com/160), [MDN — Using server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events), [RFC 6455 — The WebSocket Protocol](https://datatracker.ietf.org/doc/html/rfc6455)
+> 참고: [MDN — Using server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events), [MDN — The WebSocket API](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API), [web.dev — Stream updates with server-sent events](https://web.dev/articles/eventsource-basics), [Ably — WebSockets vs SSE](https://ably.com/blog/websockets-vs-sse), [Ably — WebSockets vs Long Polling](https://ably.com/blog/websockets-vs-long-polling), [RFC 6455 — The WebSocket Protocol](https://datatracker.ietf.org/doc/html/rfc6455), [실시간 통신 기술 정리 (jay-ya.tistory.com)](https://jay-ya.tistory.com/160)
