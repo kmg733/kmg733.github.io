@@ -14,5 +14,7 @@
   "/images/thumbnails/read-write-performance-dark.png": "data:image/webp;base64,UklGRjwAAABXRUJQVlA4IDAAAADwAgCdASoUAA0APzmGulOvKKWkMAgB4CcJYwCdAC0kAAD+7hsDmmA2xv+eHAzgAAA=",
   "/images/thumbnails/read-write-performance-light.png": "data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAADwAgCdASoUAA0APzmGuVQvKSWssAgB4CcJZQDCgC5JAAD+7T7KWvLaG9LAMAAA",
   "/images/thumbnails/latency-dark.png": "data:image/webp;base64,UklGRjgAAABXRUJQVlA4ICwAAACwAgCdASoUAA0APzmGuVOvKSWisAgB4CcJZQAAeyAA/u56+zJ3cUnhAxIQAA==",
-  "/images/thumbnails/latency-light.png": "data:image/webp;base64,UklGRjYAAABXRUJQVlA4ICoAAADQAgCdASoUAA0APzmGulQvKSWjMAgB4CcJZwAAe/QAAP7uJvd6mrAAAAA="
+  "/images/thumbnails/latency-light.png": "data:image/webp;base64,UklGRjYAAABXRUJQVlA4ICoAAADQAgCdASoUAA0APzmGulQvKSWjMAgB4CcJZwAAe/QAAP7uJvd6mrAAAAA=",
+  "/images/thumbnails/realtime-communication-dark.png": "data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAADwAgCdASoUAA0APzmGuVOvKSWisAgB4CcJZQCdAC0kAAD+7qjtGwwGk7ZtmAAA",
+  "/images/thumbnails/realtime-communication-light.png": "data:image/webp;base64,UklGRjYAAABXRUJQVlA4ICoAAADwAgCdASoUAA0APzmGulQvKSWjMAgB4CcJaQDMHC1yAAD+7orbhGkQAAA="
 }
