@@ -407,9 +407,7 @@ SSE와 달리 재연결을 직접 구현해야 합니다. `onclose`에서 지수
 
 기술을 먼저 고르고 요구사항을 맞추면 과설계가 됩니다. 구현 기술을 고를때는, 개발 요구사항의 통신 방향과 실시간성 필요 여부를 확인하며 사용할 기술을 선택하면 됩니다.
 
-이 선택 순서는 널리 공유되는 가이드에 뿌리를 둡니다. 구글 [web.dev](https://web.dev/articles/eventsource-basics)는 주식 시세나 뉴스 피드처럼 서버에서 한 방향으로 흐르는 데이터를 SSE의 자리로, 게임이나 메신저처럼 양방향이 필요한 경우를 WebSocket의 자리로 정리합니다. 실시간 인프라를 만드는 [Ably](https://ably.com/blog/websockets-vs-sse)의 비교도 같은 선을 긋고, 롱 폴링은 새 프로토콜을 못 쓰는 레거시 환경의 대안으로 둡니다. 아래 표는 그 합의를 이 글의 맥락에 맞춰 옮긴 것입니다.
-
-위 그림에서 중점으로 보는 구현 기술의 실마리는 실시간 갱신이 필요한지입니다. 몇 초쯤 늦어도 되면 폴링, 이벤트를 즉시 받아야 하면 SSE로 갑니다. 서버가 클라이언트로 밀어 보내는 단방향 실시간 갱신에는 SSE가 기본값입니다. 앞서 짚은 HTTP/1.1 연결 수 제한이나 프록시 버퍼링은 SSE의 전제조건이 아니라 특정 환경에서만 걸리는 예외라, 대부분의 현대 인프라에서는 그대로 동작합니다. web.dev와 Ably도 SSE가 별도 프로토콜 없이 HTTP로 오가고 대부분의 방화벽·프록시를 특별한 설정 없이 통과하며 자동으로 재연결된다는 점을 장점으로 꼽습니다. 롱 폴링은 그 SSE를 쓸 수 없는 환경, 예를 들어 `EventSource`가 없는 구형 브라우저나 스트리밍 응답을 버퍼링하는 프록시에서 같은 효과를 대신 내는 폴백입니다. 앞서 본 한계를 그대로 안고 가므로, SSE를 쓸 수 있으면 SSE가 낫습니다.
+그림 5는 웹에서 공유되고 있는 큰 기업들의 가이드를 기준으로 그려 보았습니다. 구글의 [web.dev](https://web.dev/articles/eventsource-basics) 글에서는 주식 시세나 뉴스 피드처럼 서버에서 한 방향으로 흐르는 데이터를 SSE로, 게임이나 메신저처럼 양방향이 필요한 경우를 WebSocket로 예시를 들고있습니다. 실시간 인프라를 만드는 [Ably](https://ably.com/blog/websockets-vs-sse)의 비교도 같은 선을 긋고, 롱 폴링은 새 프로토콜을 못 쓰는 레거시 환경의 대안으로 둡니다. 아래 표는 이 글들의 맥락에 맞춰 정리한 것입니다.
 
 | 기능 | 적합한 방식 | 이유 |
 |------|-----------|------|
@@ -420,11 +418,13 @@ SSE와 달리 재연결을 직접 구현해야 합니다. `onclose`에서 지수
 | 대시보드 지표 갱신 | SSE 또는 폴링 | 갱신 주기가 길면 폴링으로 충분 |
 | 실시간 시세, 관제 | WebSocket | 초저지연 + 바이너리 |
 
+정리하면, 사용할 통신 기술을 선택할때 중점으로 보는 구현 기술의 실마리는 실시간 갱신이 필요한지입니다. 몇 초쯤 늦어도 되면 폴링, 이벤트를 즉시 받아야 하면 SSE로 갑니다. 서버가 클라이언트로 밀어 보내는 단방향 실시간 갱신에는 SSE가 기본값입니다. 앞서 짚은 HTTP/1.1 연결 수 제한이나 프록시 버퍼링은 SSE의 전제조건이 아니라 특정 환경에서만 걸리는 예외라, 대부분의 현대 인프라에서는 그대로 동작합니다. web.dev와 Ably도 SSE가 별도 프로토콜 없이 HTTP로 오가고 대부분의 방화벽·프록시를 특별한 설정 없이 통과하며 자동으로 재연결된다는 점을 장점으로 꼽습니다. 롱 폴링은 그 SSE를 쓸 수 없는 환경, 예를 들어 `EventSource`가 없는 구형 브라우저나 스트리밍 응답을 버퍼링하는 프록시에서 같은 효과를 대신 내는 폴백입니다. 앞서 본 한계를 그대로 안고 가므로, SSE를 쓸 수 있으면 SSE가 낫습니다.
+
 ### 동시 사용자 수가 손익분기를 바꾼다
 
-플로우차트는 통신 방향이나 실시간성 같은 정성적인 축만 다룹니다. 그런데 실제로 결정을 뒤집는 건 동시 사용자 수인 경우가 많습니다. 두 방식은 사용자가 늘어날 때 비용이 불어나는 방식 자체가 다릅니다.
+그림 5는 통신 방향이나 실시간성 같은 정성적인 축만 다룹니다. 그런데 실제로 결정을 뒤집는 건 동시 사용자 수인 경우가 많습니다. 두 방식은 사용자가 늘어날 때 비용이 불어나는 방식 자체가 다릅니다.
 
-- **폴링**: 요청 수 = 동시 사용자 × 화면의 갱신 요소 수 × (1 ÷ 주기). 사용자 수와 요소 수가 서로 곱해집니다.
+- **폴링**: 초당 요청 수 = 동시 사용자 × 화면의 갱신 요소 수 × (1 ÷ 주기). 사용자 수와 요소 수가 서로 곱해집니다.
 - **연결 유지**: 커넥션 수 = 동시 사용자. 대신 서버의 데이터 조회는 브로드캐스트 한 번으로 끝나므로 사용자가 늘어도 그대로입니다.
 
 곱셈이 일어난다는 점이 폴링의 약점입니다. 위젯 열 개짜리 화면을 100명이 5초 주기로 보고 있으면 초당 200건입니다. 같은 화면을 SSE로 만들면 커넥션 100개를 유지하는 대신 DB 조회는 5초에 한 번입니다.
@@ -435,9 +435,13 @@ SSE와 달리 재연결을 직접 구현해야 합니다. `onclose`에서 지수
 | 수백~수천 명 | 사용자 × 요소 수로 요청이 곱해져 병목 | DB 조회를 한 번으로 공유해 유리 |
 | 수만 명 이상 | 현실적으로 어려움 | 커넥션 수가 서버 자원 한계에 도달, 인스턴스 분산·브로커 필요 |
 
+이 두 부하 모델은 실시간 인프라 벤더의 확장 가이드와도 맞습니다. [Ably](https://ably.com/topic/long-polling)는 롱 폴링에서 열린 요청 하나하나가 메모리와 컴퓨트를 물어 수천 명 이상을 감당하기 어렵다고 정리하고, [WebSocket 확장 문서](https://ably.com/topic/the-challenge-of-scaling-websockets)는 연결 하나가 메모리와 파일 디스크립터를 차지해 인스턴스당 동시 연결 수에 상한이 있고 수백만 명 규모는 노드 분산이 필수라고 설명합니다.
+
 다만 이 표는 트래픽만 본 것입니다. 사용자가 적다고 폴링이 항상 정답은 아닙니다. 갱신을 초 단위로 당겨야 하거나 이벤트 발생 시점을 예측할 수 없다면, 사용자가 몇 명이든 서버가 주기를 쥐는 쪽이 낫습니다. 트래픽은 후보를 좁히는 축이지 혼자 결론을 내는 축은 아닙니다.
 
 ### 자주 하는 잘못된 판단
+
+이 오해들도 앞서 인용한 가이드가 공통으로 짚는 지점입니다. web.dev와 Ably는 단방향이면 SSE로 충분하다고 보고, 저트래픽에서는 폴링이 문제되지 않으며, 연결을 유지하는 방식은 요청이 적은 대신 동시 연결 수가 비용이 된다는 점을 함께 지적합니다.
 
 - **"실시간이니까 WebSocket"**: 단방향 알림에 WebSocket을 쓰면 재연결, 스케일아웃, 상태 관리 비용만 떠안습니다. SSE로 충분한 경우가 많습니다.
 - **"폴링은 무조건 나쁘다"**: 동시 사용자가 적으면 폴링이 가장 저렴하고 안정적입니다. 인프라를 늘리지 않아도 된다는 장점이 큽니다.
@@ -460,4 +464,13 @@ SSE와 달리 재연결을 직접 구현해야 합니다. `onclose`에서 지수
 
 다음 글에서는 서두에 말한 두 화면이 왜 SSE와 폴링으로 갈렸는지를 자세히 짚고, SSE를 실제로 운영하면서 부딪힌 문제들까지 다룹니다. 중복 전송을 걸러 내는 방법, 여러 스레드에서 밀어 보낼 때 생기는 전송 순서 역전, 느린 클라이언트가 전체를 막지 않게 격리하는 방법 같은 것들입니다.
 
-> 참고: [MDN — Using server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events), [MDN — The WebSocket API](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API), [web.dev — Stream updates with server-sent events](https://web.dev/articles/eventsource-basics), [Ably — WebSockets vs SSE](https://ably.com/blog/websockets-vs-sse), [Ably — WebSockets vs Long Polling](https://ably.com/blog/websockets-vs-long-polling), [RFC 6455 — The WebSocket Protocol](https://datatracker.ietf.org/doc/html/rfc6455), [실시간 통신 기술 정리 (jay-ya.tistory.com)](https://jay-ya.tistory.com/160)
+## 참고
+
+- [MDN — Using server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events)
+- [MDN — The WebSocket API](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API)
+- [web.dev — Stream updates with server-sent events](https://web.dev/articles/eventsource-basics)
+- [Ably — WebSockets vs SSE](https://ably.com/blog/websockets-vs-sse)
+- [Ably — What is HTTP Long Polling](https://ably.com/topic/long-polling)
+- [Ably — The challenge of scaling WebSockets](https://ably.com/topic/the-challenge-of-scaling-websockets)
+- [RFC 6455 — The WebSocket Protocol](https://datatracker.ietf.org/doc/html/rfc6455)
+- [실시간 통신 기술 정리 (jay-ya.tistory.com)](https://jay-ya.tistory.com/160)
