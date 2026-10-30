@@ -7,6 +7,7 @@ subcategory: "Java"
 tags: ["guide", "beginner"]
 series: "java-memory"
 seriesOrder: 1
+seriesTitle: "JVM 메모리"
 glossary:
   - id: "heap-memory"
     term: "힙 메모리(Heap Memory)"

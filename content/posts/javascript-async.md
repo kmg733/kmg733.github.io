@@ -7,6 +7,7 @@ subcategory: "JavaScript"
 tags: ["guide", "beginner"]
 series: "javascript-core"
 seriesOrder: 3
+seriesTitle: "JavaScript 핵심 개념"
 relatedSlugs:
   - "javascript-closure"
   - "javascript-this-binding"

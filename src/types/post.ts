@@ -12,6 +12,7 @@ export interface PostMeta {
   readingTime: string;
   series?: string;
   seriesOrder?: number;
+  seriesTitle?: string;
   relatedSlugs?: string[];
   comments?: boolean;
 }
@@ -44,6 +45,7 @@ export interface PostFrontmatter {
   tags?: string[];
   series?: string;
   seriesOrder?: number;
+  seriesTitle?: string;
   relatedSlugs?: string[];
   comments?: boolean;
 }

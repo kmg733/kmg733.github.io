@@ -7,6 +7,7 @@ subcategory: "Java"
 tags: ["guide", "intermediate"]
 series: "java-memory"
 seriesOrder: 2
+seriesTitle: "JVM 메모리"
 glossary:
   - id: "memory-leak"
     term: "메모리 누수(Memory Leak)"

@@ -7,6 +7,7 @@ subcategory: "JavaScript"
 tags: ["guide", "intermediate"]
 series: "javascript-core"
 seriesOrder: 1
+seriesTitle: "JavaScript 핵심 개념"
 glossary:
   - id: "closure"
     term: "클로저(Closure)"
