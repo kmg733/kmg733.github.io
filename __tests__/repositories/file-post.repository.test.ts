@@ -244,7 +244,7 @@ seriesTitle: 실시간 통신
 `;
 
       mockedFs.existsSync.mockReturnValue(true);
-      mockedFs.readdirSync.mockReturnValue(["series-post.md"] as unknown as fs.Dirent[]);
+      mockedReaddirSync.mockReturnValue(["series-post.md"]);
       mockedFs.readFileSync.mockReturnValue(mockFileContent);
 
       const posts = repository.findAll();
@@ -266,7 +266,7 @@ seriesOrder: 1
 `;
 
       mockedFs.existsSync.mockReturnValue(true);
-      mockedFs.readdirSync.mockReturnValue(["series-post.md"] as unknown as fs.Dirent[]);
+      mockedReaddirSync.mockReturnValue(["series-post.md"]);
       mockedFs.readFileSync.mockReturnValue(mockFileContent);
 
       const posts = repository.findAll();
