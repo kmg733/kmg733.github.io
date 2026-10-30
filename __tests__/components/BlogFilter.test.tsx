@@ -102,9 +102,15 @@ describe("BlogFilter", () => {
     it("should render all posts", () => {
       render(<BlogFilter {...defaultProps} />);
 
-      expect(screen.getByText("React 시작하기")).toBeInTheDocument();
-      expect(screen.getByText("TypeScript 타입 시스템")).toBeInTheDocument();
-      expect(screen.getByText("제주도 여행")).toBeInTheDocument();
+      expect(
+        screen.getByRole("heading", { name: "React 시작하기" })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("heading", { name: "TypeScript 타입 시스템" })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("heading", { name: "제주도 여행" })
+      ).toBeInTheDocument();
     });
 
     it("should show empty message when no posts exist", () => {
@@ -141,6 +147,21 @@ describe("BlogFilter", () => {
       expect(
         screen.getByText("'개발 > React' 카테고리에 포스트가 없습니다.")
       ).toBeInTheDocument();
+    });
+  });
+
+  describe("제목 카드", () => {
+    it("썸네일 자리에 이미지 대신 포스트마다 제목 카드를 그린다", () => {
+      const { container } = render(<BlogFilter {...defaultProps} />);
+
+      const cards = container.querySelectorAll(
+        '[data-testid="post-title-card"]'
+      );
+      expect(cards).toHaveLength(mockPosts.length);
+      expect(cards[0]).toHaveTextContent("React 시작하기");
+      expect(cards[0]).toHaveAttribute("aria-hidden", "true");
+      expect(cards[0].parentElement).toHaveClass("aspect-[3/2]", "sm:w-64");
+      expect(container.querySelector("img")).toBeNull();
     });
   });
 
@@ -207,7 +228,9 @@ describe("BlogFilter", () => {
       if (reactChip) {
         fireEvent.click(reactChip);
         // react 태그를 가진 포스트: react-post만
-        expect(screen.getByText("React 시작하기")).toBeInTheDocument();
+        expect(
+          screen.getByRole("heading", { name: "React 시작하기" })
+        ).toBeInTheDocument();
       }
     });
   });

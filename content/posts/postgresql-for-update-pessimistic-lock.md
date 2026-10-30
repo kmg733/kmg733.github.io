@@ -5,7 +5,6 @@ description: "같은 PostgreSQL DB를 보는 웹 서버와 에이전트 서버�
 category: "개발"
 subcategory: "Database"
 tags: ["guide", "intermediate", "PostgreSQL"]
-thumbnail: "/images/thumbnails/postgresql"
 glossary:
   - id: "pessimistic-lock"
     term: "비관적 잠금(Pessimistic Lock)"
@@ -36,15 +35,6 @@ glossary:
     brief: "잠긴 행은 건너뛰고 잠기지 않은 나머지 행만 반환하는 FOR UPDATE 옵션"
     detail: "SELECT ... FOR UPDATE SKIP LOCKED는 다른 트랜잭션이 이미 잠근 행을 에러 없이 건너뛴다. 여러 워커가 하나의 작업 큐 테이블을 나눠 가져갈 때, 서로 다른 행을 겹치지 않게 집어가도록 하는 데 유용하다."
 ---
-
-<figure>
-  <div className="figure-content">
-    <div className="image-frame">
-      <img className="theme-light" src="/images/thumbnails/postgresql-light.png" alt="PostgreSQL" />
-      <img className="theme-dark" src="/images/thumbnails/postgresql-dark.png" alt="PostgreSQL" />
-    </div>
-  </div>
-</figure>
 
 하나의 **PostgreSQL** DB를 함께 바라보는 두 서버가 있었습니다.
 사용자 요청을 받는 **웹 서버(A)**와, 백그라운드 작업을 처리하는 **에이전트 서버(B)**입니다.

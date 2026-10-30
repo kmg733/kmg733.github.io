@@ -5,7 +5,6 @@ description: "JavaScript 비동기 처리의 진화 과정을 정리합니다. �
 category: "개발"
 subcategory: "JavaScript"
 tags: ["guide", "beginner"]
-thumbnail: "/images/thumbnails/javascript"
 series: "javascript-core"
 seriesOrder: 3
 relatedSlugs:
@@ -33,15 +32,6 @@ glossary:
     brief: "매크로태스크보다 우선 실행되는 작업 큐"
     detail: "Promise.then, queueMicrotask 등이 마이크로태스크 큐에 등록된다. 콜 스택이 비면 매크로태스크(setTimeout 등)보다 먼저 실행되며, 큐가 비워질 때까지 모두 처리된다."
 ---
-
-<figure>
-  <div className="figure-content">
-    <div className="image-frame">
-      <img className="theme-light" src="/images/posts/javascript-async/javascript-async-light.png" alt="JavaScript 비동기 처리" />
-      <img className="theme-dark" src="/images/posts/javascript-async/javascript-async-dark.png" alt="JavaScript 비동기 처리" />
-    </div>
-  </div>
-</figure>
 
 ## 비동기란 무엇인가
 

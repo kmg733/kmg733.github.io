@@ -5,7 +5,6 @@ description: "jstat, jmap, 힙 덤프, NMT(Native Memory Tracking)까지 JVM 진
 category: "개발"
 subcategory: "Java"
 tags: ["guide", "advanced"]
-thumbnail: "/images/thumbnails/java"
 series: "java-memory"
 seriesOrder: 3
 glossary:
@@ -54,15 +53,6 @@ glossary:
     brief: "어떤 객체가 GC되면 함께 회수될 메모리의 총합"
     detail: "Shallow Size가 객체 자신만의 크기라면, Retained Size는 그 객체가 dominator인 모든 하위 객체의 크기까지 포함한다. 예를 들어 HashMap의 Shallow Size는 수십 바이트지만, 안에 100MB 데이터가 들어있다면 Retained Size는 100MB+가 된다. 누수 분석은 항상 Retained Size 기준으로 정렬해야 진짜 범인을 찾을 수 있다."
 ---
-
-<figure>
-  <div className="figure-content">
-    <div className="image-frame">
-      <img className="theme-light" src="/images/posts/jvm-memory-diagnosis-tuning/jvm-memory-tuning-light.png" alt="JVM 메모리 누수 진단과 튜닝" />
-      <img className="theme-dark" src="/images/posts/jvm-memory-diagnosis-tuning/jvm-memory-tuning-dark.png" alt="JVM 메모리 누수 진단과 튜닝" />
-    </div>
-  </div>
-</figure>
 
 [1편](/blog/jvm-memory-structure)에서 JVM 메모리 구조를, [2편](/blog/jvm-memory-leak-patterns)에서 메모리 누수 패턴과 코드 레벨 해결법을 다뤘습니다.
 이번 3편에서는 **이미 운영 환경에서 문제가 발생했을 때** 어떻게 원인을 추적하고 JVM을 튜닝하는지를 실무 도구 중심으로 정리합니다.

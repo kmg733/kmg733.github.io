@@ -5,7 +5,6 @@ description: "PostgreSQL에서 트랜잭션 내 SQL 에러가 발생하면 이�
 category: "개발"
 subcategory: "Spring"
 tags: ["guide", "intermediate"]
-thumbnail: "/images/thumbnails/springboot"
 glossary:
   - id: "transaction-abort"
     term: "트랜잭션 abort"
@@ -36,15 +35,6 @@ glossary:
     brief: "트랜잭션의 모든 연산이 전부 성공하거나 전부 실패해야 한다는 ACID 속성"
     detail: "ACID의 A에 해당하며, 트랜잭션 내 일부만 적용되는 부분 커밋을 허용하지 않는다. PostgreSQL은 이 원칙을 엄격하게 적용하여 트랜잭션 내 하나의 SQL이라도 실패하면 전체를 abort 상태로 전환한다. MySQL(InnoDB)은 상대적으로 유연하게 해석하여 실패한 statement만 무효화하고 트랜잭션을 유지한다."
 ---
-
-<figure>
-  <div className="figure-content">
-    <div className="image-frame">
-      <img className="theme-light" src="/images/thumbnails/springboot-light.png" alt="Spring Boot" />
-      <img className="theme-dark" src="/images/thumbnails/springboot-dark.png" alt="Spring Boot" />
-    </div>
-  </div>
-</figure>
 
 회사에서 PostgreSQL DB를 사용하는 서비스에서 `@Transactional`을 다룰 때 있었던 일입니다.
 `@Transactional`을 선언한 메서드 안에서 핵심 데이터를 INSERT한 뒤, 부가 로직으로 메일 발송 쿼리를 실행하는 구조였습니다.

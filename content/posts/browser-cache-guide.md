@@ -5,7 +5,6 @@ description: "HTTP 캐싱의 동작 원리를 정리합니다. 강력 캐시와 
 category: "개발"
 subcategory: "웹"
 tags: ["guide", "intermediate"]
-thumbnail: "/images/thumbnails/web"
 glossary:
   - id: "strong-cache"
     term: "강력 캐시(Strong Cache)"
@@ -32,15 +31,6 @@ glossary:
     brief: "Cache-Control이 없을 때 브라우저가 자체적으로 캐시 기간을 추정하는 방식"
     detail: "'(현재 시간 - Last-Modified) x 10%' 공식으로 캐시 유효 기간을 계산한다. 예측 불가능한 동작을 유발할 수 있으므로, 모든 응답에 Cache-Control을 명시적으로 설정하는 것이 권장된다."
 ---
-
-<figure>
-  <div className="figure-content">
-    <div className="image-frame">
-      <img src="/images/posts/browser-cache-guide/browser-cache.png" alt="브라우저 캐시" />
-    </div>
-    <figcaption>그림 1. Browser Cache</figcaption>
-  </div>
-</figure>
 
 ## 캐시가 필요한 이유
 
@@ -113,7 +103,7 @@ HTTP 캐싱은 이전에 가져온 리소스를 재사용하여 이 문제를 �
       <img className="theme-light" src="/images/posts/browser-cache-guide/browser-cache-light.png" alt="브라우저 캐시 동작 흐름" />
       <img className="theme-dark" src="/images/posts/browser-cache-guide/browser-cache-dark.png" alt="브라우저 캐시 동작 흐름" />
     </div>
-    <figcaption>그림 2. 브라우저, 캐시 스토리지, 웹 서버 간의 리소스 흐름</figcaption>
+    <figcaption>그림 1. 브라우저, 캐시 스토리지, 웹 서버 간의 리소스 흐름</figcaption>
   </div>
 </figure>
 
@@ -125,7 +115,7 @@ HTTP 캐싱은 이전에 가져온 리소스를 재사용하여 이 문제를 �
       <img className="theme-light" src="/images/posts/browser-cache-guide/cache-flow-light.png" alt="캐시 동작 흐름도" />
       <img className="theme-dark" src="/images/posts/browser-cache-guide/cache-flow-dark.png" alt="캐시 동작 흐름도" />
     </div>
-    <figcaption>그림 3. 브라우저 캐시 동작 흐름 - 강력 캐시 확인 후 협상 캐시로 이어지는 과정</figcaption>
+    <figcaption>그림 2. 브라우저 캐시 동작 흐름 - 강력 캐시 확인 후 협상 캐시로 이어지는 과정</figcaption>
   </div>
 </figure>
 
@@ -227,7 +217,7 @@ Pragma: no-cache
       <img className="theme-light" src="/images/posts/browser-cache-guide/etag-flow-light.png" alt="ETag 협상 캐시 흐름" />
       <img className="theme-dark" src="/images/posts/browser-cache-guide/etag-flow-dark.png" alt="ETag 협상 캐시 흐름" />
     </div>
-    <figcaption>그림 4. ETag / If-None-Match 협상 캐시 흐름</figcaption>
+    <figcaption>그림 3. ETag / If-None-Match 협상 캐시 흐름</figcaption>
   </div>
 </figure>
 
@@ -244,7 +234,7 @@ Strong ETag는 바이트 단위 완전 일치를 요구하고, Weak ETag는 의�
       <img className="theme-light" src="/images/posts/browser-cache-guide/last-modified-flow-light.png" alt="Last-Modified 협상 캐시 흐름" />
       <img className="theme-dark" src="/images/posts/browser-cache-guide/last-modified-flow-dark.png" alt="Last-Modified 협상 캐시 흐름" />
     </div>
-    <figcaption>그림 5. Last-Modified / If-Modified-Since 협상 캐시 흐름</figcaption>
+    <figcaption>그림 4. Last-Modified / If-Modified-Since 협상 캐시 흐름</figcaption>
   </div>
 </figure>
 

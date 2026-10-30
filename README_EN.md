@@ -62,7 +62,7 @@ Infrastructure (Repositories)
 │   │   ├── TableOfContents #   TOC with scroll tracking
 │   │   ├── BlogFilter      #   Category/search filter
 │   │   ├── RelatedPosts    #   Related posts (manual+auto hybrid)
-│   │   ├── PostThumbnail   #   Category thumbnails (dark/light)
+│   │   ├── PostTitleCard   #   Title card for post lists (generated from title, subcategory, series)
 │   │   ├── PostNavigation  #   Series prev/next navigation
 │   │   ├── CategoryTree    #   Category tree (sidebar)
 │   │   ├── ScrollReveal    #   Scroll-based reveal animations
@@ -91,7 +91,6 @@ description: "Post description"
 category: "개발"
 subcategory: "JavaScript"
 tags: ["guide", "intermediate"]
-thumbnail: "/images/posts/my-post/thumbnail-dark.png"
 series: "Series Name"
 seriesOrder: 1
 relatedSlugs: ["other-post-slug"]
@@ -112,9 +111,8 @@ Content (<Term id="Closure" /> to reference glossary)
 | `date` | Yes | Publish date (YYYY-MM-DD) |
 | `description` | Yes | Post description |
 | `category` | Yes | Category (e.g., "개발", "일상") |
-| `subcategory` | No | Subcategory (e.g., "JavaScript", "React") |
+| `subcategory` | No | Subcategory (e.g., "JavaScript", "React"). Sets the title card color in post lists (add a color for new values in `src/lib/post-card-theme.ts`) |
 | `tags` | Yes | Tag array |
-| `thumbnail` | No | Custom thumbnail image path |
 | `series` | No | Series name (enables prev/next navigation) |
 | `seriesOrder` | No | Order within series |
 | `relatedSlugs` | No | Manually specified related post slugs |

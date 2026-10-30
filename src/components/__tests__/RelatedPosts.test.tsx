@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import { POST_CARD_THEMES } from "@/lib/post-card-theme";
 import RelatedPosts from "../RelatedPosts";
 import type { PostMeta } from "@/types";
 
@@ -25,8 +26,12 @@ describe("RelatedPosts", () => {
     render(<RelatedPosts posts={posts} />);
 
     expect(screen.getByText("관련 글")).toBeInTheDocument();
-    expect(screen.getByText("First Post")).toBeInTheDocument();
-    expect(screen.getByText("Second Post")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "First Post" })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Second Post" })
+    ).toBeInTheDocument();
   });
 
   it("각 항목에 제목, 날짜가 표시된다", () => {
@@ -40,37 +45,41 @@ describe("RelatedPosts", () => {
 
     render(<RelatedPosts posts={posts} />);
 
-    expect(screen.getByText("Test Title")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Test Title" })
+    ).toBeInTheDocument();
+    expect(screen.getByText(/2025년.*6월.*15일/)).toBeInTheDocument();
   });
 
-  it("썸네일 이미지가 다크/라이트 쌍으로 표시된다", () => {
+  it("썸네일 자리에 이미지 대신 하위 카테고리 색의 제목 카드가 표시된다", () => {
     const posts = [
       createPostMeta({
-        slug: "thumb-test",
-        title: "Thumb Post",
-        thumbnail: "/images/thumbnails/javascript",
+        slug: "card-test",
+        title: "Card Post",
+        subcategory: "Java",
       }),
     ];
 
     const { container } = render(<RelatedPosts posts={posts} />);
 
-    const imgs = container.querySelectorAll("img");
-    expect(imgs).toHaveLength(2);
-    expect(imgs[0]).toHaveAttribute("src", "/images/thumbnails/javascript-light.png");
-    expect(imgs[1]).toHaveAttribute("src", "/images/thumbnails/javascript-dark.png");
+    const card = container.querySelector('[data-testid="post-title-card"]');
+    expect(card).not.toBeNull();
+    expect(card).toHaveAttribute("aria-hidden", "true");
+    for (const cls of POST_CARD_THEMES.Java.card.split(" ")) {
+      expect(card).toHaveClass(cls);
+    }
+    expect(card).toHaveTextContent("Card Post");
+    expect(container.querySelector("img")).toBeNull();
   });
 
-  it("썸네일 미지정 시 기본 이미지 다크/라이트 쌍이 표시된다", () => {
-    const posts = [
-      createPostMeta({ slug: "no-thumb", title: "No Thumb" }),
-    ];
+  it("제목 카드는 h-36 틀 안에 있고 hover 시 확대된다", () => {
+    const posts = [createPostMeta({ slug: "frame", title: "Frame Post" })];
 
     const { container } = render(<RelatedPosts posts={posts} />);
 
-    const imgs = container.querySelectorAll("img");
-    expect(imgs).toHaveLength(2);
-    expect(imgs[0]).toHaveAttribute("src", "/images/default-thumbnail-light.svg");
-    expect(imgs[1]).toHaveAttribute("src", "/images/default-thumbnail-dark.svg");
+    const card = container.querySelector('[data-testid="post-title-card"]');
+    expect(card).toHaveClass("group-hover:scale-105", "transition-transform");
+    expect(card?.parentElement).toHaveClass("h-36", "overflow-hidden");
   });
 
   it("subcategory가 있으면 뱃지가 표시된다", () => {
@@ -84,7 +93,11 @@ describe("RelatedPosts", () => {
 
     render(<RelatedPosts posts={posts} />);
 
-    expect(screen.getByText("React")).toBeInTheDocument();
+    // 카드 라벨(aria-hidden)과 별개로 텍스트 영역에 뱃지가 있어야 한다
+    const badges = screen
+      .getAllByText("React")
+      .filter((el) => !el.closest('[aria-hidden="true"]'));
+    expect(badges).toHaveLength(1);
   });
 
   it("각 항목의 링크가 /blog/{slug}로 연결된다", () => {

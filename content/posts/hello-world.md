@@ -4,7 +4,6 @@ date: "2026-01-13"
 description: "Next.js와 TypeScript로 만든 블로그의 첫 번째 포스트입니다."
 category: "블로그"
 tags: ["tutorial", "beginner"]
-thumbnail: "/images/thumbnails/nextjs"
 ---
 
 <figure>

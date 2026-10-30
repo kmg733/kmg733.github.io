@@ -10,7 +10,7 @@ Next.js 기반 개인 블로그 프로젝트 (`kmg733.github.io`)
 - **MDX**: next-mdx-remote v6 (RSC)
 - **코드 하이라이팅**: rehype-pretty-code + Shiki
 - **마크다운 확장**: remark-gfm, rehype-slug, github-slugger (TOC/앵커 slug)
-- **기타**: sharp(썸네일 최적화), feed(RSS/Atom), @giscus/react(댓글), reading-time
+- **기타**: feed(RSS/Atom), @giscus/react(댓글), reading-time
 - **테스트**: Jest + Testing Library
 
 ## 블로그 포스트 작성 규칙
@@ -20,7 +20,6 @@ Next.js 기반 개인 블로그 프로젝트 (`kmg733.github.io`)
 ```
 content/posts/{slug}.md          # 포스트 본문 (MDX)
 public/images/posts/{slug}/      # 포스트 이미지 (light/dark 쌍)
-public/images/thumbnails/        # 카테고리 썸네일 (sharp로 webp 최적화)
 src/app/                         # App Router 페이지 + RSS(feed.xml)/Atom(atom.xml)
 src/components/                  # UI 컴포넌트 (glossary/Term, CodeBlock, TableOfContents …)
 src/{lib,repositories,services,types}/   # 데이터 로딩 · 도메인 계층
@@ -39,7 +38,6 @@ tags: ["guide", "intermediate"]        # 문자열 배열
 
 # 선택
 subcategory: "Java"                    # 카테고리 하위 분류
-thumbnail: "/images/thumbnails/java"   # 접미사·확장자 없는 base 경로
 series: "java-memory"                  # 시리즈 slug
 seriesOrder: 1                         # 시리즈 내 순서
 relatedSlugs: ["other-slug"]           # 관련 글 수동 지정
@@ -55,13 +53,19 @@ glossary:
 ```
 
 > - `readingTime`은 본문에서 자동 계산되므로 frontmatter에 넣지 않는다.
-> - `thumbnail`은 확장자·테마 접미사 없이 base 경로만 적는다 (`PostThumbnail`이 `-light/-dark`, `webp/png`를 해석).
 > - glossary 항목은 `description`이 아니라 **`brief`(툴팁) + `detail`(상세)** 두 필드를 쓴다.
 
 ### 다이어그램/이미지 규칙
 
 > **다이어그램은 반드시 사전 렌더링된 PNG 이미지를 사용한다.**
 > Mermaid 런타임 렌더링(클라이언트 JS)은 사용하지 않는다.
+
+#### 쓰는 이미지와 쓰지 않는 이미지
+
+- 본문 이미지는 정보를 담는 것만 쓴다: 다이어그램, 실제 스크린샷, 측정 결과 차트.
+- 정보를 담지 않는 장식 이미지(글머리 대표 이미지, 카테고리 로고 등)와 AI 생성 이미지는 쓰지 않는다.
+- 목록 썸네일은 제목 카드(`src/components/PostTitleCard.tsx`)가 frontmatter의 `title`·`subcategory`·`series`로 자동 생성한다. 썸네일 이미지를 따로 만들지 않는다.
+- 새 하위 카테고리(`subcategory`)를 만들면 `src/lib/post-card-theme.ts`에 그 카테고리의 색을 추가한다. 빠뜨리면 테스트가 실패한다.
 
 #### 이미지 생성 워크플로우
 
@@ -137,6 +141,7 @@ MDX에 등록된 컴포넌트는 `Term`과 코드블록용 `CodeBlock`(`pre` 매
 - ❌ `blockJS: false` 옵션 (next-mdx-remote 보안 우회)
 - ❌ `<img>` 태그에 한쪽 테마만 제공
 - ❌ 이미지 없이 텍스트만으로 다이어그램 표현
+- ❌ 정보를 담지 않는 장식 이미지·AI 생성 이미지 (썸네일 이미지 포함)
 
 ## 빌드 · 테스트 · 배포
 
@@ -149,7 +154,6 @@ npm run lint           # ESLint
 ```
 
 - **정적 내보내기**: `next.config.ts`의 `output: "export"` → `out/` 생성. `transpilePackages: ["github-slugger", "feed"]`.
-- **prebuild 훅**: `npm run build` 시 `optimize-thumbnails`(sharp)가 먼저 실행돼 썸네일 webp를 만든다.
 - **배포**: `.github/workflows/deploy.yml`로 GitHub Pages 자동 배포.
 - **품질 게이트**: 변경 후 `npx next build` + `npm test`로 정적 생성·테스트 통과를 확인한다.
 

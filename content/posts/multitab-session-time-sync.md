@@ -5,7 +5,6 @@ description: "탭마다 독립적으로 돌던 세션 만료 카운트다운을,
 category: "개발"
 subcategory: "웹"
 tags: ["guide", "advanced"]
-thumbnail: "/images/thumbnails/web"
 glossary:
   - id: "broadcast-channel"
     term: "BroadcastChannel"
@@ -32,15 +31,6 @@ glossary:
     brief: "서버에 상태를 저장하지 않고 토큰 자체에 정보를 담는 무상태 인증 방식"
     detail: "JSON Web Token. 사용자 정보와 만료 시각(exp) 등을 서명된 토큰 안에 담아, 서버가 세션을 저장하지 않고도 매 요청에서 서명·exp만 검증해 인증하는 방식입니다. 무상태라 수평 확장에 유리하지만, '마지막 활동' 추적(슬라이딩 만료)이나 만료 전 즉시 무효화는 별도의 서버 측 저장소(리프레시 토큰·폐기 목록) 없이는 구현하기 어렵습니다."
 ---
-
-<figure>
-  <div className="figure-content">
-    <div className="image-frame">
-      <img className="theme-light" src="/images/thumbnails/web-light.png" alt="멀티탭 세션 동기화" />
-      <img className="theme-dark" src="/images/thumbnails/web-dark.png" alt="멀티탭 세션 동기화" />
-    </div>
-  </div>
-</figure>
 
 회사 서비스의 세션 만료는 **프론트엔드 카운트다운**으로 처리하고 있었습니다.
 로그인하면 화면 한쪽의 `#sessionClock`이 남은 시간을 세고, 0이 되면 만료 페이지로 보내는 구조였습니다.
