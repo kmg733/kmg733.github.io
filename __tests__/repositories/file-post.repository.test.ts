@@ -41,7 +41,7 @@ tags:
 `;
 
       mockedFs.existsSync.mockReturnValue(true);
-      mockedFs.readdirSync.mockReturnValue(["test-post.md"] as unknown as fs.Dirent[]);
+      mockedFs.readdirSync.mockReturnValue(["test-post.md"] as unknown as ReturnType<typeof fs.readdirSync>);
       mockedFs.readFileSync.mockReturnValue(mockFileContent);
 
       const posts = repository.findAll();
@@ -63,7 +63,7 @@ tags:
 `;
 
       mockedFs.existsSync.mockReturnValue(true);
-      mockedFs.readdirSync.mockReturnValue(["no-category.md"] as unknown as fs.Dirent[]);
+      mockedFs.readdirSync.mockReturnValue(["no-category.md"] as unknown as ReturnType<typeof fs.readdirSync>);
       mockedFs.readFileSync.mockReturnValue(mockFileContent);
 
       const posts = repository.findAll();
@@ -85,7 +85,7 @@ tags: []
 `;
 
       mockedFs.existsSync.mockReturnValue(true);
-      mockedFs.readdirSync.mockReturnValue(["daily-post.md"] as unknown as fs.Dirent[]);
+      mockedFs.readdirSync.mockReturnValue(["daily-post.md"] as unknown as ReturnType<typeof fs.readdirSync>);
       mockedFs.readFileSync.mockReturnValue(mockFileContent);
 
       const posts = repository.findAll();
@@ -125,7 +125,7 @@ Content`;
         "dev.md",
         "daily.md",
         "uncategorized.md",
-      ] as unknown as fs.Dirent[]);
+      ] as unknown as ReturnType<typeof fs.readdirSync>);
       mockedFs.readFileSync.mockImplementation((filePath) => {
         const fileName = path.basename(filePath as string);
         if (fileName === "dev.md") return devPost;
@@ -216,7 +216,7 @@ tags: []
 `;
 
       mockedFs.existsSync.mockReturnValue(true);
-      mockedFs.readdirSync.mockReturnValue(["empty-frontmatter.md"] as unknown as fs.Dirent[]);
+      mockedFs.readdirSync.mockReturnValue(["empty-frontmatter.md"] as unknown as ReturnType<typeof fs.readdirSync>);
       mockedFs.readFileSync.mockReturnValue(mockFileContent);
 
       const posts = repository.findAll();
@@ -242,7 +242,7 @@ relatedSlugs:
 `;
 
       mockedFs.existsSync.mockReturnValue(true);
-      mockedFs.readdirSync.mockReturnValue(["related-post.md"] as unknown as fs.Dirent[]);
+      mockedFs.readdirSync.mockReturnValue(["related-post.md"] as unknown as ReturnType<typeof fs.readdirSync>);
       mockedFs.readFileSync.mockReturnValue(mockFileContent);
 
       const posts = repository.findAll();
@@ -269,7 +269,7 @@ relatedSlugs:
 `;
 
       mockedFs.existsSync.mockReturnValue(true);
-      mockedFs.readdirSync.mockReturnValue(["bad-slugs.md"] as unknown as fs.Dirent[]);
+      mockedFs.readdirSync.mockReturnValue(["bad-slugs.md"] as unknown as ReturnType<typeof fs.readdirSync>);
       mockedFs.readFileSync.mockReturnValue(mockFileContent);
 
       const posts = repository.findAll();
@@ -292,7 +292,7 @@ relatedSlugs:
 `;
 
       mockedFs.existsSync.mockReturnValue(true);
-      mockedFs.readdirSync.mockReturnValue(["all-invalid.md"] as unknown as fs.Dirent[]);
+      mockedFs.readdirSync.mockReturnValue(["all-invalid.md"] as unknown as ReturnType<typeof fs.readdirSync>);
       mockedFs.readFileSync.mockReturnValue(mockFileContent);
 
       const posts = repository.findAll();
@@ -307,7 +307,7 @@ relatedSlugs:
         "post.mdx",
         "image.png",
         "data.json",
-      ] as unknown as fs.Dirent[]);
+      ] as unknown as ReturnType<typeof fs.readdirSync>);
       mockedFs.readFileSync.mockReturnValue(`---
 title: Test
 date: 2025-01-15

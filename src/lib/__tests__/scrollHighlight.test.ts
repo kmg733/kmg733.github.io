@@ -32,7 +32,7 @@ describe("scrollAndHighlight", () => {
     });
 
     afterEach(() => {
-      delete (window as Record<string, unknown>)["onscrollend"];
+      delete (window as unknown as Record<string, unknown>)["onscrollend"];
     });
 
     it("scrollend 이벤트 발생 후 강조 클래스를 추가한다", () => {
@@ -151,7 +151,7 @@ describe("scrollAndHighlight", () => {
 
     expect(target.classList.remove).toHaveBeenCalledWith("heading-highlight");
 
-    delete (window as Record<string, unknown>)["onscrollend"];
+    delete (window as unknown as Record<string, unknown>)["onscrollend"];
   });
 });
 
