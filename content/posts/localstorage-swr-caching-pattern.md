@@ -7,7 +7,6 @@ subcategory: "웹"
 tags: ["guide", "beginner"]
 relatedSlugs:
   - spring-boot-i18next-architecture
-thumbnail: "/images/thumbnails/web"
 glossary:
   - id: "swr"
     term: "SWR(Stale-While-Revalidate)"
@@ -30,15 +29,6 @@ glossary:
     brief: "캐시가 전혀 없는 최초 상태"
     detail: "사용자가 처음 방문하거나 캐시가 삭제된 상태를 말한다. 이 경우 서버에서 데이터를 받아와야 하므로 네트워크 요청이 1회 발생한다. 한 번 데이터를 받아오면 캐시에 저장되어 이후부터는 Cache Hit 또는 Stale 상태가 된다."
 ---
-
-<figure>
-  <div className="figure-content">
-    <div className="image-frame">
-      <img className="theme-light" src="/images/posts/localstorage-swr-caching-pattern/hero-light.png" alt="localStorage SWR 캐싱 패턴" />
-      <img className="theme-dark" src="/images/posts/localstorage-swr-caching-pattern/hero-dark.png" alt="" />
-    </div>
-  </div>
-</figure>
 
 웹 페이지를 열 때마다 서버에서 같은 데이터를 반복해서 받아오는 것은 낭비입니다.
 특히 다국어 번역 메시지나 설정 데이터처럼 자주 변하지 않는 데이터라면 더욱 그렇습니다.

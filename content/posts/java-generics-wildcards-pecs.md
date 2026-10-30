@@ -5,7 +5,6 @@ description: "removeIf 구현을 열어보다 만난 Predicate<? super E>에서 
 category: "개발"
 subcategory: "Java"
 tags: ["guide", "intermediate", "Java"]
-thumbnail: "/images/thumbnails/java"
 glossary:
   - id: "generics"
     term: "제네릭(Generics)"
@@ -44,15 +43,6 @@ glossary:
     brief: "바깥에서 받은 값을 컬렉션에 넣어 소비하는 역할"
     detail: "데이터를 받아서 담는 쪽이다. Collections.copy에서 목적지(dest)나 Consumer<? super T> 콜백이 여기 해당한다. 소비자는 쓰기만 하면 되므로 ? super T로 열어 유연성을 얻는다."
 ---
-
-<figure>
-  <div className="figure-content">
-    <div className="image-frame">
-      <img className="theme-light" src="/images/thumbnails/java-light.png" alt="Java 경계 와일드카드와 PECS" />
-      <img className="theme-dark" src="/images/thumbnails/java-dark.png" alt="Java 경계 와일드카드와 PECS" />
-    </div>
-  </div>
-</figure>
 
 ## 이 글을 쓰게 된 계기 — `removeIf`를 열어보다
 

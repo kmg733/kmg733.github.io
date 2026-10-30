@@ -5,7 +5,6 @@ description: "성능 최적화를 키워드 나열이 아닌 계층(Layer)별 �
 category: "개발"
 subcategory: "아키텍처"
 tags: ["guide", "intermediate"]
-thumbnail: "/images/thumbnails/read-write-performance"
 glossary:
   - id: "cdn"
     term: "CDN"
@@ -32,16 +31,6 @@ glossary:
     brief: "쓰기(Command)와 읽기(Query)의 모델·시스템을 분리하는 아키텍처 패턴"
     detail: "Command Query Responsibility Segregation의 약자입니다. 쓰기(Command)와 읽기(Query)의 책임·모델·시스템을 완전히 분리합니다. 읽기 모델과 쓰기 모델을 각각 독립적으로 최적화할 수 있으나, 두 모델 간 동기화(주로 이벤트 기반)와 최종 일관성을 감수해야 합니다."
 ---
-
-<figure>
-  <div className="figure-content">
-    <div className="image-frame">
-      <img className="theme-light" src="/images/thumbnails/read-write-performance-light.png" alt="읽기 성능과 쓰기 성능 최적화" />
-      <img className="theme-dark" src="/images/thumbnails/read-write-performance-dark.png" alt="읽기 성능과 쓰기 성능 최적화" />
-    </div>
-  </div>
-  <figcaption>그림 1. 읽기와 쓰기는 비용 구조가 정반대다</figcaption>
-</figure>
 
 ## 들어가며
 
@@ -71,7 +60,7 @@ glossary:
       <img className="theme-dark" src="/images/posts/read-write-performance-optimization/layer-cost-dark.png" alt="레이턴시 차수와 아키텍처 계층의 매핑" />
     </div>
   </div>
-  <figcaption>그림 2. 계층마다 비용이 다른 이유 — 위로 갈수록 빠르고 가깝고 저렴하다</figcaption>
+  <figcaption>그림 1. 계층마다 비용이 다른 이유 — 위로 갈수록 빠르고 가깝고 저렴하다</figcaption>
 </figure>
 
 > 계층별 비용 차이의 근거가 되는 레이턴시 숫자(ns·μs·ms)의 감각은 [바이브 코딩 시대, 개발자와 아키텍트를 가르는 숫자 감각](/blog/latency-numbers)에서 따로 정리했습니다.

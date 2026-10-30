@@ -5,7 +5,6 @@ description: "폴링·롱폴링·SSE·WebSocket을 HTTP의 무상태·비연결�
 category: "개발"
 subcategory: "웹"
 tags: ["guide", "intermediate"]
-thumbnail: "/images/thumbnails/realtime-communication"
 series: "realtime-communication"
 seriesOrder: 1
 glossary:
@@ -43,16 +42,6 @@ glossary:
     detail: "서버가 이벤트에 `id:` 필드를 붙여 보내면 브라우저는 그 값을 기억합니다. 연결이 끊겨 자동 재연결할 때 `Last-Event-ID` 요청 헤더로 그 값을 되돌려 주므로, 서버는 끊긴 동안 놓친 이벤트를 골라 재전송할 수 있습니다. 표준이 제공하는 몇 안 되는 복구 장치입니다."
 ---
 
-<figure>
-  <div className="figure-content">
-    <div className="image-frame">
-      <img className="theme-light" src="/images/thumbnails/realtime-communication-light.png" alt="폴링, 롱폴링, SSE, WebSocket 네 가지 통신 방식이 대시보드로 데이터를 전달하는 모습" />
-      <img className="theme-dark" src="/images/thumbnails/realtime-communication-dark.png" alt="폴링, 롱폴링, SSE, WebSocket 네 가지 통신 방식이 대시보드로 데이터를 전달하는 모습" />
-    </div>
-  </div>
-  <figcaption>그림 1. 네 가지 중 무엇으로 대시보드에 데이터를 흘려보낼 것인가</figcaption>
-</figure>
-
 ## 들어가며
 
 실무에서 폴링, 롱폴링, <Term id="sse">SSE</Term>, WebSocket에 대해서 각각 어떤 상황에서 사용해야할지 대략적인 감각은 있는데, 가끔 어떤걸 써야할지 헷갈려서 다시 검색해 본 경험이 있습니다. 최근 작업이 그랬습니다. 제품 대시보드에서 데이터를 뿌려 주는 코드를 작업하면서 폴링과 SSE 중 무엇을 쓸지 고민했습니다. 이번 기회에 각 통신 방식을 정리해서 이해한 뒤 비교해 보려고 합니다.
@@ -84,7 +73,7 @@ HTTP에서 통신은 항상 클라이언트 요청으로만 시작됩니다. 서
       <img className="theme-dark" src="/images/posts/realtime-communication-polling-sse-websocket/polling-vs-longpolling-dark.png" alt="폴링과 롱 폴링의 요청-응답 시퀀스 비교" />
     </div>
   </div>
-  <figcaption>그림 2. 폴링은 주기마다 묻고, 롱 폴링은 답이 나올 때까지 기다린다</figcaption>
+  <figcaption>그림 1. 폴링은 주기마다 묻고, 롱 폴링은 답이 나올 때까지 기다린다</figcaption>
 </figure>
 
 ### 폴링
@@ -143,7 +132,7 @@ Accept: application/json
       <img src="/images/posts/realtime-communication-polling-sse-websocket/har-header-size.png" alt="HAR에서 추출한 대시보드 위젯 요청별 헤더 크기. 요청마다 862~929바이트를 기록하고 있다" />
     </div>
   </div>
-  <figcaption>그림 3. 위젯 요청 하나마다 헤더로만 900바이트 안팎이 나간다</figcaption>
+  <figcaption>그림 2. 위젯 요청 하나마다 헤더로만 900바이트 안팎이 나간다</figcaption>
 </figure>
 
 요청 하나에 약 900바이트입니다. 위젯 열한 개가 한 번씩 갱신되면 헤더로만 10 KB 가까이 나가고, 그중 대부분은 매 요청 똑같이 반복되는 쿠키와 `User-Agent`입니다. 직접 확인하려면 개발자 도구의 Network 패널에서 **Save all as HAR**로 내보낸 뒤 이렇게 뽑으면 됩니다.
@@ -222,7 +211,7 @@ longPoll();
       <img className="theme-dark" src="/images/posts/realtime-communication-polling-sse-websocket/sse-vs-websocket-dark.png" alt="SSE와 WebSocket의 연결 방식 비교" />
     </div>
   </div>
-  <figcaption>그림 4. SSE는 응답을 열어둔 채 밀어 보내고, WebSocket은 프로토콜을 바꿔 양방향 회선을 연다</figcaption>
+  <figcaption>그림 3. SSE는 응답을 열어둔 채 밀어 보내고, WebSocket은 프로토콜을 바꿔 양방향 회선을 연다</figcaption>
 </figure>
 
 ### SSE
@@ -402,12 +391,12 @@ SSE와 달리 재연결을 직접 구현해야 합니다. `onclose`에서 지수
       <img className="theme-dark" src="/images/posts/realtime-communication-polling-sse-websocket/decision-flow-dark.png" alt="실시간 통신 방식 선택 플로우차트" />
     </div>
   </div>
-  <figcaption>그림 5. 통신 방향과 실시간성으로 좁히고, SSE를 못 쓰는 환경만 롱 폴링으로 폴백한다</figcaption>
+  <figcaption>그림 4. 통신 방향과 실시간성으로 좁히고, SSE를 못 쓰는 환경만 롱 폴링으로 폴백한다</figcaption>
 </figure>
 
 기술을 먼저 고르고 요구사항을 맞추면 과설계가 됩니다. 구현 기술을 고를때는, 개발 요구사항의 통신 방향과 실시간성 필요 여부를 확인하며 사용할 기술을 선택하면 됩니다.
 
-그림 5는 웹에서 공유되고 있는 큰 기업들의 가이드를 기준으로 그려 보았습니다. 구글의 [web.dev](https://web.dev/articles/eventsource-basics) 글에서는 주식 시세나 뉴스 피드처럼 서버에서 한 방향으로 흐르는 데이터를 SSE로, 게임이나 메신저처럼 양방향이 필요한 경우를 WebSocket로 예시를 들고있습니다. 실시간 인프라를 만드는 [Ably](https://ably.com/blog/websockets-vs-sse)의 비교도 같은 선을 긋고, 롱 폴링은 새 프로토콜을 못 쓰는 레거시 환경의 대안으로 둡니다. 아래 표는 이 글들의 맥락에 맞춰 정리한 것입니다.
+그림 4는 웹에서 공유되고 있는 큰 기업들의 가이드를 기준으로 그려 보았습니다. 구글의 [web.dev](https://web.dev/articles/eventsource-basics) 글에서는 주식 시세나 뉴스 피드처럼 서버에서 한 방향으로 흐르는 데이터를 SSE로, 게임이나 메신저처럼 양방향이 필요한 경우를 WebSocket로 예시를 들고있습니다. 실시간 인프라를 만드는 [Ably](https://ably.com/blog/websockets-vs-sse)의 비교도 같은 선을 긋고, 롱 폴링은 새 프로토콜을 못 쓰는 레거시 환경의 대안으로 둡니다. 아래 표는 이 글들의 맥락에 맞춰 정리한 것입니다.
 
 | 기능 | 적합한 방식 | 이유 |
 |------|-----------|------|
@@ -426,7 +415,7 @@ web.dev와 Ably도 SSE가 별도 프로토콜 없이 HTTP로 오가고 대부분
 
 ### 동시 사용자 수가 손익분기를 바꾼다
 
-그림 5는 통신 방향이나 실시간성 같은 정성적인 축만 다룹니다. 그런데 실제로 결정을 뒤집는 건 동시 사용자 수인 경우가 많습니다. 두 방식은 사용자가 늘어날 때 비용이 불어나는 방식 자체가 다릅니다.
+그림 4는 통신 방향이나 실시간성 같은 정성적인 축만 다룹니다. 그런데 실제로 결정을 뒤집는 건 동시 사용자 수인 경우가 많습니다. 두 방식은 사용자가 늘어날 때 비용이 불어나는 방식 자체가 다릅니다.
 
 - **폴링**: 초당 요청 수 = 동시 사용자 × 화면의 갱신 요소 수 × (1 ÷ 주기). 사용자 수와 요소 수가 서로 곱해집니다.
 - **연결 유지**: 커넥션 수 = 동시 사용자. 대신 서버의 데이터 조회는 브로드캐스트 한 번으로 끝나므로 사용자가 늘어도 그대로입니다.

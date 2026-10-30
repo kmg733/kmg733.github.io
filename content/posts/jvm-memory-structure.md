@@ -5,7 +5,6 @@ description: "JVM이 메모리를 관리하는 방식을 정리합니다. 힙 �
 category: "개발"
 subcategory: "Java"
 tags: ["guide", "beginner"]
-thumbnail: "/images/thumbnails/java"
 series: "java-memory"
 seriesOrder: 1
 glossary:
@@ -38,15 +37,6 @@ glossary:
     brief: "클래스 메타데이터를 저장하는 네이티브 메모리 영역"
     detail: "Java 8부터 PermGen을 대체한 영역으로, 클래스 이름, 메서드 정보, 상수 풀 등 클래스의 구조 정보를 저장한다. 네이티브 메모리에 위치하며 -XX:MaxMetaspaceSize로 최대 크기를 제한할 수 있다."
 ---
-
-<figure>
-  <div className="figure-content">
-    <div className="image-frame">
-      <img className="theme-light" src="/images/posts/jvm-memory-structure/jvm-memory-light.png" alt="JVM 메모리 구조" />
-      <img className="theme-dark" src="/images/posts/jvm-memory-structure/jvm-memory-dark.png" alt="JVM 메모리 구조" />
-    </div>
-  </div>
-</figure>
 
 Java 개발을 하다 보면 `OutOfMemoryError`를 한 번쯤 만나게 됩니다.
 이 에러를 만났을 때 "메모리를 늘려야 하나?", "코드에 문제가 있나?"를 판단하려면 JVM이 메모리를 어떻게 관리하는지 알아야 합니다.
