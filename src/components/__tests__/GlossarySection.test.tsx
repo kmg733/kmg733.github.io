@@ -171,7 +171,7 @@ describe("GlossarySection", () => {
 
     expect(mockClassList.add).toHaveBeenCalledWith("glossary-highlight");
 
-    delete (window as Record<string, unknown>)["onscrollend"];
+    delete (window as unknown as Record<string, unknown>)["onscrollend"];
     jest.restoreAllMocks();
   });
 });
