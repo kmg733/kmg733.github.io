@@ -62,7 +62,7 @@ Infrastructure (Repositories)
 │   │   ├── TableOfContents #   목차 (스크롤 추적)
 │   │   ├── BlogFilter      #   카테고리/검색 필터
 │   │   ├── RelatedPosts    #   관련 글 추천 (수동+자동 하이브리드)
-│   │   ├── PostThumbnail   #   카테고리별 썸네일 (다크/라이트)
+│   │   ├── PostTitleCard   #   목록용 제목 카드 (제목·하위 카테고리·시리즈로 자동 생성)
 │   │   ├── PostNavigation  #   시리즈 이전/다음 네비게이션
 │   │   ├── CategoryTree    #   카테고리 트리 (사이드바)
 │   │   ├── ScrollReveal    #   스크롤 기반 등장 애니메이션
@@ -91,7 +91,6 @@ description: "포스트 설명"
 category: "개발"
 subcategory: "JavaScript"
 tags: ["guide", "intermediate"]
-thumbnail: "/images/posts/my-post/thumbnail-dark.png"
 series: "시리즈 이름"
 seriesOrder: 1
 relatedSlugs: ["other-post-slug"]
@@ -112,9 +111,8 @@ glossary:
 | `date` | O | 발행일 (YYYY-MM-DD) |
 | `description` | O | 포스트 설명 |
 | `category` | O | 카테고리 (예: "개발", "일상") |
-| `subcategory` | - | 서브카테고리 (예: "JavaScript", "React") |
+| `subcategory` | - | 서브카테고리 (예: "JavaScript", "React"). 목록 제목 카드 색상 결정 (새 값은 `src/lib/post-card-theme.ts`에 색 추가) |
 | `tags` | O | 태그 배열 |
-| `thumbnail` | - | 커스텀 썸네일 이미지 경로 |
 | `series` | - | 시리즈 이름 (이전/다음 네비게이션 활성화) |
 | `seriesOrder` | - | 시리즈 내 순서 |
 | `relatedSlugs` | - | 수동 지정 관련 글 slug 배열 |
