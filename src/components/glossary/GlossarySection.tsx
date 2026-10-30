@@ -3,7 +3,7 @@
 import { useCallback } from "react";
 import type { GlossaryEntry } from "@/types";
 import { useGlossarySection } from "./GlossaryProvider";
-import { scrollAndHighlight } from "@/lib/scrollHighlight";
+import { navigateToAnchor } from "@/lib/anchorNavigation";
 
 interface GlossarySectionProps {
   entries: GlossaryEntry[];
@@ -14,8 +14,7 @@ export function GlossarySection({ entries }: GlossarySectionProps) {
 
   const handleBackToTerm = useCallback((e: React.MouseEvent, termId: string) => {
     e.preventDefault();
-    const target = document.getElementById(`term-${termId}`);
-    scrollAndHighlight(target);
+    navigateToAnchor(`term-${termId}`, "glossary-highlight");
   }, []);
 
   if (entries.length === 0) {

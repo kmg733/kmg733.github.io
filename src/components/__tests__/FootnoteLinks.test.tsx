@@ -33,6 +33,7 @@ describe("FootnoteLinks", () => {
   afterEach(() => {
     jest.clearAllMocks();
     document.body.innerHTML = "";
+    window.history.replaceState(null, "", "/");
   });
 
   it("본문 각주 번호를 누르면 각주 항목으로 부드럽게 이동하고 강조한다", () => {
@@ -45,6 +46,7 @@ describe("FootnoteLinks", () => {
     expect(notPrevented).toBe(false);
     expect(scrollAndHighlight).toHaveBeenCalledWith(footnote, "glossary-entry-highlight");
     expect(requestTocSync).toHaveBeenCalledWith(footnote);
+    expect(window.location.hash).toBe("#user-content-fn-advisory");
   });
 
   it("각주의 ↩ 를 누르면 본문 각주 번호로 돌아가 강조한다", () => {
@@ -57,6 +59,7 @@ describe("FootnoteLinks", () => {
     expect(notPrevented).toBe(false);
     expect(scrollAndHighlight).toHaveBeenCalledWith(ref, "glossary-highlight");
     expect(requestTocSync).toHaveBeenCalledWith(ref);
+    expect(window.location.hash).toBe("#user-content-fnref-advisory");
   });
 
   it("각주 번호 안쪽 요소를 눌러도 링크로 처리한다", () => {
