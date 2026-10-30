@@ -7,6 +7,7 @@ subcategory: "웹"
 tags: ["guide", "intermediate"]
 series: "realtime-communication"
 seriesOrder: 1
+seriesTitle: "실시간 통신"
 glossary:
   - id: "sse"
     term: "SSE"

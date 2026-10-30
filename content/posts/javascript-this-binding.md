@@ -7,6 +7,7 @@ subcategory: "JavaScript"
 tags: ["guide", "intermediate"]
 series: "javascript-core"
 seriesOrder: 2
+seriesTitle: "JavaScript 핵심 개념"
 ---
 
 ## this란 무엇인가
