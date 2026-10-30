@@ -5,7 +5,6 @@ description: "Java 애플리케이션에서 발생하는 7가지 메모리 누�
 category: "개발"
 subcategory: "Java"
 tags: ["guide", "intermediate"]
-thumbnail: "/images/thumbnails/java"
 series: "java-memory"
 seriesOrder: 2
 glossary:
@@ -34,15 +33,6 @@ glossary:
     brief: "미리 생성한 스레드를 재사용하는 관리 패턴"
     detail: "ExecutorService로 구현하며, 스레드를 매번 생성/삭제하지 않고 풀에서 꺼내 쓰고 반환하는 방식이다. 스레드 생성 비용과 네이티브 스택 메모리 낭비를 방지한다."
 ---
-
-<figure>
-  <div className="figure-content">
-    <div className="image-frame">
-      <img className="theme-light" src="/images/posts/jvm-memory-leak-patterns/leak-patterns-overview-light.png" alt="JVM 메모리 누수 패턴과 해결법" />
-      <img className="theme-dark" src="/images/posts/jvm-memory-leak-patterns/leak-patterns-overview-dark.png" alt="JVM 메모리 누수 패턴과 해결법" />
-    </div>
-  </div>
-</figure>
 
 [1편](/blog/jvm-memory-structure)에서 JVM이 메모리를 **힙**과 **네이티브**로 나눠 관리한다는 것을 살펴봤습니다.
 이번 편에서는 이 두 영역에서 **메모리 누수가 발생하는 구체적인 패턴**과 해결법을 다룹니다.

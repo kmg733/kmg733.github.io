@@ -5,7 +5,6 @@ description: "PostgreSQL의 WITH RECURSIVE를 사용하여 트리·계층 구조
 category: "개발"
 subcategory: "Database"
 tags: ["guide", "intermediate", "PostgreSQL"]
-thumbnail: "/images/thumbnails/postgresql"
 glossary:
   - id: "recursive-cte"
     term: "재귀 CTE"
@@ -24,15 +23,6 @@ glossary:
     brief: "재귀 CTE에서 재귀의 시작 데이터를 정의하는 첫 번째 SELECT"
     detail: "재귀 CTE의 UNION 위쪽에 위치하는 SELECT 문으로, 재귀의 출발점이 되는 초기 행 집합을 정의한다. 프로그래밍의 반복문에서 초기값 설정(i = 0)에 해당하며, 딱 한 번만 실행된다."
 ---
-
-<figure>
-  <div className="figure-content">
-    <div className="image-frame">
-      <img className="theme-light" src="/images/thumbnails/postgresql-light.png" alt="PostgreSQL" />
-      <img className="theme-dark" src="/images/thumbnails/postgresql-dark.png" alt="PostgreSQL" />
-    </div>
-  </div>
-</figure>
 
 파일 시스템의 폴더 구조처럼 **부모-자식 관계로 이루어진 트리 데이터**를 데이터베이스에서 조회해야 할 때가 있습니다.
 특정 폴더에서 루트까지의 경로를 구하거나, 조직도에서 상위 부서를 역추적하는 경우가 대표적입니다.

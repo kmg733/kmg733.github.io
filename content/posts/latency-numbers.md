@@ -5,7 +5,6 @@ description: "L1 캐시부터 HDD·대륙 간 네트워크까지, 메모리 계�
 category: "개발"
 subcategory: "아키텍처"
 tags: ["guide", "intermediate"]
-thumbnail: "/images/thumbnails/latency"
 glossary:
   - id: "latency"
     term: "레이턴시"

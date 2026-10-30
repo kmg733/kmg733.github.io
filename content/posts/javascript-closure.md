@@ -5,7 +5,6 @@ description: "JavaScript 클로저의 동작 원리부터 실무 활용 패턴�
 category: "개발"
 subcategory: "JavaScript"
 tags: ["guide", "intermediate"]
-thumbnail: "/images/thumbnails/javascript"
 series: "javascript-core"
 seriesOrder: 1
 glossary:
@@ -26,15 +25,6 @@ glossary:
     brief: "더 이상 참조되지 않는 메모리를 자동으로 해제하는 메커니즘"
     detail: "JavaScript 엔진이 더 이상 사용되지 않는 객체나 변수의 메모리를 자동으로 회수하는 메모리 관리 메커니즘이다. 클로저가 외부 변수를 참조하면 해당 변수는 가비지 컬렉션 대상에서 제외된다."
 ---
-
-<figure>
-  <div className="figure-content">
-    <div className="image-frame">
-      <img src="/images/posts/javascript-closure/javascript-closure.png" alt="Hello World!" />
-    </div>
-    <figcaption>그림 1. Javascript Closure</figcaption>
-  </div>
-</figure>
 
 ## 클로저란 무엇인가
 

@@ -5,7 +5,6 @@ description: "pgjdbc 42.7.11에서 JSONB 컬럼의 반환 타입이 String에서
 category: "개발"
 subcategory: "Spring"
 tags: ["guide", "intermediate"]
-thumbnail: "/images/thumbnails/springboot"
 glossary:
   - id: "pgobject"
     term: "PGobject"
@@ -28,15 +27,6 @@ glossary:
     brief: "JDBC 표준에 정의되지 않은 타입을 나타내는 범용 분류"
     detail: "PostgreSQL의 json, jsonb, inet, cidr 등 JDBC 표준(java.sql.Types)에 포함되지 않는 데이터베이스 고유 타입이 이 분류에 해당한다. MyBatis TypeHandler에서 @MappedJdbcTypes(JdbcType.OTHER)로 지정하면 이러한 비표준 타입의 변환을 처리할 수 있다."
 ---
-
-<figure>
-  <div className="figure-content">
-    <div className="image-frame">
-      <img className="theme-light" src="/images/thumbnails/java-light.png" alt="Java" />
-      <img className="theme-dark" src="/images/thumbnails/java-dark.png" alt="Java" />
-    </div>
-  </div>
-</figure>
 
 Java에서 PostgreSQL에 접속할 때는 **pgjdbc**라는 JDBC 드라이버를 사용합니다.
 Java 25 마이그레이션을 준비하면서 이 드라이버를 최신 버전인 42.7.11로 업그레이드했는데, 기존에 잘 동작하던 JSONB 관련 테스트가 일제히 실패하기 시작했습니다.
