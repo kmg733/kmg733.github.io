@@ -10,6 +10,7 @@ import { postService } from "@/lib/container";
 import { extractHeadings } from "@/lib/toc";
 import { DATE_FORMAT } from "@/lib/constants";
 import TableOfContents from "@/components/TableOfContents";
+import FootnoteLinks from "@/components/FootnoteLinks";
 import BlogPostSidebar from "@/components/BlogPostSidebar";
 import RelatedPosts from "@/components/RelatedPosts";
 import PostNavigation from "@/components/PostNavigation";
@@ -146,6 +147,7 @@ export default async function BlogPostPage({ params }: Props) {
             <div className="prose prose-zinc max-w-none dark:prose-invert prose-headings:font-semibold prose-a:text-amber-700 prose-a:hover:text-amber-800 prose-code:rounded prose-code:bg-amber-100 prose-code:px-1 prose-code:py-0.5 prose-code:text-amber-900 prose-code:before:content-none prose-code:after:content-none dark:prose-a:text-blue-400 dark:prose-code:bg-zinc-800 dark:prose-code:text-zinc-200">
               {mdxContent}
             </div>
+            <FootnoteLinks />
             {glossary.length > 0 && <GlossarySection entries={glossary} />}
           </GlossaryProvider>
 

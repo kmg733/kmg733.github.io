@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { useGlossary, useGlossarySection } from "./GlossaryProvider";
-import { scrollAndHighlight } from "@/lib/scrollHighlight";
+import { navigateToAnchor } from "@/lib/anchorNavigation";
 
 interface TermProps {
   id: string;
@@ -16,8 +16,7 @@ export function Term({ id, children }: TermProps) {
 
   const handleScrollToGlossary = useCallback(() => {
     openSection();
-    const target = document.getElementById(`glossary-${id}`);
-    scrollAndHighlight(target, "glossary-entry-highlight");
+    navigateToAnchor(`glossary-${id}`, "glossary-entry-highlight");
   }, [id, openSection]);
 
   const handleKeyDown = useCallback(

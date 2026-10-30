@@ -2,6 +2,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { GlossarySection } from "../glossary/GlossarySection";
 import { GlossaryProvider } from "../glossary/GlossaryProvider";
 import type { GlossaryEntry } from "@/types";
+import { TOC_SYNC_EVENT } from "@/lib/tocSync";
 
 const mockEntries: GlossaryEntry[] = [
   {
@@ -173,5 +174,33 @@ describe("GlossarySection", () => {
 
     delete (window as unknown as Record<string, unknown>)["onscrollend"];
     jest.restoreAllMocks();
+  });
+
+  describe("주소 해시·목차 동기화", () => {
+    let syncListener: jest.Mock;
+
+    beforeEach(() => {
+      Element.prototype.scrollIntoView = jest.fn();
+      syncListener = jest.fn();
+      window.addEventListener(TOC_SYNC_EVENT, syncListener);
+    });
+
+    afterEach(() => {
+      window.removeEventListener(TOC_SYNC_EVENT, syncListener);
+      window.history.replaceState(null, "", "/");
+      document.body.innerHTML = "";
+    });
+
+    it("↑ 클릭 시 주소 해시를 본문 용어로 바꾸고 목차를 그 위치로 맞춘다", () => {
+      const term = document.createElement("abbr");
+      term.id = "term-closure";
+      document.body.appendChild(term);
+      renderWithProvider();
+
+      fireEvent.click(screen.getAllByLabelText("본문으로 돌아가기")[0]);
+
+      expect(window.location.hash).toBe("#term-closure");
+      expect((syncListener.mock.calls[0][0] as CustomEvent).detail).toBe(term);
+    });
   });
 });

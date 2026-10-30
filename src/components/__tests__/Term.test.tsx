@@ -3,6 +3,7 @@ import { Term } from "../glossary/Term";
 import { GlossaryProvider } from "../glossary/GlossaryProvider";
 import { GlossarySection } from "../glossary/GlossarySection";
 import type { GlossaryEntry } from "@/types";
+import { TOC_SYNC_EVENT } from "@/lib/tocSync";
 
 const mockEntries: GlossaryEntry[] = [
   {
@@ -186,5 +187,45 @@ describe("Term", () => {
     fireEvent.click(abbr);
 
     expect(toggleButton).toHaveAttribute("aria-expanded", "true");
+  });
+
+  describe("주소 해시·목차 동기화", () => {
+    let syncListener: jest.Mock;
+
+    beforeEach(() => {
+      Element.prototype.scrollIntoView = jest.fn();
+      syncListener = jest.fn();
+      window.addEventListener(TOC_SYNC_EVENT, syncListener);
+    });
+
+    afterEach(() => {
+      window.removeEventListener(TOC_SYNC_EVENT, syncListener);
+      window.history.replaceState(null, "", "/");
+    });
+
+    it("클릭 시 주소 해시를 용어 설명 항목으로 바꾸고 목차를 그 위치로 맞춘다", () => {
+      render(
+        <GlossaryProvider entries={mockEntries}>
+          <Term id="closure">클로저</Term>
+          <GlossarySection entries={mockEntries} />
+        </GlossaryProvider>
+      );
+
+      fireEvent.click(screen.getByText("클로저"));
+
+      expect(window.location.hash).toBe("#glossary-closure");
+      expect((syncListener.mock.calls[0][0] as CustomEvent).detail).toBe(
+        document.getElementById("glossary-closure")
+      );
+    });
+
+    it("용어 설명 섹션이 없으면 해시를 바꾸지 않는다", () => {
+      renderWithProvider(<Term id="closure">클로저</Term>);
+
+      fireEvent.click(screen.getByText("클로저"));
+
+      expect(window.location.hash).toBe("");
+      expect(syncListener).not.toHaveBeenCalled();
+    });
   });
 });

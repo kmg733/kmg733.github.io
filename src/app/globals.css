@@ -1019,6 +1019,12 @@ body::before {
   color: #a1a1aa;
 }
 
+/* 각주 번호 ↔ 각주 항목 이동 시 고정 헤더에 가리지 않게 (FootnoteLinks) */
+.prose [data-footnote-ref],
+.prose .footnotes li {
+  scroll-margin-top: 6rem;
+}
+
 /* Table of Contents */
 .toc-nav {
   padding: 1rem;
