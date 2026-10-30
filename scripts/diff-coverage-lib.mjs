@@ -7,33 +7,51 @@ import path from "path";
  *
  * `git diff <base>...HEAD` 로 추가·수정된 라인을 구하고,
  * `coverage/lcov.info` 에서 그 라인과 라인의 분기가 모두 실행됐는지 확인한다.
- * lcov 에 기록이 없는 라인(주석·타입 선언)과 파일(테스트·문서)은 검사 대상이 아니다.
+ * 소스가 아닌 파일(테스트·문서·설정)과 lcov 에 기록이 없는 라인(주석·타입 선언)은 검사 대상이 아니다.
+ * 소스 파일인데 lcov 에 없거나, 커버리지 제외 주석을 추가했으면 미달로 본다.
  */
 
 const LCOV_PATH = "coverage/lcov.info";
 const HUNK_HEADER = /^@@ -\d+(?:,\d+)? \+(\d+)(?:,\d+)? @@/;
+// jest.config.ts collectCoverageFrom 과 같은 범위
+const SOURCE_FILE = /^(src|scripts)\/.+\.[cm]?[jt]sx?$/;
+const NOT_SOURCE_FILE = /(^|\/)__tests__\/|\.(test|spec)\.[cm]?[jt]sx?$|\.d\.ts$/;
+const IGNORE_COMMENT = /\b(c8|v8|istanbul)\s+ignore\b/;
 
-/** unified diff → 파일(저장소 상대 경로)별 추가·수정 라인 번호 */
+/** `+++ ` 헤더의 경로: 공백이 있으면 끝에 탭이, 특수문자가 있으면 따옴표가 붙는다 */
+function headerPath(raw) {
+  const target = raw.replace(/\t$/, "");
+  return target.startsWith('"') ? JSON.parse(target) : target;
+}
+
+/** unified diff → 파일(저장소 상대 경로)별 추가·수정 라인 번호 → 내용 */
 export function parseDiff(diffText) {
   const changed = new Map();
   let lines = null;
+  let inHeader = false;
   let next = 0;
 
   for (const row of diffText.split("\n")) {
-    if (row.startsWith("+++ ")) {
-      const target = row.slice(4);
-      lines = target === "/dev/null" ? null : new Set();
+    if (row.startsWith("diff --git ")) {
+      inHeader = true;
+      continue;
+    }
+    // 본문의 "+++" 는 내용이 "++" 로 시작하는 추가 라인이므로 헤더 구간에서만 경로로 읽는다
+    if (inHeader && row.startsWith("+++ ")) {
+      const target = headerPath(row.slice(4));
+      lines = target === "/dev/null" ? null : new Map();
       if (lines) changed.set(target.replace(/^b\//, ""), lines);
       continue;
     }
     const hunk = HUNK_HEADER.exec(row);
     if (hunk) {
+      inHeader = false;
       next = Number(hunk[1]);
       continue;
     }
-    if (!lines) continue;
+    if (!lines || inHeader) continue;
     if (row.startsWith("+")) {
-      lines.add(next++);
+      lines.set(next++, row.slice(1));
     } else if (row.startsWith(" ")) {
       next++;
     }
@@ -67,31 +85,57 @@ export function parseLcov(lcovText, rootDir) {
   return coverage;
 }
 
-/** 변경 라인 중 실행되지 않은 라인과 일부 분기만 실행된 라인을 찾는다 */
+function isSourceFile(file) {
+  return SOURCE_FILE.test(file) && !NOT_SOURCE_FILE.test(file);
+}
+
+/** 변경 라인 중 실행되지 않은 라인, 일부 분기만 실행된 라인, 커버리지 제외 주석을 찾는다 */
 export function findUncovered(changed, coverage) {
-  const uncovered = [];
-  let checkedLines = 0;
-  let checkedBranches = 0;
+  const result = { uncovered: [], checkedLines: 0, checkedBranches: 0 };
 
   for (const [file, lines] of changed) {
+    if (lines.size === 0 || !isSourceFile(file)) continue;
     const fileCoverage = coverage.get(file);
-    if (!fileCoverage) continue;
-
-    for (const line of lines) {
-      const hits = fileCoverage.lines.get(line);
-      if (hits === undefined) continue;
-      checkedLines++;
-      const branch = fileCoverage.branches.get(line);
-      if (branch) checkedBranches += branch.total;
-
-      if (hits === 0) {
-        uncovered.push({ file, line, kind: "line" });
-      } else if (branch && branch.taken < branch.total) {
-        uncovered.push({ file, line, kind: "branch", taken: branch.taken, total: branch.total });
-      }
+    if (fileCoverage) {
+      checkFile(file, lines, fileCoverage, result);
+    } else {
+      result.uncovered.push({ file, kind: "unmeasured" });
     }
   }
-  return { uncovered, checkedLines, checkedBranches };
+  return result;
+}
+
+function checkFile(file, lines, fileCoverage, result) {
+  for (const [line, text] of lines) {
+    if (IGNORE_COMMENT.test(text)) {
+      result.uncovered.push({ file, line, kind: "ignore" });
+      continue;
+    }
+    const hits = fileCoverage.lines.get(line);
+    if (hits === undefined) continue;
+    result.checkedLines++;
+    const branch = fileCoverage.branches.get(line);
+    if (branch) result.checkedBranches += branch.total;
+
+    if (hits === 0) {
+      result.uncovered.push({ file, line, kind: "line" });
+    } else if (branch && branch.taken < branch.total) {
+      result.uncovered.push({ file, line, kind: "branch", taken: branch.taken, total: branch.total });
+    }
+  }
+}
+
+function describeUncovered({ file, line, kind, taken, total }) {
+  switch (kind) {
+    case "line":
+      return `  ${file}:${line} (라인 미실행)`;
+    case "branch":
+      return `  ${file}:${line} (분기 ${taken}/${total})`;
+    case "ignore":
+      return `  ${file}:${line} (커버리지 제외 주석 사용 금지)`;
+    default:
+      return `  ${file} (커버리지 측정 대상 아님: jest.config.ts collectCoverageFrom 확인)`;
+  }
 }
 
 export function formatReport({ uncovered, checkedLines, checkedBranches }) {
@@ -99,9 +143,7 @@ export function formatReport({ uncovered, checkedLines, checkedBranches }) {
   if (uncovered.length === 0) {
     return `변경 라인 커버리지 100%: ${summary}`;
   }
-  const rows = uncovered.map(({ file, line, kind, taken, total }) =>
-    kind === "line" ? `  ${file}:${line} (라인 미실행)` : `  ${file}:${line} (분기 ${taken}/${total})`
-  );
+  const rows = uncovered.map(describeUncovered);
   return [
     `변경 라인 커버리지 미달: ${uncovered.length}곳이 테스트로 실행되지 않았다 (${summary})`,
     ...rows,
@@ -116,7 +158,7 @@ export const defaultDeps = {
   error: (msg) => console.error(msg),
 };
 
-/** 종료 코드: 0 통과, 1 미달, 2 실행 오류 (기준 ref 없음, lcov 없음) */
+/** 종료 코드: 0 통과, 1 미달, 2 실행 오류 (기준 ref 없음, lcov 없음, git diff 실패) */
 export function run(argv, deps = defaultDeps) {
   const [baseRef] = argv;
   if (!baseRef) {
@@ -132,15 +174,21 @@ export function run(argv, deps = defaultDeps) {
     return 2;
   }
 
-  const diffText = deps.git([
-    "-c",
-    "core.quotePath=false",
-    "diff",
-    "--no-color",
-    "--no-ext-diff",
-    "-U0",
-    `${baseRef}...HEAD`,
-  ]);
+  let diffText;
+  try {
+    diffText = deps.git([
+      "-c",
+      "core.quotePath=false",
+      "diff",
+      "--no-color",
+      "--no-ext-diff",
+      "-U0",
+      `${baseRef}...HEAD`,
+    ]);
+  } catch (e) {
+    deps.error(`${baseRef} 와 비교한 변경 라인을 구하지 못했다: ${e.message}`);
+    return 2;
+  }
   const result = findUncovered(parseDiff(diffText), parseLcov(lcovText, deps.cwd));
   const report = formatReport(result);
 
