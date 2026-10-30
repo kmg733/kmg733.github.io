@@ -7,6 +7,7 @@ subcategory: "Java"
 tags: ["guide", "advanced"]
 series: "java-memory"
 seriesOrder: 3
+seriesTitle: "JVM 메모리"
 glossary:
   - id: "jstat"
     term: "jstat"

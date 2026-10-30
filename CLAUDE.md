@@ -40,6 +40,7 @@ tags: ["guide", "intermediate"]        # 문자열 배열
 subcategory: "Java"                    # 카테고리 하위 분류
 series: "java-memory"                  # 시리즈 slug
 seriesOrder: 1                         # 시리즈 내 순서
+seriesTitle: "JVM 메모리"               # 글머리 연재 목록에 보이는 이름 (모든 편 동일)
 relatedSlugs: ["other-slug"]           # 관련 글 수동 지정
 comments: true                         # giscus 댓글 노출 여부
 
@@ -132,6 +133,7 @@ MDX에 등록된 컴포넌트는 `Term`과 코드블록용 `CodeBlock`(`pre` 매
 | 이미지/다이어그램 | `<figure><div className="figure-content"><div className="image-frame">…</div></div></figure>` | 위 "이미지 삽입 패턴" 참고 |
 | 정보 강조 | `<div className="info-box">…</div>` | 부연·팁 박스 |
 | 주의 강조 | `<div className="warning-box">…</div>` | 경고·함정 박스 |
+| 각주 | `문장.[^id]` + 글 끝 `[^id]: 출처, 확인 날짜` | 수치·직접 인용의 출처 (remark-gfm, 라벨은 `src/lib/mdx-options.ts`) |
 
 > `figure`·`info-box`·`warning-box`는 컴포넌트가 아니라 `globals.css` 클래스 스타일이다. MDX 안에서 `className`으로 쓴다.
 

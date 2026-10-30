@@ -7,6 +7,7 @@ subcategory: "웹"
 tags: ["guide", "advanced"]
 series: "realtime-communication"
 seriesOrder: 2
+seriesTitle: "실시간 통신"
 glossary:
   - id: "sse-emitter"
     term: "SseEmitter"
@@ -36,7 +37,7 @@ glossary:
 
 ## 들어가며
 
-이글은 [1편](/blog/realtime-communication-polling-sse-websocket)에서 폴링·롱폴링·<Term id="sse-emitter">SSE</Term>·WebSocket 에 대해서 정리한 내용을 기반으로, 비슷한 성격의 2개의 대시보드 페이지(처리 파이프라인, 요약)를 왜 SSE와 폴링으로 나누어 구현했는지와 당시 고민거리들과 결정 배경에 대해서 적어보았습니다.
+이 글은 [1편](/blog/realtime-communication-polling-sse-websocket)에서 폴링·롱폴링·<Term id="sse-emitter">SSE</Term>·WebSocket 에 대해서 정리한 내용을 기반으로, 비슷한 성격의 2개의 대시보드 페이지(처리 파이프라인, 요약)를 왜 SSE와 폴링으로 나누어 구현했는지와 당시 고민거리들과 결정 배경에 대해서 적어보았습니다.
 
 글의 순서는 먼저 두 화면이 **왜** 갈렸는지를 자세히 짚고, 그다음 SSE로 간 화면을 **운영에 올리면서** 발생한 고민거리들에 대해서 순서대로 다룹니다. SSE는 컨트롤러에서 `SseEmitter`를 반환하는 것만으로 화면이 뜹니다. 문제는 그 코드가 "동작하는 코드"일 뿐 "운영에 올릴 수 있는 코드"는 아니라는 데서 시작됐습니다.
 

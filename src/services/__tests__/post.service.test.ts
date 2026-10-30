@@ -175,6 +175,80 @@ describe("PostService.getAdjacentPosts", () => {
   });
 });
 
+describe("PostService.getSeriesPosts", () => {
+  let mockRepository: jest.Mocked<IPostRepository>;
+  let service: PostService;
+
+  beforeEach(() => {
+    mockRepository = {
+      findAll: jest.fn(),
+      findBySlug: jest.fn(),
+      findAllSlugs: jest.fn(),
+    };
+    service = new PostService(mockRepository);
+  });
+
+  it("같은 시리즈의 글을 seriesOrder 순서로 반환한다", () => {
+    mockRepository.findBySlug.mockReturnValue(
+      createPost({ slug: "js-this", series: "javascript-core", seriesOrder: 2 })
+    );
+    mockRepository.findAll.mockReturnValue([
+      createPostMeta({ slug: "js-prototype", series: "javascript-core", seriesOrder: 3 }),
+      createPostMeta({ slug: "react-intro", series: "react-basics", seriesOrder: 1 }),
+      createPostMeta({ slug: "js-closure", series: "javascript-core", seriesOrder: 1 }),
+      createPostMeta({ slug: "js-this", series: "javascript-core", seriesOrder: 2 }),
+      createPostMeta({ slug: "random-post" }),
+    ]);
+
+    const result = service.getSeriesPosts("js-this");
+
+    expect(result.map((post) => post.slug)).toEqual([
+      "js-closure",
+      "js-this",
+      "js-prototype",
+    ]);
+  });
+
+  it("seriesOrder가 없는 글은 시리즈 목록에서 제외한다", () => {
+    mockRepository.findBySlug.mockReturnValue(
+      createPost({ slug: "js-this", series: "javascript-core", seriesOrder: 2 })
+    );
+    mockRepository.findAll.mockReturnValue([
+      createPostMeta({ slug: "js-draft", series: "javascript-core" }),
+      createPostMeta({ slug: "js-this", series: "javascript-core", seriesOrder: 2 }),
+    ]);
+
+    const result = service.getSeriesPosts("js-this");
+
+    expect(result.map((post) => post.slug)).toEqual(["js-this"]);
+  });
+
+  it("시리즈가 없는 글이면 빈 배열을 반환한다", () => {
+    mockRepository.findBySlug.mockReturnValue(createPost({ slug: "random-post" }));
+
+    expect(service.getSeriesPosts("random-post")).toEqual([]);
+    expect(mockRepository.findAll).not.toHaveBeenCalled();
+  });
+
+  it("존재하지 않는 slug면 빈 배열을 반환한다", () => {
+    mockRepository.findBySlug.mockReturnValue(null);
+
+    expect(service.getSeriesPosts("nonexistent")).toEqual([]);
+  });
+
+  it("현재 글에 seriesOrder가 없으면 빈 배열을 반환한다", () => {
+    mockRepository.findBySlug.mockReturnValue(
+      createPost({ slug: "js-draft", series: "javascript-core" })
+    );
+    mockRepository.findAll.mockReturnValue([
+      createPostMeta({ slug: "js-draft", series: "javascript-core" }),
+      createPostMeta({ slug: "js-closure", series: "javascript-core", seriesOrder: 1 }),
+    ]);
+
+    expect(service.getSeriesPosts("js-draft")).toEqual([]);
+  });
+});
+
 describe("PostService.getRelatedPosts", () => {
   let mockRepository: jest.Mocked<IPostRepository>;
   let service: PostService;

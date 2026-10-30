@@ -185,22 +185,31 @@ export class PostService {
   }
 
   /**
+   * 현재 포스트가 속한 시리즈의 글을 seriesOrder 순서로 조회합니다.
+   * 현재 포스트가 시리즈에 속하지 않거나 seriesOrder가 없으면 빈 배열을 반환합니다.
+   * @param slug 현재 포스트 slug
+   */
+  getSeriesPosts(slug: string): PostMeta[] {
+    const currentPost = this.postRepository.findBySlug(slug);
+    if (!currentPost?.series || currentPost.seriesOrder == null) {
+      return [];
+    }
+
+    return this.postRepository
+      .findAll()
+      .filter(
+        (post): post is PostMeta & { seriesOrder: number } =>
+          post.series === currentPost.series && post.seriesOrder != null
+      )
+      .sort((a, b) => a.seriesOrder - b.seriesOrder);
+  }
+
+  /**
    * 같은 시리즈의 이전/다음 포스트를 조회합니다.
    * @param slug 현재 포스트 slug
    */
   getAdjacentPosts(slug: string): AdjacentPosts {
-    const currentPost = this.postRepository.findBySlug(slug);
-    if (!currentPost?.series) {
-      return { prev: null, next: null };
-    }
-
-    const seriesPosts = this.postRepository
-      .findAll()
-      .filter(
-        (post) =>
-          post.series === currentPost.series && post.seriesOrder != null
-      )
-      .sort((a, b) => (a.seriesOrder ?? 0) - (b.seriesOrder ?? 0));
+    const seriesPosts = this.getSeriesPosts(slug);
 
     const currentIndex = seriesPosts.findIndex(
       (post) => post.slug === slug
