@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback, useEffect, useRef } from "react";
+import { useState, useMemo, useCallback, useRef } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import type { PostMeta } from "@/types";
 import { extractTagsWithCount, type TagCount } from "@/utils/tag";
@@ -38,18 +38,19 @@ export function useTagFilter(posts: PostMeta[]): UseTagFilterReturn {
   }, [searchParams, validTagNames]);
 
   const [selectedTag, setSelectedTag] = useState<string | null>(validatedTag);
+  const [prevValidatedTag, setPrevValidatedTag] = useState(validatedTag);
 
   // URL 파라미터 변경 시 state 동기화 (브라우저 뒤로가기 대응)
-  useEffect(() => {
+  // effect 대신 렌더 중에 조정해 바뀐 값으로 한 번 더 그리는 렌더를 줄인다
+  if (validatedTag !== prevValidatedTag) {
+    setPrevValidatedTag(validatedTag);
     setSelectedTag(validatedTag);
-  }, [validatedTag]);
+  }
 
   // 선택된 태그가 포스트 변경으로 사라지면 자동 해제
-  useEffect(() => {
-    if (selectedTag && !validTagNames.has(selectedTag)) {
-      setSelectedTag(null);
-    }
-  }, [selectedTag, validTagNames]);
+  if (selectedTag && !validTagNames.has(selectedTag)) {
+    setSelectedTag(null);
+  }
 
   // searchParams를 ref로 보관하여 updateURL의 불필요한 재생성 방지
   const searchParamsRef = useRef(searchParams);

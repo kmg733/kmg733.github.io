@@ -182,6 +182,38 @@ describe("useTagFilter", () => {
     expect(result.current.availableTags[0].name).toBe("guide");
   });
 
+  it("마운트 후 URL의 태그가 바뀌면(뒤로가기) 선택도 따라 바뀐다", () => {
+    mockSearchParams = new URLSearchParams("tag=guide");
+    const { result, rerender } = renderHook(() => useTagFilter(samplePosts));
+    expect(result.current.selectedTag).toBe("guide");
+
+    mockSearchParams = new URLSearchParams("tag=beginner");
+    rerender();
+
+    expect(result.current.selectedTag).toBe("beginner");
+    expect(result.current.filteredPosts.map((p) => p.slug)).toEqual([
+      "p1",
+      "p3",
+    ]);
+
+    mockSearchParams = new URLSearchParams();
+    rerender();
+
+    expect(result.current.selectedTag).toBeNull();
+    expect(result.current.filteredPosts).toHaveLength(4);
+  });
+
+  it("URL이 그대로면 다시 렌더링돼도 직접 고른 태그를 유지한다", () => {
+    const { result, rerender } = renderHook(() => useTagFilter(samplePosts));
+
+    act(() => {
+      result.current.selectTag("tutorial");
+    });
+    rerender();
+
+    expect(result.current.selectedTag).toBe("tutorial");
+  });
+
   it("선택된 태그가 포스트 변경으로 사라지면 자동 해제된다", () => {
     const { result, rerender } = renderHook(
       ({ posts }) => useTagFilter(posts),
