@@ -5,6 +5,7 @@ import rehypeSlug from "rehype-slug";
 import rehypePrettyCode from "rehype-pretty-code";
 import type { Options as PrettyCodeOptions } from "rehype-pretty-code";
 import { addLazyLoading, fixBoldBeforeKorean } from "@/lib/mdx-lazy-loading";
+import { remarkRehypeOptions } from "@/lib/mdx-options";
 import { postService } from "@/lib/container";
 import { extractHeadings } from "@/lib/toc";
 import { DATE_FORMAT } from "@/lib/constants";
@@ -12,6 +13,7 @@ import TableOfContents from "@/components/TableOfContents";
 import BlogPostSidebar from "@/components/BlogPostSidebar";
 import RelatedPosts from "@/components/RelatedPosts";
 import PostNavigation from "@/components/PostNavigation";
+import SeriesList from "@/components/SeriesList";
 import CodeBlock from "@/components/CodeBlock";
 import BackButton from "@/components/BackButton";
 import { GlossaryProvider, GlossarySection, Term } from "@/components/glossary";
@@ -67,6 +69,7 @@ export default async function BlogPostPage({ params }: Props) {
   }));
   const headings = extractHeadings(post.content);
   const relatedPosts = postService.getRelatedPosts(slug, 3);
+  const seriesPosts = postService.getSeriesPosts(slug);
   const adjacentPosts = postService.getAdjacentPosts(slug);
   const glossary = post.glossary ?? [];
 
@@ -77,6 +80,7 @@ export default async function BlogPostPage({ params }: Props) {
       options={{
         mdxOptions: {
           remarkPlugins: [remarkGfm],
+          remarkRehypeOptions,
           rehypePlugins: [rehypeSlug, [rehypePrettyCode, prettyCodeOptions]],
         },
       }}
@@ -135,6 +139,8 @@ export default async function BlogPostPage({ params }: Props) {
             </div>
             <div className="mt-4 text-sm text-zinc-500">{post.readingTime}</div>
           </header>
+
+          <SeriesList posts={seriesPosts} currentSlug={slug} />
 
           <GlossaryProvider entries={glossary}>
             <div className="prose prose-zinc max-w-none dark:prose-invert prose-headings:font-semibold prose-a:text-amber-700 prose-a:hover:text-amber-800 prose-code:rounded prose-code:bg-amber-100 prose-code:px-1 prose-code:py-0.5 prose-code:text-amber-900 prose-code:before:content-none prose-code:after:content-none dark:prose-a:text-blue-400 dark:prose-code:bg-zinc-800 dark:prose-code:text-zinc-200">

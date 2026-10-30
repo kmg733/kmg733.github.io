@@ -227,6 +227,51 @@ tags: []
       expect(posts[0].tags).toEqual([]);
     });
 
+    it("should parse seriesTitle from frontmatter", () => {
+      const mockFileContent = `---
+title: Series Post
+date: 2025-01-15
+description: Test
+category: 개발
+tags: []
+series: realtime-communication
+seriesOrder: 1
+seriesTitle: 실시간 통신
+---
+# Content
+`;
+
+      mockedFs.existsSync.mockReturnValue(true);
+      mockedFs.readdirSync.mockReturnValue(["series-post.md"] as unknown as fs.Dirent[]);
+      mockedFs.readFileSync.mockReturnValue(mockFileContent);
+
+      const posts = repository.findAll();
+
+      expect(posts[0].seriesTitle).toBe("실시간 통신");
+    });
+
+    it("should not include seriesTitle when frontmatter has none", () => {
+      const mockFileContent = `---
+title: Series Post
+date: 2025-01-15
+description: Test
+category: 개발
+tags: []
+series: realtime-communication
+seriesOrder: 1
+---
+# Content
+`;
+
+      mockedFs.existsSync.mockReturnValue(true);
+      mockedFs.readdirSync.mockReturnValue(["series-post.md"] as unknown as fs.Dirent[]);
+      mockedFs.readFileSync.mockReturnValue(mockFileContent);
+
+      const posts = repository.findAll();
+
+      expect(posts[0]).not.toHaveProperty("seriesTitle");
+    });
+
     it("should parse valid relatedSlugs from frontmatter", () => {
       const mockFileContent = `---
 title: Post With Related
