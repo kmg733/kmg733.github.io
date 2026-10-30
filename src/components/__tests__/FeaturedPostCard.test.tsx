@@ -44,7 +44,7 @@ describe("FeaturedPostCard", () => {
     const card = getCard(container);
     expect(card).not.toBeNull();
     expect(card).toHaveAttribute("aria-hidden", "true");
-    for (const cls of POST_CARD_THEMES.Spring.split(" ")) {
+    for (const cls of POST_CARD_THEMES.Spring.card.split(" ")) {
       expect(card).toHaveClass(cls);
     }
     // compact: 제목 없이 짧은 라벨만

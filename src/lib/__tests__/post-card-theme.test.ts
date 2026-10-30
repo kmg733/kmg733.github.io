@@ -43,8 +43,14 @@ describe("getPostCardTheme", () => {
   });
 
   it("기본값은 zinc 계열이다", () => {
-    expect(DEFAULT_POST_CARD_THEME).toMatch(/\bbg-zinc-\d+\b/);
-    expect(DEFAULT_POST_CARD_THEME).toMatch(/\bdark:bg-zinc-\d+\b/);
+    expect(DEFAULT_POST_CARD_THEME.card).toMatch(/(^|\s)from-zinc-\d+(\s|$)/);
+    expect(DEFAULT_POST_CARD_THEME.card).toMatch(/(^|\s)to-zinc-\d+(\s|$)/);
+    expect(DEFAULT_POST_CARD_THEME.card).toMatch(
+      /(^|\s)dark:from-zinc-\d+(\s|$)/
+    );
+    expect(DEFAULT_POST_CARD_THEME.glow).toMatch(
+      /(^|\s)dark:bg-zinc-\d+\/\d+(\s|$)/
+    );
   });
 });
 
@@ -58,26 +64,41 @@ describe("POST_CARD_THEMES", () => {
   });
 
   it.each(entries)(
-    "%s 는 라이트/다크 배경·글자색을 완성된 클래스 문자열로 가진다",
-    (_key, classes) => {
+    "%s 는 라이트/다크 그라데이션·글자색을 완성된 클래스 문자열로 가진다",
+    (_key, theme) => {
       // Tailwind 가 소스를 스캔해 클래스를 생성하므로 조합이 아닌 완성 문자열이어야 한다
-      expect(classes).toMatch(/(^|\s)bg-[a-z]+-\d+(\s|$)/);
-      expect(classes).toMatch(/(^|\s)text-[a-z]+-\d+(\s|$)/);
-      expect(classes).toMatch(/(^|\s)dark:bg-[a-z]+-\d+(\s|$)/);
-      expect(classes).toMatch(/(^|\s)dark:text-[a-z]+-\d+(\s|$)/);
-      expect(classes).not.toMatch(/\$\{|undefined/);
+      expect(theme.card).toMatch(/(^|\s)from-[a-z]+-\d+(\s|$)/);
+      expect(theme.card).toMatch(/(^|\s)text-[a-z]+-\d+(\s|$)/);
+      expect(theme.card).toMatch(/(^|\s)dark:via-[a-z]+-\d+(\s|$)/);
+      expect(theme.card).toMatch(/(^|\s)dark:text-[a-z]+-\d+(\s|$)/);
+      expect(theme.card).not.toMatch(/\$\{|undefined/);
+      expect(theme.glow).not.toMatch(/\$\{|undefined/);
     }
   );
 
   it("6개 색 계열이 서로 다르고 기본값(zinc)과도 다르다", () => {
     const families = entries.map(
-      ([, classes]) => /(?:^|\s)bg-([a-z]+)-\d+/.exec(classes)?.[1]
+      ([, theme]) => /(?:^|\s)from-([a-z]+)-\d+/.exec(theme.card)?.[1]
     );
     expect(families).toHaveLength(6);
     expect(families).not.toContain(undefined);
     expect(new Set(families).size).toBe(6);
     expect(families).not.toContain("zinc");
   });
+
+  it.each([
+    ...entries,
+    ["기본값", DEFAULT_POST_CARD_THEME] as const,
+  ])(
+    "%s 는 그라데이션 카드와 다크 빛 번짐 색을 가진다",
+    (_key, theme) => {
+      expect(theme.card).toMatch(/(^|\s)bg-linear-to-br(\s|$)/);
+      expect(theme.card).toMatch(/(^|\s)from-[a-z]+-\d+(\s|$)/);
+      expect(theme.card).toMatch(/(^|\s)to-[a-z]+-\d+(\s|$)/);
+      expect(theme.card).toMatch(/(^|\s)dark:from-[a-z]+-\d+(\s|$)/);
+      expect(theme.glow).toMatch(/(^|\s)dark:bg-[a-z]+-\d+\/\d+(\s|$)/);
+    }
+  );
 
   it("content/posts 의 실제 subcategory 값이 모두 매핑에 있다", () => {
     const subcategories = readContentSubcategories();

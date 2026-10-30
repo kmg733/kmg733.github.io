@@ -48,7 +48,7 @@ describe("Home - 최근 포스트", () => {
     const cards = container.querySelectorAll('[data-testid="post-title-card"]');
     expect(cards).toHaveLength(1);
     expect(cards[0]).toHaveTextContent("PostgreSQL 비관적 락");
-    for (const cls of POST_CARD_THEMES.Database.split(" ")) {
+    for (const cls of POST_CARD_THEMES.Database.card.split(" ")) {
       expect(cards[0]).toHaveClass(cls);
     }
     expect(cards[0].parentElement).toHaveClass("aspect-[3/2]", "sm:w-64");

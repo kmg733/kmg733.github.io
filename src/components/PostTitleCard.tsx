@@ -12,7 +12,7 @@ export type PostTitleCardPost = Pick<
 
 interface PostTitleCardProps {
   post: PostTitleCardPost;
-  /** default: 라벨 + 제목, compact: 작은 칸(64px)용 색 블록 + 짧은 라벨 */
+  /** default: 라벨 + 제목 + 빛 번짐, compact: 작은 칸(64px)용 색 블록 + 짧은 라벨 (빛 번짐 없음) */
   variant?: "default" | "compact";
   className?: string;
 }
@@ -30,7 +30,9 @@ export default function PostTitleCard({
 }: PostTitleCardProps) {
   const theme = getPostCardTheme(post.subcategory);
   const rootClass = (extra: string) =>
-    [extra, "h-full w-full", theme, className].filter(Boolean).join(" ");
+    [extra, "relative h-full w-full overflow-hidden", theme.card, className]
+      .filter(Boolean)
+      .join(" ");
 
   if (variant === "compact") {
     return (
@@ -52,10 +54,14 @@ export default function PostTitleCard({
       aria-hidden="true"
       className={rootClass("flex flex-col justify-between gap-3 p-5")}
     >
-      <span className="text-xs font-semibold tracking-wide opacity-75">
+      {/* 빛 번짐: 루트가 aria-hidden 이라 따로 숨기지 않는다 */}
+      <span
+        className={`pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full blur-2xl ${theme.glow}`}
+      />
+      <span className="relative text-xs font-semibold tracking-wide opacity-75">
         {getPostCardLabel(post)}
       </span>
-      <p className="line-clamp-3 break-keep text-lg font-bold leading-snug">
+      <p className="relative line-clamp-3 break-keep text-lg font-bold leading-snug">
         {post.title}
       </p>
     </div>

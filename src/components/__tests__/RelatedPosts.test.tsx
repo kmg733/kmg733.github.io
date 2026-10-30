@@ -65,7 +65,7 @@ describe("RelatedPosts", () => {
     const card = container.querySelector('[data-testid="post-title-card"]');
     expect(card).not.toBeNull();
     expect(card).toHaveAttribute("aria-hidden", "true");
-    for (const cls of POST_CARD_THEMES.Java.split(" ")) {
+    for (const cls of POST_CARD_THEMES.Java.card.split(" ")) {
       expect(card).toHaveClass(cls);
     }
     expect(card).toHaveTextContent("Card Post");

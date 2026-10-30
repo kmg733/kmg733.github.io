@@ -42,9 +42,19 @@ describe("PostTitleCard", () => {
       }
     );
 
+    it.each(["default", "compact"] as const)(
+      "%s: 루트는 relative 이고 넘치는 빛 번짐을 잘라낸다",
+      (variant) => {
+        const { container } = render(
+          <PostTitleCard post={javaPost} variant={variant} />
+        );
+        expect(getCard(container)).toHaveClass("relative", "overflow-hidden");
+      }
+    );
+
     it("하위 카테고리 색 클래스를 적용한다", () => {
       const { container } = render(<PostTitleCard post={javaPost} />);
-      expectClasses(getCard(container), POST_CARD_THEMES.Java);
+      expectClasses(getCard(container), POST_CARD_THEMES.Java.card);
     });
 
     it("매핑에 없는 하위 카테고리는 zinc 기본색을 쓴다", () => {
@@ -52,8 +62,8 @@ describe("PostTitleCard", () => {
         <PostTitleCard post={{ ...javaPost, subcategory: "Rust" }} />
       );
       const card = getCard(container);
-      expectClasses(card, DEFAULT_POST_CARD_THEME);
-      expect(card).not.toHaveClass("bg-rose-100");
+      expectClasses(card, DEFAULT_POST_CARD_THEME.card);
+      expect(card).not.toHaveClass("from-rose-50");
     });
 
     it("className 을 루트에 덧붙인다", () => {
@@ -70,6 +80,33 @@ describe("PostTitleCard", () => {
   });
 
   describe("default", () => {
+    it("하위 카테고리 색의 빛 번짐 요소를 정확히 1개 그린다", () => {
+      const { container } = render(<PostTitleCard post={javaPost} />);
+      const glows = getCard(container).querySelectorAll<HTMLElement>(
+        ".blur-2xl"
+      );
+
+      expect(glows).toHaveLength(1);
+      expectClasses(glows[0], POST_CARD_THEMES.Java.glow);
+      expect(glows[0]).toHaveClass("pointer-events-none", "absolute");
+      expect(glows[0]).toBeEmptyDOMElement();
+    });
+
+    it("매핑에 없는 하위 카테고리는 zinc 빛 번짐을 쓴다", () => {
+      const { container } = render(
+        <PostTitleCard post={{ ...javaPost, subcategory: "Rust" }} />
+      );
+      const glow = getCard(container).querySelector<HTMLElement>(".blur-2xl");
+      expect(glow).not.toBeNull();
+      expectClasses(glow!, DEFAULT_POST_CARD_THEME.glow);
+    });
+
+    it("라벨과 제목은 relative 라 빛 번짐 위에 그려진다", () => {
+      render(<PostTitleCard post={javaPost} />);
+      expect(screen.getByText("Java")).toHaveClass("relative", "opacity-75");
+      expect(screen.getByText(javaPost.title)).toHaveClass("relative");
+    });
+
     it("variant 를 생략하면 제목과 라벨을 그린다", () => {
       render(<PostTitleCard post={javaPost} />);
 
@@ -146,7 +183,14 @@ describe("PostTitleCard", () => {
       const { container } = render(
         <PostTitleCard post={javaPost} variant="compact" />
       );
-      expectClasses(getCard(container), POST_CARD_THEMES.Java);
+      expectClasses(getCard(container), POST_CARD_THEMES.Java.card);
+    });
+
+    it("compact 는 빛 번짐 요소를 그리지 않는다", () => {
+      const { container } = render(
+        <PostTitleCard post={javaPost} variant="compact" />
+      );
+      expect(getCard(container).querySelectorAll(".blur-2xl")).toHaveLength(0);
     });
   });
 });
