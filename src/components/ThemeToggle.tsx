@@ -1,17 +1,21 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useIsClient } from "@/hooks/useIsClient";
 
 export default function ThemeToggle() {
-  const [theme, setTheme] = useState<"light" | "dark" | null>(null);
-  const [mounted, setMounted] = useState(false);
+  // 인라인 스크립트(layout.tsx <head>)가 이미 적용한 테마를 DOM에서 읽는다.
+  // 서버 렌더링에서는 document가 없지만, 그때는 아래 자리표시 버튼만 그리므로 값을 쓰지 않는다.
+  const [theme, setTheme] = useState<"light" | "dark">(() =>
+    typeof document !== "undefined" &&
+    document.documentElement.classList.contains("dark")
+      ? "dark"
+      : "light"
+  );
+  const mounted = useIsClient();
 
   useEffect(() => {
-    setMounted(true);
-
-    // 인라인 스크립트(layout.tsx <head>)가 이미 적용한 테마를 DOM에서 읽어 React state에 동기화
     const isDark = document.documentElement.classList.contains("dark");
-    setTheme(isDark ? "dark" : "light");
     updateFavicon(isDark ? "dark" : "light");
 
     // 렌더링 완료 후 전환 애니메이션 활성화 (FOUC 방지용 no-transition 제거)

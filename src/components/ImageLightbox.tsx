@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useFocusTrap } from "@/hooks/useFocusTrap";
+import { useIsClient } from "@/hooks/useIsClient";
 import { useTheme } from "@/hooks/useTheme";
 import { useSwipe } from "@/hooks/useSwipe";
 import { collectGalleryAt, type GalleryImage } from "@/utils/galleryImages";
@@ -13,7 +14,7 @@ export default function ImageLightbox() {
   const [isLoading, setIsLoading] = useState(true);
   const [images, setImages] = useState<GalleryImage[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [mounted, setMounted] = useState(false);
+  const mounted = useIsClient();
 
   // 클릭 시점의 현재 테마를 읽기 위한 ref (이벤트 핸들러는 1회 등록되어 stale 클로저 방지)
   // useFocusTrap / useKeyboardShortcut 와 동일한 렌더 중 ref 동기화 관용구를 따른다.
@@ -24,11 +25,6 @@ export default function ImageLightbox() {
   const currentImage = images[currentIndex] ?? null;
   const total = images.length;
   const hasMultiple = total > 1;
-
-  // Hydration 완료 후 마운트
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   // 라이트박스 닫기 애니메이션 시작
   const closeLightbox = useCallback(() => {

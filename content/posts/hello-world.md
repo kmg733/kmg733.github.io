@@ -58,56 +58,6 @@ gh-pages로 블로그를 운영하는 이유는 3가지가 있습니다.
 | 스타일링 | Tailwind CSS | 유틸리티 기반 CSS |
 | 배포 | GitHub Pages | 정적 사이트 호스팅 |
 
-### 주요 라이브러리
-
-| 라이브러리 | 용도 |
-|-----------|------|
-| `next-mdx-remote` | 마크다운/MDX를 HTML로 렌더링 |
-| `gray-matter` | 마크다운 frontmatter(메타데이터) 파싱 |
-| `remark-gfm` | GitHub Flavored Markdown 지원 (테이블, 취소선 등) |
-| `rehype-slug` | 헤딩에 ID 자동 추가 (목차 링크용) |
-| `reading-time` | 글 읽기 시간 자동 계산 |
-| `@tailwindcss/typography` | prose 클래스 기반 타이포그래피 스타일 |
-
-### 개발 도구
-
-| 도구 | 용도 |
-|-----|------|
-| Jest | 단위 테스트 |
-| ESLint | 코드 린팅 |
-| ts-jest | TypeScript 테스트 지원 |
-
-### 마크다운 렌더링 흐름
-
-현재 블로그는 `Next.js` 프레임워크를 기반으로, `gray-matter`로 마크다운 파일의 메타데이터를 파싱하고, `next-mdx-remote`로 본문을 HTML로 렌더링합니다.
-우측에는 자동으로 생성된 목차(TOC)가 표시되어 긴 글에서도 원하는 섹션으로 쉽게 이동할 수 있습니다.
-
-```
-content/posts/hello-world.md (마크다운 파일)
-              ↓
-      gray-matter (frontmatter 파싱)
-              ↓
-      extractHeadings (h2, h3 추출 → 목차 생성)
-              ↓
-      next-mdx-remote (MDX → HTML 변환)
-        ├── remark-gfm (테이블, 취소선 지원)
-        └── rehype-slug (헤딩에 ID 추가)
-              ↓
-      @tailwindcss/typography (prose 스타일 적용)
-              ↓
-      브라우저 렌더링 (본문 + 우측 목차)
-```
-
-### 주요 기능
-
-| 기능 | 설명 |
-|-----|------|
-| 목차 자동 생성 | h2, h3 헤딩을 추출하여 우측에 목차 표시 |
-| 스크롤 추적 | 현재 읽고 있는 섹션이 목차에서 하이라이트 |
-| 클릭 시 이동 | 목차 항목 클릭 시 해당 섹션으로 스크롤 |
-| 읽기 시간 | 글 길이에 따른 예상 읽기 시간 자동 계산 |
-| 다크모드 | 시스템 설정에 따른 자동 테마 전환 |
-
 ## 마무리
 
 이렇게 마크다운을 활용할 수 있는 나만의 블로그를 구축해보았습니다.
