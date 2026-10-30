@@ -5,7 +5,6 @@ description: "SSE는 컨트롤러에서 SseEmitter를 반환하면 화면이 뜹
 category: "개발"
 subcategory: "웹"
 tags: ["guide", "advanced"]
-thumbnail: "/images/thumbnails/realtime-communication"
 series: "realtime-communication"
 seriesOrder: 2
 glossary:
@@ -35,16 +34,6 @@ glossary:
     detail: "같은 연산을 두 번, 세 번 반복해도 상태가 한 번 실행한 것과 동일하게 유지되면 멱등하다고 합니다. 정리 로직이 콜백으로 재진입할 수 있는 SSE에서는, 레지스트리 제거 같은 정리를 멱등하게 만들어 두어야 중복 호출이 문제를 일으키지 않습니다."
 ---
 
-<figure>
-  <div className="figure-content">
-    <div className="image-frame">
-      <img className="theme-light" src="/images/thumbnails/realtime-communication-light.png" alt="폴링, 롱폴링, SSE, WebSocket 네 가지 통신 방식이 대시보드로 데이터를 전달하는 모습" />
-      <img className="theme-dark" src="/images/thumbnails/realtime-communication-dark.png" alt="폴링, 롱폴링, SSE, WebSocket 네 가지 통신 방식이 대시보드로 데이터를 전달하는 모습" />
-    </div>
-  </div>
-  <figcaption>그림 1. 네 방식 중 두 화면을 SSE와 폴링으로 갈랐다. 이 글은 SSE 화면을 운영에 올리기까지의 뒷이야기다</figcaption>
-</figure>
-
 ## 들어가며
 
 이글은 [1편](/blog/realtime-communication-polling-sse-websocket)에서 폴링·롱폴링·<Term id="sse-emitter">SSE</Term>·WebSocket 에 대해서 정리한 내용을 기반으로, 비슷한 성격의 2개의 대시보드 페이지(처리 파이프라인, 요약)를 왜 SSE와 폴링으로 나누어 구현했는지와 당시 고민거리들과 결정 배경에 대해서 적어보았습니다.
@@ -62,7 +51,7 @@ glossary:
       <img className="theme-dark" src="/images/posts/sse-production-implementation/dashboard-split-dark.png" alt="처리 파이프라인 화면은 SSE, 요약 대시보드 화면은 폴링으로 구성한 구조" />
     </div>
   </div>
-  <figcaption>그림 2. 같은 대시보드 안의 두 화면이 서로 다른 방식을 쓴다</figcaption>
+  <figcaption>그림 1. 같은 대시보드 안의 두 화면이 서로 다른 방식을 쓴다</figcaption>
 </figure>
 
 ### 처리 파이프라인 화면에 SSE를 쓴 이유
@@ -184,7 +173,7 @@ Map<Set<Integer>, String> serializedByPermission = new HashMap<>();
       <img className="theme-dark" src="/images/posts/sse-production-implementation/executor-isolation-dark.png" alt="스케줄러 스레드가 직접 전송하면 느린 클라이언트가 전체를 막지만, 전용 전송 풀에 위임하면 스케줄러는 제출만 하고 빠진다" />
     </div>
   </div>
-  <figcaption>그림 3. 전송을 전용 풀로 격리하면 느린 클라이언트가 스케줄러를 붙잡지 못한다</figcaption>
+  <figcaption>그림 2. 전송을 전용 풀로 격리하면 느린 클라이언트가 스케줄러를 붙잡지 못한다</figcaption>
 </figure>
 
 그래서 전송을 **전용 스레드 풀**에 위임합니다. 스케줄러 스레드는 각 전송을 풀에 제출만 하고 즉시 다음 일로 넘어갑니다. 느린 클라이언트는 워커 스레드 하나만 붙잡을 뿐, 다른 구독자와 스케줄러는 영향받지 않습니다.
@@ -212,7 +201,7 @@ for (SseEmitter emitter : emitters) {
       <img className="theme-dark" src="/images/posts/sse-production-implementation/sequence-inversion-dark.png" alt="워커 A가 5번 스냅샷, 워커 B가 6번 스냅샷을 병렬 전송할 때 B가 먼저 도착하면 A는 시퀀스 가드에서 버려진다" />
     </div>
   </div>
-  <figcaption>그림 4. 더 최신 스냅샷이 이미 나갔으면, 뒤늦은 옛 스냅샷은 버린다</figcaption>
+  <figcaption>그림 3. 더 최신 스냅샷이 이미 나갔으면, 뒤늦은 옛 스냅샷은 버린다</figcaption>
 </figure>
 
 대응은 **시퀀스 + <Term id="cas">CAS</Term> 가드**입니다. 브로드캐스트 한 번마다 증가하는 번호를 부여하고, emitter마다 "마지막으로 내보낸 시퀀스"를 들고 있다가, 전송 직전에 CAS로 그 자리를 확보합니다. 더 최신 번호가 이미 나갔으면 지금 전송은 버립니다.
@@ -263,7 +252,7 @@ boolean claimSequence(long seq) {
       <img className="theme-dark" src="/images/posts/sse-production-implementation/session-idle-dark.png" alt="폴링은 갱신 요청마다 세션이 갱신되지만, SSE는 스트림만 흐르고 요청이 없어 세션이 유휴로 만료된다" />
     </div>
   </div>
-  <figcaption>그림 5. 폴링의 갱신 요청은 세션을 살리지만, SSE 스트림은 세션을 살리지 못한다</figcaption>
+  <figcaption>그림 4. 폴링의 갱신 요청은 세션을 살리지만, SSE 스트림은 세션을 살리지 못한다</figcaption>
 </figure>
 
 대응은 주기적으로 **실제 HTTP 요청(핑)**을 한 번씩 보내 세션을 살려 두는 것입니다. 주기는 세션 시간의 절반, 하한 30초입니다. 주기가 관리자 설정에 따라 달라지므로 `setInterval`이 아니라 재귀 `setTimeout`으로 매번 다시 계산합니다.
@@ -327,7 +316,7 @@ if (permissionsChanged) {
       <img className="theme-dark" src="/images/posts/sse-production-implementation/architecture-dark.png" alt="브로드캐스트 스케줄러가 전송 전용 풀에 제출하면 워커들이 각 구독자 emitter로 밀어 보내고, 종료는 별도의 종료 전용 풀에서 처리되는 최종 구조" />
     </div>
   </div>
-  <figcaption>그림 6. 일곱 문제를 반영한 최종 구조. 전송과 종료를 각각 전용 풀로 가른다</figcaption>
+  <figcaption>그림 5. 일곱 문제를 반영한 최종 구조. 전송과 종료를 각각 전용 풀로 가른다</figcaption>
 </figure>
 
 `SseEmitter`를 반환하는 30줄과, 그 화면을 운영에 올리는 코드 사이의 간극을 순서대로 정리하면 이렇습니다.
