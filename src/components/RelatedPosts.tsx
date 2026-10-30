@@ -1,6 +1,6 @@
 import type { PostMeta } from "@/types";
 import { DATE_FORMAT } from "@/lib/constants";
-import PostThumbnail from "@/components/PostThumbnail";
+import PostTitleCard from "@/components/PostTitleCard";
 
 interface RelatedPostsProps {
   posts: PostMeta[];
@@ -31,10 +31,9 @@ const RelatedPosts: React.FC<RelatedPostsProps> = ({ posts }) => {
             >
               {/* 썸네일 */}
               <div className="h-36 shrink-0 overflow-hidden bg-zinc-100 dark:bg-zinc-700">
-                <PostThumbnail
-                  thumbnail={post.thumbnail}
-                  alt={post.title}
-                  className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105"
+                <PostTitleCard
+                  post={post}
+                  className="transition-transform duration-200 group-hover:scale-105"
                 />
               </div>
               {/* 텍스트 영역 */}

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { postService } from "@/lib/container";
 import { HOME_DEFAULTS, DATE_FORMAT } from "@/lib/constants";
 import ScrollReveal from "@/components/ScrollReveal";
-import PostThumbnail from "@/components/PostThumbnail";
+import PostTitleCard from "@/components/PostTitleCard";
 import TypeWriter from "@/components/TypeWriter";
 import FloatingParticles from "@/components/FloatingParticles";
 import BlogStats from "@/components/BlogStats";
@@ -120,7 +120,7 @@ export default function Home() {
                   <Link href={`/blog/${post.slug}`} className="flex flex-col sm:flex-row">
                     {/* 썸네일 영역 */}
                     <div className="aspect-[3/2] shrink-0 overflow-hidden bg-zinc-100 dark:bg-zinc-800 sm:aspect-auto sm:h-auto sm:w-64">
-                      <PostThumbnail thumbnail={post.thumbnail} alt={post.title} />
+                      <PostTitleCard post={post} />
                     </div>
                     {/* 텍스트 영역 */}
                     <div className="flex flex-1 flex-col justify-center p-6">

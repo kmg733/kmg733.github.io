@@ -5,7 +5,7 @@ import Link from "next/link";
 import type { PostMeta } from "@/types";
 import { useSearch } from "@/hooks/useSearch";
 import { useTagFilter } from "@/hooks/useTagFilter";
-import PostThumbnail from "./PostThumbnail";
+import PostTitleCard from "./PostTitleCard";
 import SearchInput from "./SearchInput";
 import TagChips from "./TagChips";
 import HighlightedText from "./HighlightedText";
@@ -96,7 +96,7 @@ export default function BlogFilter({
                 <Link href={`/blog/${post.slug}`} className="flex flex-col gap-4 sm:flex-row">
                   {/* 썸네일 영역 */}
                   <div className="aspect-[3/2] shrink-0 overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800 sm:aspect-auto sm:h-auto sm:w-64">
-                    <PostThumbnail thumbnail={post.thumbnail} alt={post.title} />
+                    <PostTitleCard post={post} />
                   </div>
                   {/* 텍스트 영역 */}
                   <div className="min-w-0 flex-1">

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import PostThumbnail from "@/components/PostThumbnail";
+import PostTitleCard from "@/components/PostTitleCard";
 import { DATE_FORMAT } from "@/lib/constants";
 import type { PostMeta } from "@/types";
 
@@ -12,7 +12,7 @@ export default function FeaturedPostCard({ post }: FeaturedPostCardProps) {
     <article className="card-hover-accent group overflow-hidden rounded-md border border-zinc-200 transition-colors hover:border-zinc-300 dark:border-zinc-800 dark:hover:border-zinc-700">
       <Link href={`/blog/${post.slug}`} className="flex flex-row items-center gap-3 p-2.5">
         <div className="h-16 w-16 shrink-0 overflow-hidden rounded bg-zinc-100 dark:bg-zinc-800">
-          <PostThumbnail thumbnail={post.thumbnail} alt={post.title} />
+          <PostTitleCard post={post} variant="compact" />
         </div>
         <div className="flex min-w-0 flex-1 flex-col">
           <h3 className="line-clamp-1 text-sm font-semibold leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400">
