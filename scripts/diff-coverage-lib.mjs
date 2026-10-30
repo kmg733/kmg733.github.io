@@ -8,7 +8,8 @@ import path from "path";
  * `git diff <base>...HEAD` 로 추가·수정된 라인을 구하고,
  * `coverage/lcov.info` 에서 그 라인과 라인의 분기가 모두 실행됐는지 확인한다.
  * 소스가 아닌 파일(테스트·문서·설정)과 lcov 에 기록이 없는 라인(주석·타입 선언)은 검사 대상이 아니다.
- * 소스 파일인데 lcov 에 없거나, 커버리지 제외 주석을 추가했으면 미달로 본다.
+ * 커버리지 제외 주석을 추가했으면 미달로 본다.
+ * 소스 파일인데 lcov 에 없으면 경고만 남긴다. babel 측정은 실행 코드가 없는 파일(타입 전용)을 lcov 에서 빼기 때문이다.
  */
 
 const LCOV_PATH = "coverage/lcov.info";
@@ -91,7 +92,7 @@ function isSourceFile(file) {
 
 /** 변경 라인 중 실행되지 않은 라인, 일부 분기만 실행된 라인, 커버리지 제외 주석을 찾는다 */
 export function findUncovered(changed, coverage) {
-  const result = { uncovered: [], checkedLines: 0, checkedBranches: 0 };
+  const result = { uncovered: [], warnings: [], checkedLines: 0, checkedBranches: 0 };
 
   for (const [file, lines] of changed) {
     if (lines.size === 0 || !isSourceFile(file)) continue;
@@ -99,7 +100,7 @@ export function findUncovered(changed, coverage) {
     if (fileCoverage) {
       checkFile(file, lines, fileCoverage, result);
     } else {
-      result.uncovered.push({ file, kind: "unmeasured" });
+      result.warnings.push(file);
     }
   }
   return result;
@@ -131,23 +132,29 @@ function describeUncovered({ file, line, kind, taken, total }) {
       return `  ${file}:${line} (라인 미실행)`;
     case "branch":
       return `  ${file}:${line} (분기 ${taken}/${total})`;
-    case "ignore":
-      return `  ${file}:${line} (커버리지 제외 주석 사용 금지)`;
     default:
-      return `  ${file} (커버리지 측정 대상 아님: jest.config.ts collectCoverageFrom 확인)`;
+      return `  ${file}:${line} (커버리지 제외 주석 사용 금지)`;
   }
 }
 
-export function formatReport({ uncovered, checkedLines, checkedBranches }) {
-  const summary = `실행 가능한 변경 라인 ${checkedLines}개, 분기 ${checkedBranches}개`;
-  if (uncovered.length === 0) {
-    return `변경 라인 커버리지 100%: ${summary}`;
-  }
-  const rows = uncovered.map(describeUncovered);
+function describeWarnings(warnings) {
+  if (warnings.length === 0) return [];
   return [
-    `변경 라인 커버리지 미달: ${uncovered.length}곳이 테스트로 실행되지 않았다 (${summary})`,
-    ...rows,
-  ].join("\n");
+    `경고: lcov 에 없는 소스 ${warnings.length}개 (타입 전용 파일이면 정상, 아니면 jest.config.ts collectCoverageFrom 확인)`,
+    ...warnings.map((file) => `  ${file}`),
+  ];
+}
+
+export function formatReport({ uncovered, warnings, checkedLines, checkedBranches }) {
+  const summary = `실행 가능한 변경 라인 ${checkedLines}개, 분기 ${checkedBranches}개`;
+  const head =
+    uncovered.length === 0
+      ? [`변경 라인 커버리지 100%: ${summary}`]
+      : [
+          `변경 라인 커버리지 미달: ${uncovered.length}곳이 테스트로 실행되지 않았다 (${summary})`,
+          ...uncovered.map(describeUncovered),
+        ];
+  return [...head, ...describeWarnings(warnings)].join("\n");
 }
 
 export const defaultDeps = {

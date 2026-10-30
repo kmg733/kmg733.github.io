@@ -210,19 +210,26 @@ describe("findUncovered", () => {
     expect(result.checkedBranches).toBe(0);
   });
 
-  it("lcov 에 없는 소스 파일은 측정되지 않은 소스로 보고한다", () => {
+  it("lcov 에 없는 소스 파일(babel 은 타입 전용 파일을 빼고 기록한다)은 미달이 아니라 경고로 남긴다", () => {
     const changed = new Map([
-      ["src/lib/legacy.js", lines(1)],
+      ["src/types/post.ts", lines(5)],
       ["scripts/tool.ts", lines(3)],
       ["src/lib/removed-lines-only.ts", new Map()],
     ]);
 
     const result = findUncovered(changed, coverage);
 
-    expect(result.uncovered).toEqual([
-      { file: "src/lib/legacy.js", kind: "unmeasured" },
-      { file: "scripts/tool.ts", kind: "unmeasured" },
+    expect(result.uncovered).toEqual([]);
+    expect(result.warnings).toEqual(["src/types/post.ts", "scripts/tool.ts"]);
+  });
+
+  it("lcov 에 있는 파일과 소스가 아닌 파일은 경고하지 않는다", () => {
+    const changed = new Map([
+      ["src/a.ts", lines(1)],
+      ["content/posts/x.md", lines(1)],
     ]);
+
+    expect(findUncovered(changed, coverage).warnings).toEqual([]);
   });
 
   it("커버리지 제외 주석을 추가한 라인은 실행 여부와 상관없이 보고한다", () => {
@@ -268,11 +275,12 @@ describe("findUncovered", () => {
 
 describe("formatReport", () => {
   it("통과하면 검사한 라인·분기 수를 알려준다", () => {
-    const text = formatReport({ uncovered: [], checkedLines: 3, checkedBranches: 2 });
+    const text = formatReport({ uncovered: [], warnings: [], checkedLines: 3, checkedBranches: 2 });
 
     expect(text).toContain("100%");
     expect(text).toContain("라인 3개");
     expect(text).toContain("분기 2개");
+    expect(text).not.toContain("경고");
   });
 
   it("실패하면 위치와 이유를 나열한다", () => {
@@ -281,8 +289,8 @@ describe("formatReport", () => {
         { file: "src/a.ts", line: 2, kind: "line" },
         { file: "src/a.ts", line: 3, kind: "branch", taken: 1, total: 2 },
         { file: "src/a.ts", line: 5, kind: "ignore" },
-        { file: "src/b.js", kind: "unmeasured" },
       ],
+      warnings: [],
       checkedLines: 4,
       checkedBranches: 2,
     });
@@ -290,8 +298,24 @@ describe("formatReport", () => {
     expect(text).toContain("src/a.ts:2 (라인 미실행)");
     expect(text).toContain("src/a.ts:3 (분기 1/2)");
     expect(text).toContain("src/a.ts:5 (커버리지 제외 주석 사용 금지)");
-    expect(text).toContain("src/b.js (커버리지 측정 대상 아님: jest.config.ts collectCoverageFrom 확인)");
     expect(text).not.toContain("100%");
+  });
+
+  it("lcov 에 없는 소스는 통과·실패와 함께 경고로 나열한다", () => {
+    const warnings = ["src/types/post.ts"];
+    const passed = formatReport({ uncovered: [], warnings, checkedLines: 0, checkedBranches: 0 });
+    const failed = formatReport({
+      uncovered: [{ file: "src/a.ts", line: 2, kind: "line" }],
+      warnings,
+      checkedLines: 1,
+      checkedBranches: 0,
+    });
+
+    for (const text of [passed, failed]) {
+      expect(text).toContain("경고: lcov 에 없는 소스 1개");
+      expect(text).toContain("  src/types/post.ts");
+    }
+    expect(passed).toContain("100%");
   });
 });
 
@@ -347,6 +371,14 @@ describe("run", () => {
 
     expect(run(["origin/develop"], d.deps)).toBe(1);
     expect(d.err.join("\n")).toContain("src/a.ts:2 (라인 미실행)");
+  });
+
+  it("타입 전용 파일만 바뀌어 lcov 에 없으면 경고만 남기고 0 을 돌려준다", () => {
+    const d = deps("diff --git a/src/types/post.ts b/src/types/post.ts\n+++ b/src/types/post.ts\n@@ -4,0 +5 @@\n+  title: string;");
+
+    expect(run(["origin/develop"], d.deps)).toBe(0);
+    expect(d.out.join("\n")).toContain("src/types/post.ts");
+    expect(d.err).toEqual([]);
   });
 
   it("기준 ref 가 없으면 2 를 돌려준다", () => {
