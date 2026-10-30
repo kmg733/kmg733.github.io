@@ -6,42 +6,12 @@ import type { TocItem } from "@/lib/toc";
 /**
  * TableOfContents 컴포넌트 테스트.
  *
- * 핵심 이슈: 빠른 스크롤 시 IntersectionObserver Last-Write-Wins 문제
- * - 다수의 entry가 동시에 isIntersecting=true → 마지막이 승리 (부정확)
- * - 수정 방향: Observer는 트리거 역할만, getBoundingClientRect로 실제 active 결정
+ * active heading은 scroll 이벤트마다 getBoundingClientRect로 다시 계산한다.
+ * (IntersectionObserver는 제목이 감시 띠를 한 프레임에 건너뛰면 콜백이 오지 않아,
+ *  스크롤바를 빠르게 끌면 목차가 이전 위치에 멈췄다.)
  */
 
-// ─────────────────────────────────────────────────────
-// IntersectionObserver 모킹 인프라
-// ─────────────────────────────────────────────────────
-
-type ObserverCallback = (entries: IntersectionObserverEntry[]) => void;
-
-let observerCallback: ObserverCallback | null = null;
-let observedElements: Element[] = [];
-
-const mockObserve = jest.fn((el: Element) => {
-  observedElements.push(el);
-});
-const mockUnobserve = jest.fn();
-const mockDisconnect = jest.fn(() => {
-  observedElements = [];
-});
-
-class MockIntersectionObserver {
-  constructor(callback: ObserverCallback) {
-    observerCallback = callback;
-  }
-  observe = mockObserve;
-  unobserve = mockUnobserve;
-  disconnect = mockDisconnect;
-}
-
-Object.defineProperty(window, "IntersectionObserver", {
-  writable: true,
-  configurable: true,
-  value: MockIntersectionObserver,
-});
+import { TOC_SYNC_EVENT } from "@/lib/tocSync";
 
 // ─────────────────────────────────────────────────────
 // scrollAndHighlight 모킹 (사이드이펙트 제거)
@@ -101,20 +71,12 @@ function mockHeadingRects(tops: Record<string, number>) {
 }
 
 /**
- * IntersectionObserver 콜백을 강제 트리거한다.
- * entries: 교차 상태가 변경된 heading entry 목록.
+ * scroll 이벤트를 보내고 rAF(16ms)까지 진행한다.
  */
-function triggerObserver(
-  entries: Array<{ slug: string; isIntersecting: boolean }>
-) {
-  if (!observerCallback) return;
+function triggerScroll() {
   act(() => {
-    observerCallback!(
-      entries.map(({ slug, isIntersecting }) => ({
-        target: { id: slug } as Element,
-        isIntersecting,
-      })) as unknown as IntersectionObserverEntry[]
-    );
+    window.dispatchEvent(new Event("scroll"));
+    jest.advanceTimersByTime(16);
   });
 }
 
@@ -125,8 +87,6 @@ function triggerObserver(
 describe("TableOfContents", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    observerCallback = null;
-    observedElements = [];
     localStorageMock.clear();
     jest.spyOn(document, "getElementById").mockRestore?.();
     jest.useFakeTimers();
@@ -179,10 +139,7 @@ describe("TableOfContents", () => {
       render(<TableOfContents headings={headings} />);
 
       // intro, setup 두 개 동시에 intersecting (빠른 스크롤 시뮬레이션)
-      triggerObserver([
-        { slug: "intro", isIntersecting: true },
-        { slug: "setup", isIntersecting: true },
-      ]);
+      triggerScroll();
 
       // viewport 상단 기준 (top <= 80), 가장 아래에 있는 것 = setup
       const setupLink = screen.getByText("설치").closest("a");
@@ -200,10 +157,7 @@ describe("TableOfContents", () => {
       render(<TableOfContents headings={headings} />);
 
       // 순서 뒤집기: setup 먼저, intro 나중
-      triggerObserver([
-        { slug: "setup", isIntersecting: true },
-        { slug: "intro", isIntersecting: true },
-      ]);
+      triggerScroll();
 
       // 기존 코드는 intro가 active (Last-Write-Wins → 마지막 entry)
       // 새 코드는 setup이 active (getBoundingClientRect 기반)
@@ -220,7 +174,7 @@ describe("TableOfContents", () => {
 
       render(<TableOfContents headings={headings} />);
 
-      triggerObserver([{ slug: "setup", isIntersecting: true }]);
+      triggerScroll();
 
       const setupLink = screen.getByText("설치").closest("a");
       expect(setupLink).toHaveClass("toc-item-active");
@@ -239,7 +193,7 @@ describe("TableOfContents", () => {
       render(<TableOfContents headings={headings} />);
 
       // 첫 번째 heading이 교차 감지됨
-      triggerObserver([{ slug: "intro", isIntersecting: true }]);
+      triggerScroll();
 
       const introLink = screen.getByText("소개").closest("a");
       expect(introLink).toHaveClass("toc-item-active");
@@ -259,7 +213,7 @@ describe("TableOfContents", () => {
 
       render(<TableOfContents headings={headings} />);
 
-      triggerObserver([{ slug: "advanced", isIntersecting: true }]);
+      triggerScroll();
 
       const advancedLink = screen.getByText("고급").closest("a");
       expect(advancedLink).toHaveClass("toc-item-active");
@@ -267,9 +221,9 @@ describe("TableOfContents", () => {
   });
 
   // ─────────────────────────────────────────────────────
-  // 3. 클릭 후 Observer 비활성화 로직 유지
+  // 3. 클릭 후 스크롤 계산 잠시 중지
   // ─────────────────────────────────────────────────────
-  describe("클릭 후 Observer 비활성화 로직", () => {
+  describe("클릭 후 스크롤 계산 잠시 중지", () => {
     test("TOC 링크 클릭 시 클릭한 heading이 active로 설정된다", () => {
       mockHeadingRects({ intro: 10, setup: 50, usage: 200, advanced: 400 });
 
@@ -283,7 +237,7 @@ describe("TableOfContents", () => {
       expect(usageLink).toHaveClass("toc-item-active");
     });
 
-    test("클릭 후 2초 이내에는 Observer 트리거가 active를 변경하지 않는다", () => {
+    test("클릭 후 2초 이내에는 스크롤이 active를 변경하지 않는다", () => {
       mockHeadingRects({ intro: 10, setup: 50, usage: 200, advanced: 400 });
 
       render(<TableOfContents headings={headings} />);
@@ -294,21 +248,18 @@ describe("TableOfContents", () => {
         fireEvent.click(usageLink);
       });
 
-      // 클릭 직후 Observer 트리거 발생 (1초 이내)
+      // 클릭 직후 스크롤 발생 (1초 이내)
       act(() => {
         jest.advanceTimersByTime(500);
       });
 
-      triggerObserver([
-        { slug: "intro", isIntersecting: true },
-        { slug: "setup", isIntersecting: true },
-      ]);
+      triggerScroll();
 
       // usage가 여전히 active여야 한다
       expect(usageLink).toHaveClass("toc-item-active");
     });
 
-    test("클릭 후 2초가 지나면 Observer가 다시 active를 제어한다", () => {
+    test("클릭 후 2초가 지나면 스크롤이 다시 active를 제어한다", () => {
       mockHeadingRects({ intro: 10, setup: 50, usage: 200, advanced: 400 });
 
       render(<TableOfContents headings={headings} />);
@@ -319,13 +270,13 @@ describe("TableOfContents", () => {
         fireEvent.click(usageLink);
       });
 
-      // 2초 경과 (Observer 재활성화)
+      // 2초 경과 (스크롤 계산 재개)
       act(() => {
         jest.advanceTimersByTime(2000);
       });
 
-      // Observer가 setup을 active로 트리거
-      triggerObserver([{ slug: "setup", isIntersecting: true }]);
+      // 스크롤 계산 결과 setup이 active
+      triggerScroll();
 
       const setupLink = screen.getByText("설치").closest("a")!;
       expect(setupLink).toHaveClass("toc-item-active");
@@ -375,34 +326,151 @@ describe("TableOfContents", () => {
   });
 
   // ─────────────────────────────────────────────────────
-  // 5. IntersectionObserver 등록
+  // 5. 스크롤 리스너
   // ─────────────────────────────────────────────────────
-  describe("IntersectionObserver 등록", () => {
-    test("모든 heading에 대해 observe가 호출된다", () => {
-      mockHeadingRects({
-        intro: 100,
-        setup: 200,
-        usage: 300,
-        advanced: 400,
-      });
-
+  describe("스크롤 리스너", () => {
+    test("스크롤바로 단번에 건너뛰어도 스크롤이 끝난 위치의 heading이 active가 된다", () => {
+      // 처음엔 맨 위
+      mockHeadingRects({ intro: 200, setup: 400, usage: 600, advanced: 800 });
       render(<TableOfContents headings={headings} />);
+      act(() => {
+        jest.advanceTimersByTime(16);
+      });
+      expect(screen.getByText("소개").closest("a")).toHaveClass("toc-item-active");
 
-      expect(mockObserve).toHaveBeenCalledTimes(headings.length);
+      // 한 프레임 만에 usage 구간으로 이동 (제목들이 감시 띠 안에 머문 프레임이 없음)
+      mockHeadingRects({ intro: -2000, setup: -1200, usage: -300, advanced: 900 });
+      triggerScroll();
+
+      expect(screen.getByText("사용법").closest("a")).toHaveClass("toc-item-active");
     });
 
-    test("언마운트 시 disconnect가 호출된다", () => {
-      mockHeadingRects({
-        intro: 100,
-        setup: 200,
-        usage: 300,
-        advanced: 400,
+    test("scroll-margin(96px) 위치에 멈춘 heading도 active가 된다", () => {
+      // 제목 링크·각주 이동은 대상 요소를 화면 위 96px에 멈춘다
+      mockHeadingRects({ intro: -500, setup: 96, usage: 600, advanced: 800 });
+      render(<TableOfContents headings={headings} />);
+      act(() => {
+        jest.advanceTimersByTime(16);
       });
 
+      expect(screen.getByText("설치").closest("a")).toHaveClass("toc-item-active");
+    });
+
+    test("한 프레임 안의 여러 scroll 이벤트는 한 번만 계산한다", () => {
+      mockHeadingRects({ intro: 10, setup: 400, usage: 600, advanced: 800 });
+      render(<TableOfContents headings={headings} />);
+      const spy = document.getElementById as jest.Mock;
+      spy.mockClear();
+
+      act(() => {
+        window.dispatchEvent(new Event("scroll"));
+        window.dispatchEvent(new Event("scroll"));
+        window.dispatchEvent(new Event("scroll"));
+        jest.advanceTimersByTime(16);
+      });
+
+      expect(spy).toHaveBeenCalledTimes(headings.length);
+    });
+
+    test("언마운트 후에는 스크롤에 반응하지 않고 예약된 계산도 취소한다", () => {
+      mockHeadingRects({ intro: 10, setup: 400, usage: 600, advanced: 800 });
+      const cancelSpy = jest.spyOn(window, "cancelAnimationFrame");
       const { unmount } = render(<TableOfContents headings={headings} />);
+      const spy = document.getElementById as jest.Mock;
+
+      act(() => {
+        window.dispatchEvent(new Event("scroll"));
+      });
+      unmount();
+      spy.mockClear();
+      act(() => {
+        jest.advanceTimersByTime(16);
+        window.dispatchEvent(new Event("scroll"));
+        jest.advanceTimersByTime(16);
+      });
+
+      expect(cancelSpy).toHaveBeenCalled();
+      expect(spy).not.toHaveBeenCalled();
+    });
+  });
+
+  // ─────────────────────────────────────────────────────
+  // 6. 본문에서 요청한 목차 동기화 (각주 이동 등)
+  // ─────────────────────────────────────────────────────
+  describe("목차 동기화 이벤트", () => {
+    function dispatchSync(target: Element) {
+      act(() => {
+        window.dispatchEvent(new CustomEvent(TOC_SYNC_EVENT, { detail: target }));
+      });
+    }
+
+    beforeEach(() => {
+      document.body.innerHTML = `
+        <p id="lead">도입<a id="ref-lead">1</a></p>
+        <h2 id="intro">소개</h2>
+        <h2 id="setup">설치</h2>
+        <p><a id="ref-setup">2</a></p>
+        <h2 id="usage">사용법</h2>
+        <h3 id="advanced">고급</h3>
+        <ol><li id="fn-1">출처</li></ol>
+      `;
+    });
+
+    afterEach(() => {
+      document.body.innerHTML = "";
+    });
+
+    test("이동할 요소가 속한 구간의 heading이 active가 된다", () => {
+      render(<TableOfContents headings={headings} />);
+
+      dispatchSync(document.getElementById("ref-setup")!);
+
+      expect(screen.getByRole("link", { name: "설치" })).toHaveClass("toc-item-active");
+    });
+
+    test("모든 제목 뒤의 각주 목록으로 가면 마지막 heading이 active가 된다", () => {
+      render(<TableOfContents headings={headings} />);
+
+      dispatchSync(document.getElementById("fn-1")!);
+
+      expect(screen.getByRole("link", { name: "고급" })).toHaveClass("toc-item-active");
+    });
+
+    test("첫 제목보다 앞이면 첫 heading이 active가 된다", () => {
+      render(<TableOfContents headings={headings} />);
+      dispatchSync(document.getElementById("fn-1")!);
+
+      dispatchSync(document.getElementById("ref-lead")!);
+
+      expect(screen.getByRole("link", { name: "소개" })).toHaveClass("toc-item-active");
+    });
+
+    test("동기화 후 2초 동안은 부드러운 스크롤 중간 위치로 active가 바뀌지 않는다", () => {
+      render(<TableOfContents headings={headings} />);
+      dispatchSync(document.getElementById("fn-1")!);
+
+      // 스크롤 도중: 아직 setup 구간을 지나는 중
+      mockHeadingRects({ intro: -400, setup: 20, usage: 500, advanced: 700 });
+      act(() => {
+        jest.advanceTimersByTime(500);
+      });
+      triggerScroll();
+      expect(screen.getByRole("link", { name: "고급" })).toHaveClass("toc-item-active");
+
+      act(() => {
+        jest.advanceTimersByTime(1500);
+      });
+      triggerScroll();
+      expect(screen.getByRole("link", { name: "설치" })).toHaveClass("toc-item-active");
+    });
+
+    test("언마운트 후에는 동기화 이벤트를 듣지 않는다", () => {
+      const removeSpy = jest.spyOn(window, "removeEventListener");
+      const { unmount } = render(<TableOfContents headings={headings} />);
+
       unmount();
 
-      expect(mockDisconnect).toHaveBeenCalled();
+      expect(removeSpy).toHaveBeenCalledWith(TOC_SYNC_EVENT, expect.any(Function));
     });
   });
 });

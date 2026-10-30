@@ -3,13 +3,15 @@
 import { useEffect, useState, useRef } from "react";
 import type { TocItem } from "@/lib/toc";
 import { scrollAndHighlight } from "@/lib/scrollHighlight";
+import { TOC_SYNC_EVENT, findSectionHeading } from "@/lib/tocSync";
 
 interface TableOfContentsProps {
   headings: TocItem[];
 }
 
 const TOC_STORAGE_KEY = "toc-is-open";
-const HEADER_HEIGHT = 80;
+// 제목·각주 링크는 대상을 화면 위 96px(scroll-margin-top: 6rem)에 멈춘다. 그 위치의 제목도 active가 되도록 조금 여유를 둔다.
+const ACTIVE_LINE = 100;
 const CLICK_DEBOUNCE_MS = 2000;
 
 export default function TableOfContents({ headings }: TableOfContentsProps) {
@@ -43,6 +45,17 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
     }
   }, [isOpen, mounted]);
 
+  // 클릭·동기화 직후에는 부드러운 스크롤 중간 위치로 active가 바뀌지 않게 잠시 계산을 멈춘다.
+  const pauseScrollTracking = () => {
+    clickedRef.current = true;
+    if (clickTimeoutRef.current) {
+      clearTimeout(clickTimeoutRef.current);
+    }
+    clickTimeoutRef.current = setTimeout(() => {
+      clickedRef.current = false;
+    }, CLICK_DEBOUNCE_MS);
+  };
+
   useEffect(() => {
     if (headings.length === 0) return;
 
@@ -51,7 +64,7 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
      *
      * 알고리즘:
      * 1. 모든 heading의 top 값을 수집한다.
-     * 2. top <= HEADER_HEIGHT 인 heading들 중 가장 큰 top 값을 가진 것이 active.
+     * 2. top <= ACTIVE_LINE 인 heading들 중 가장 큰 top 값을 가진 것이 active.
      *    (viewport 상단에 가장 가까운, 즉 마지막으로 통과한 heading)
      * 3. 해당 없으면 (모든 heading이 아직 viewport 아래) 첫 번째 heading이 active.
      */
@@ -65,7 +78,7 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
 
         const top = el.getBoundingClientRect().top;
 
-        if (top <= HEADER_HEIGHT && top > bestTop) {
+        if (top <= ACTIVE_LINE && top > bestTop) {
           bestTop = top;
           bestId = slug;
         }
@@ -74,25 +87,36 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
       return bestId;
     }
 
-    const observer = new IntersectionObserver(
-      () => {
-        // 클릭 후 일정 시간 동안은 IntersectionObserver 무시
+    // IntersectionObserver는 스크롤바를 빠르게 끌어 제목이 감시 영역을 한 프레임에 건너뛰면
+    // 콜백이 오지 않아 목차가 멈췄다. scroll 이벤트마다(rAF 1회로 묶어) 다시 계산한다.
+    let rafId: number | null = null;
+
+    function handleScroll() {
+      if (rafId !== null) return;
+      rafId = requestAnimationFrame(() => {
+        rafId = null;
         if (clickedRef.current) return;
-
-        // Observer는 "트리거" 역할만 수행하고,
-        // 실제 active는 getBoundingClientRect 기반으로 결정한다.
         setActiveId(computeActiveId());
-      },
-      { rootMargin: "-80px 0px -80% 0px" }
-    );
+      });
+    }
 
-    headings.forEach(({ slug }) => {
-      const element = document.getElementById(slug);
-      if (element) observer.observe(element);
-    });
+    function handleSync(event: Event) {
+      const target = (event as CustomEvent<HTMLElement>).detail;
+      const slugs = headings.map(({ slug }) => slug);
+      setActiveId(findSectionHeading(target, slugs) ?? headings[0].slug);
+      pauseScrollTracking();
+    }
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener(TOC_SYNC_EVENT, handleSync);
 
     return () => {
-      observer.disconnect();
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener(TOC_SYNC_EVENT, handleSync);
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+      }
       if (clickTimeoutRef.current) {
         clearTimeout(clickTimeoutRef.current);
       }
@@ -155,14 +179,8 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
                   // 강제로 활성 상태 설정 (마지막 항목 문제 해결)
                   setActiveId(slug);
 
-                  // IntersectionObserver 일시 비활성화 (2초)
-                  clickedRef.current = true;
-                  if (clickTimeoutRef.current) {
-                    clearTimeout(clickTimeoutRef.current);
-                  }
-                  clickTimeoutRef.current = setTimeout(() => {
-                    clickedRef.current = false;
-                  }, CLICK_DEBOUNCE_MS);
+                  // 스크롤 기반 계산 일시 중지 (2초)
+                  pauseScrollTracking();
 
                   // 스크롤 + 헤딩 강조 애니메이션
                   scrollAndHighlight(element, "heading-highlight");
