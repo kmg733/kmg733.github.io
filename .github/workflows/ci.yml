@@ -17,6 +17,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -27,8 +29,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # v8 은 else 없는 if 의 거짓 경로처럼 코드 구간이 없는 분기를 기록하지 않아, 게이트는 babel 로 잰다
       - name: Test
-        run: npm test
+        run: npm run test:coverage -- --coverageProvider=babel
+
+      - name: Diff coverage (변경 라인·분기 100%)
+        run: node scripts/diff-coverage.mjs "origin/${{ github.base_ref }}"
 
       - name: Build
         run: npm run build

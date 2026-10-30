@@ -15,6 +15,8 @@ jest.mock("reading-time", () => ({
 }));
 
 const mockedFs = jest.mocked(fs);
+// 프로덕션은 withFileTypes 없이 호출해 파일 이름(string[])을 받는다. jest.mocked 는 마지막 오버로드(Dirent[])로 추론하므로 맞춰 둔다
+const mockedReaddirSync = mockedFs.readdirSync as unknown as jest.Mock<string[], [fs.PathLike]>;
 
 describe("FilePostRepository", () => {
   const testPostsDirectory = "/test/content/posts";
@@ -41,7 +43,7 @@ tags:
 `;
 
       mockedFs.existsSync.mockReturnValue(true);
-      mockedFs.readdirSync.mockReturnValue(["test-post.md"] as unknown as fs.Dirent[]);
+      mockedReaddirSync.mockReturnValue(["test-post.md"]);
       mockedFs.readFileSync.mockReturnValue(mockFileContent);
 
       const posts = repository.findAll();
@@ -63,7 +65,7 @@ tags:
 `;
 
       mockedFs.existsSync.mockReturnValue(true);
-      mockedFs.readdirSync.mockReturnValue(["no-category.md"] as unknown as fs.Dirent[]);
+      mockedReaddirSync.mockReturnValue(["no-category.md"]);
       mockedFs.readFileSync.mockReturnValue(mockFileContent);
 
       const posts = repository.findAll();
@@ -85,7 +87,7 @@ tags: []
 `;
 
       mockedFs.existsSync.mockReturnValue(true);
-      mockedFs.readdirSync.mockReturnValue(["daily-post.md"] as unknown as fs.Dirent[]);
+      mockedReaddirSync.mockReturnValue(["daily-post.md"]);
       mockedFs.readFileSync.mockReturnValue(mockFileContent);
 
       const posts = repository.findAll();
@@ -121,11 +123,11 @@ tags: []
 Content`;
 
       mockedFs.existsSync.mockReturnValue(true);
-      mockedFs.readdirSync.mockReturnValue([
+      mockedReaddirSync.mockReturnValue([
         "dev.md",
         "daily.md",
         "uncategorized.md",
-      ] as unknown as fs.Dirent[]);
+      ]);
       mockedFs.readFileSync.mockImplementation((filePath) => {
         const fileName = path.basename(filePath as string);
         if (fileName === "dev.md") return devPost;
@@ -216,7 +218,7 @@ tags: []
 `;
 
       mockedFs.existsSync.mockReturnValue(true);
-      mockedFs.readdirSync.mockReturnValue(["empty-frontmatter.md"] as unknown as fs.Dirent[]);
+      mockedReaddirSync.mockReturnValue(["empty-frontmatter.md"]);
       mockedFs.readFileSync.mockReturnValue(mockFileContent);
 
       const posts = repository.findAll();
@@ -287,7 +289,7 @@ relatedSlugs:
 `;
 
       mockedFs.existsSync.mockReturnValue(true);
-      mockedFs.readdirSync.mockReturnValue(["related-post.md"] as unknown as fs.Dirent[]);
+      mockedReaddirSync.mockReturnValue(["related-post.md"]);
       mockedFs.readFileSync.mockReturnValue(mockFileContent);
 
       const posts = repository.findAll();
@@ -314,7 +316,7 @@ relatedSlugs:
 `;
 
       mockedFs.existsSync.mockReturnValue(true);
-      mockedFs.readdirSync.mockReturnValue(["bad-slugs.md"] as unknown as fs.Dirent[]);
+      mockedReaddirSync.mockReturnValue(["bad-slugs.md"]);
       mockedFs.readFileSync.mockReturnValue(mockFileContent);
 
       const posts = repository.findAll();
@@ -337,7 +339,7 @@ relatedSlugs:
 `;
 
       mockedFs.existsSync.mockReturnValue(true);
-      mockedFs.readdirSync.mockReturnValue(["all-invalid.md"] as unknown as fs.Dirent[]);
+      mockedReaddirSync.mockReturnValue(["all-invalid.md"]);
       mockedFs.readFileSync.mockReturnValue(mockFileContent);
 
       const posts = repository.findAll();
@@ -347,12 +349,12 @@ relatedSlugs:
 
     it("should filter only markdown files", () => {
       mockedFs.existsSync.mockReturnValue(true);
-      mockedFs.readdirSync.mockReturnValue([
+      mockedReaddirSync.mockReturnValue([
         "post.md",
         "post.mdx",
         "image.png",
         "data.json",
-      ] as unknown as fs.Dirent[]);
+      ]);
       mockedFs.readFileSync.mockReturnValue(`---
 title: Test
 date: 2025-01-15

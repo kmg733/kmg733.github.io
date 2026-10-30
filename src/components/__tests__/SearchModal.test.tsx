@@ -1,5 +1,4 @@
 import { render, screen, act, fireEvent } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import SearchModal from "../SearchModal";
 import type { PostMeta } from "@/types";
 
