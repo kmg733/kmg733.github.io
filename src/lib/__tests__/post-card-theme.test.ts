@@ -6,7 +6,21 @@ import {
   DEFAULT_POST_CARD_THEME,
   getPostCardTheme,
   getPostCardLabel,
+  POST_CARD_SHORT_LABELS,
+  getPostCardShortLabel,
 } from "../post-card-theme";
+
+function readContentSubcategories(): Set<string> {
+  const dir = path.join(process.cwd(), "content/posts");
+  return new Set(
+    fs
+      .readdirSync(dir)
+      .filter((f) => f.endsWith(".md") || f.endsWith(".mdx"))
+      .map((f) => matter(fs.readFileSync(path.join(dir, f), "utf8")).data)
+      .map((data) => data.subcategory as string | undefined)
+      .filter((s): s is string => typeof s === "string")
+  );
+}
 
 describe("getPostCardTheme", () => {
   it("매핑된 하위 카테고리면 해당 색 클래스를 반환한다", () => {
@@ -66,15 +80,7 @@ describe("POST_CARD_THEMES", () => {
   });
 
   it("content/posts 의 실제 subcategory 값이 모두 매핑에 있다", () => {
-    const dir = path.join(process.cwd(), "content/posts");
-    const subcategories = new Set(
-      fs
-        .readdirSync(dir)
-        .filter((f) => f.endsWith(".md") || f.endsWith(".mdx"))
-        .map((f) => matter(fs.readFileSync(path.join(dir, f), "utf8")).data)
-        .map((data) => data.subcategory as string | undefined)
-        .filter((s): s is string => typeof s === "string")
-    );
+    const subcategories = readContentSubcategories();
 
     expect(subcategories.size).toBeGreaterThan(0);
     const missing = [...subcategories].filter(
@@ -122,5 +128,67 @@ describe("getPostCardLabel", () => {
 
   it("시리즈도 subcategory 도 없으면 category", () => {
     expect(getPostCardLabel(base)).toBe("개발");
+  });
+});
+
+describe("getPostCardShortLabel", () => {
+  const base = { category: "개발" };
+
+  it("긴 하위 카테고리는 줄임말로 바꾼다", () => {
+    expect(getPostCardShortLabel({ ...base, subcategory: "JavaScript" })).toBe(
+      "JS"
+    );
+    expect(getPostCardShortLabel({ ...base, subcategory: "Database" })).toBe(
+      "DB"
+    );
+  });
+
+  it("매핑에 없는 하위 카테고리는 그대로 쓴다", () => {
+    expect(getPostCardShortLabel({ ...base, subcategory: "Java" })).toBe("Java");
+    expect(getPostCardShortLabel({ ...base, subcategory: "아키텍처" })).toBe(
+      "아키텍처"
+    );
+  });
+
+  it("하위 카테고리가 없으면 category 를 쓴다", () => {
+    expect(getPostCardShortLabel({ category: "블로그" })).toBe("블로그");
+  });
+
+  it("Object.prototype 의 키(constructor 등)는 매핑으로 취급하지 않는다", () => {
+    expect(getPostCardShortLabel({ ...base, subcategory: "constructor" })).toBe(
+      "constructor"
+    );
+    expect(getPostCardShortLabel({ ...base, subcategory: "toString" })).toBe(
+      "toString"
+    );
+  });
+});
+
+describe("POST_CARD_SHORT_LABELS", () => {
+  const MAX_SHORT_LABEL_LENGTH = 6;
+
+  it("줄임말 매핑과 색 매핑의 키마다 짧은 라벨이 6자 이하다", () => {
+    const keys = new Set([
+      ...Object.keys(POST_CARD_SHORT_LABELS),
+      ...Object.keys(POST_CARD_THEMES),
+    ]);
+    const tooLong = [...keys].filter(
+      (s) =>
+        getPostCardShortLabel({ category: "개발", subcategory: s }).length >
+        MAX_SHORT_LABEL_LENGTH
+    );
+    expect(tooLong).toEqual([]);
+  });
+
+  it("content/posts 의 실제 subcategory 짧은 라벨이 모두 6자 이하다", () => {
+    const subcategories = readContentSubcategories();
+
+    expect(subcategories.size).toBeGreaterThan(0);
+    const tooLong = [...subcategories].filter(
+      (s) =>
+        getPostCardShortLabel({ category: "개발", subcategory: s }).length >
+        MAX_SHORT_LABEL_LENGTH
+    );
+    expect(tooLong).toEqual([]);
   });
 });

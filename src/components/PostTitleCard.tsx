@@ -1,5 +1,9 @@
 import type { PostMeta } from "@/types";
-import { getPostCardLabel, getPostCardTheme } from "@/lib/post-card-theme";
+import {
+  getPostCardLabel,
+  getPostCardShortLabel,
+  getPostCardTheme,
+} from "@/lib/post-card-theme";
 
 export type PostTitleCardPost = Pick<
   PostMeta,
@@ -36,7 +40,7 @@ export default function PostTitleCard({
         className={rootClass("flex items-center justify-center p-1.5")}
       >
         <span className="w-full truncate text-center text-[11px] font-semibold">
-          {post.subcategory ?? post.category}
+          {getPostCardShortLabel(post)}
         </span>
       </div>
     );

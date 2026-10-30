@@ -129,6 +129,19 @@ describe("PostTitleCard", () => {
       expect(screen.queryByText("회고")).toBeNull();
     });
 
+    it("긴 하위 카테고리는 줄임말 라벨을 쓴다 (JavaScript → JS)", () => {
+      const { container } = render(
+        <PostTitleCard
+          post={{ ...javaPost, subcategory: "JavaScript" }}
+          variant="compact"
+        />
+      );
+
+      expect(screen.getByText("JS")).toHaveClass("truncate");
+      expect(screen.queryByText("JavaScript")).toBeNull();
+      expect(getCard(container)).toHaveTextContent(/^JS$/);
+    });
+
     it("compact 도 하위 카테고리 색을 쓴다", () => {
       const { container } = render(
         <PostTitleCard post={javaPost} variant="compact" />

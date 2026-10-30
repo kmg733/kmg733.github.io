@@ -53,3 +53,25 @@ export function getPostCardLabel(post: PostCardLabelSource): string {
   }
   return post.subcategory ?? post.category;
 }
+
+/**
+ * compact 카드(64px 칸)용 줄임말
+ *
+ * 글자 영역이 약 52px 라 긴 이름은 잘린다. 긴 이름만 여기 적고 나머지는 그대로 쓴다.
+ * 짧은 라벨이 6자를 넘는 하위 카테고리가 생기면 가드 테스트가 알려 준다.
+ */
+export const POST_CARD_SHORT_LABELS: Readonly<Record<string, string>> = {
+  JavaScript: "JS",
+  Database: "DB",
+};
+
+/** compact 카드 라벨: 줄임말이 있으면 줄임말, 없으면 subcategory, 그것도 없으면 category */
+export function getPostCardShortLabel(
+  post: Pick<PostMeta, "category" | "subcategory">
+): string {
+  const label = post.subcategory ?? post.category;
+  if (Object.prototype.hasOwnProperty.call(POST_CARD_SHORT_LABELS, label)) {
+    return POST_CARD_SHORT_LABELS[label];
+  }
+  return label;
+}

@@ -229,8 +229,8 @@ describe("BlogFilter", () => {
         fireEvent.click(reactChip);
         // react 태그를 가진 포스트: react-post만
         expect(
-        screen.getByRole("heading", { name: "React 시작하기" })
-      ).toBeInTheDocument();
+          screen.getByRole("heading", { name: "React 시작하기" })
+        ).toBeInTheDocument();
       }
     });
   });
