@@ -42,8 +42,16 @@ describe("navigateToAnchor", () => {
   it("한글 id는 인코딩해 해시에 넣는다", () => {
     navigateToAnchor("용어-1", "glossary-highlight");
 
-    expect(window.location.hash).toBe(`#${encodeURIComponent("용어-1")}`);
+    expect(window.location.hash).toBe("#%EC%9A%A9%EC%96%B4-1");
     expect(decodeURIComponent(window.location.hash.slice(1))).toBe("용어-1");
+  });
+
+  it("이미 퍼센트 인코딩된 id(remark-gfm 한글 각주)는 다시 인코딩하지 않는다", () => {
+    document.body.innerHTML = `<li id="fn-%EC%B6%9C%EC%B2%98">출처</li>`;
+
+    navigateToAnchor("fn-%EC%B6%9C%EC%B2%98", "glossary-entry-highlight");
+
+    expect(window.location.hash).toBe("#fn-%EC%B6%9C%EC%B2%98");
   });
 
   it("대상이 없으면 아무것도 하지 않고 false를 돌려준다", () => {

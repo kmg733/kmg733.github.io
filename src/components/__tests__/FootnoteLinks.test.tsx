@@ -109,4 +109,39 @@ describe("FootnoteLinks", () => {
 
     expect(scrollAndHighlight).not.toHaveBeenCalled();
   });
+
+  it("한글 이름 각주도 remark-gfm이 만든 인코딩된 id 그대로 찾아 이동한다", () => {
+    // remark-gfm 은 [^출처] 의 이름을 퍼센트 인코딩한 채로 href 와 id 에 넣는다
+    document.body.innerHTML = `
+      <p>본문<sup><a href="#user-content-fn-%EC%B6%9C%EC%B2%98" id="user-content-fnref-%EC%B6%9C%EC%B2%98" data-footnote-ref="">1</a></sup></p>
+      <section data-footnotes="" class="footnotes"><ol>
+        <li id="user-content-fn-%EC%B6%9C%EC%B2%98"><p>한글 각주 <a href="#user-content-fnref-%EC%B6%9C%EC%B2%98" data-footnote-backref="">↩</a></p></li>
+      </ol></section>
+    `;
+    render(<FootnoteLinks />);
+    const footnote = document.getElementById("user-content-fn-%EC%B6%9C%EC%B2%98")!;
+
+    const notPrevented = fireEvent.click(document.getElementById("user-content-fnref-%EC%B6%9C%EC%B2%98")!);
+
+    expect(notPrevented).toBe(false);
+    expect(scrollAndHighlight).toHaveBeenCalledWith(footnote, "glossary-entry-highlight");
+    // 주소창 해시도 링크 주소와 같다 (% 를 다시 인코딩하지 않음)
+    expect(window.location.hash).toBe("#user-content-fn-%EC%B6%9C%EC%B2%98");
+  });
+
+  it.each([
+    ["Ctrl", { ctrlKey: true }],
+    ["Cmd", { metaKey: true }],
+    ["Shift", { shiftKey: true }],
+    ["Alt", { altKey: true }],
+    ["가운데 버튼", { button: 1 }],
+  ])("%s+클릭은 새 탭 열기 등 브라우저 기본 동작에 맡긴다", (_label, init) => {
+    renderPost();
+
+    const notPrevented = fireEvent.click(document.getElementById("user-content-fnref-advisory")!, init);
+
+    expect(notPrevented).toBe(true);
+    expect(scrollAndHighlight).not.toHaveBeenCalled();
+    expect(window.location.hash).toBe("");
+  });
 });

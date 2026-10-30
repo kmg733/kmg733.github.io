@@ -15,11 +15,16 @@ export default function FootnoteLinks() {
   useEffect(() => {
     function handleClick(event: MouseEvent) {
       if (!(event.target instanceof Element)) return;
+      // Ctrl/Cmd/Shift/Alt+클릭, 가운데 버튼은 새 탭 열기 등 브라우저 기본 동작에 맡긴다
+      if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) {
+        return;
+      }
 
       const link = event.target.closest<HTMLAnchorElement>(FOOTNOTE_LINK_SELECTOR);
       if (!link) return;
 
-      const targetId = decodeURIComponent(link.hash.slice(1));
+      // remark-gfm 은 각주 이름을 퍼센트 인코딩한 채로 요소 id 에 넣으므로 디코딩하지 않는다
+      const targetId = link.hash.slice(1);
       const isBackref = link.hasAttribute("data-footnote-backref");
       const highlightClass = isBackref ? "glossary-highlight" : "glossary-entry-highlight";
       // 대상이 없으면 브라우저 기본 동작에 맡긴다

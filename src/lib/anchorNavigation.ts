@@ -13,7 +13,10 @@ export function navigateToAnchor(id: string, highlightClass: string): boolean {
   const target = document.getElementById(id);
   if (!target) return false;
 
-  window.history.replaceState(null, "", `#${encodeURIComponent(id)}`);
+  // URL 파서는 한글 등은 인코딩하고 이미 있는 %XX 는 그대로 둔다.
+  // (remark-gfm 각주 id 는 이미 퍼센트 인코딩돼 있어 encodeURIComponent 로는 %25 로 이중 인코딩된다)
+  const hash = new URL(`#${id}`, window.location.href).hash;
+  window.history.replaceState(null, "", hash);
   scrollAndHighlight(target, highlightClass);
   requestTocSync(target);
   return true;
